@@ -43,7 +43,7 @@
     <string name="overlay_no_permission_desc">يحتاج HomeFeeder إلى الوصول إلى الإشعارات لعرض الإشعارات أعلى التطبيقات الأخرى.</string>
     <string name="overlay_no_permission_snackbar">يرجى التحقق من أنك سمحت بإذن الوصول إلى الإشعارات والمحاولة مرة أخرى.</string>
     <string name="pref_syscolors">استخدام ألوان خلفية النظام</string>
-    <string name="pref_syscolors_desc">بدلاً من خيارات المشغل:</string>
+    <string name="pref_syscolors_desc">بدلاً من خيارات ”المشغِّل:“</string>
     <string name="pref_syscolors_disabled">يتطلب Android 8.1 أو إصدارًا أحدث</string>
     <string name="action_reload">إعادة التحميل</string>
     <string name="action_restart">إعادة تشغيل التطبيق</string>
@@ -56,7 +56,7 @@
     <string name="invalid_url">عنوان URL غير صالح</string>
     <string name="go_back">الرجوع</string>
     <string name="remove_title">تأكيد الإجراء</string>
-    <string name="remove_desc">إزالة %s من مصادر الموجز</string>
+    <string name="remove_desc">إزالة %s من مصادر الأخبار؟</string>
     <string name="remove_action_yes">نعم</string>
     <string name="news_image_text">صورة قصة إخبارية</string>
     <string name="title_feed_list">قائمة الموجز</string>
