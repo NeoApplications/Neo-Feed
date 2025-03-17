@@ -107,7 +107,7 @@
     <string name="no_activity_for_link">Navegador web no encontrado</string>
     <string name="about_source_code">Código fuente</string>
     <string name="delete_feed">Eliminar suministro</string>
-    <string name="sources_import_opml">Importar feeds desde OPML</string>
+    <string name="sources_import_opml">Importar suministros desde OPML</string>
     <string name="bookmark_remove">Eliminar marcador</string>
     <string name="title_service">Servicio</string>
     <string name="theme_auto_system_black">Automáticamente (del sistema; negro)</string>
