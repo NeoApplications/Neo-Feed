@@ -14,7 +14,7 @@
     <string name="author_role">Разработчик</string>
     <string name="about_source_code">Исходный код</string>
     <string name="pref_cat_overlay">Внешний вид</string>
-    <string name="pref_transparency">Прозрачность фона</string>
+    <string name="pref_transparency">Прозрачность фона оверлея</string>
     <string name="pref_ovr_theme">Тема</string>
     <string name="pref_compact">Компактные элементы списка</string>
     <string name="pref_card_bg">Фон карточек</string>
@@ -55,7 +55,7 @@
     <string name="action_restart">Перезапустить приложение</string>
     <string name="sync_six_hours">Шесть часов</string>
     <string name="theme_auto_system">Автоматическая (как в системе)</string>
-    <string name="fetch_full_articles_by_default">Загружать статьи полностью</string>
+    <string name="fetch_full_articles_by_default">Загружать статьи сразу целиком</string>
     <string name="sync_half_hour_minutes">30 минут</string>
     <string name="background_white">Белый</string>
     <string name="syncing">Обновление</string>
@@ -64,23 +64,23 @@
     <string name="news_image_text">иллюстрация новости</string>
     <string name="add_rss">Новый канал RSS</string>
     <string name="theme_auto_launcher">Автоматически (из лаунчера)</string>
-    <string name="pref_items_per_feed">Макс. статей в каждой ленте</string>
+    <string name="pref_items_per_feed">Макс. статей в ленте</string>
     <string name="pref_sync_frequency">Частота обновления</string>
     <string name="about_licenses">Лицензия</string>
     <string name="transparency_non_transparent">Непрозрачно</string>
     <string name="add_feed_search_hint">URL-адрес ленты</string>
     <string name="sync_one_hour">Один час</string>
-    <string name="background_primary_color">Лончер: главный цвет</string>
+    <string name="background_primary_color">Лончер: основной цвет</string>
     <string name="transparency_high_transparency">Прозрачно на 25%</string>
     <string name="by_author_on_date">%1$s, %2$s</string>
-    <string name="debug_logcat_printing">Расширенная запись logcat</string>
+    <string name="debug_logcat_printing">Расширенный вывод logcat</string>
     <string name="transparency_low_transparency">Прозрачно на 75%</string>
     <string name="debug_content_printing">Запись содержимого уведомлений</string>
     <string name="background_theme_option">В зависимости от темы</string>
-    <string name="about_changelog">Список изменений</string>
-    <string name="article_not_found">Статья не найдена на устройстве</string>
-    <string name="background_secondary_color">Лончер: второстепенный цвет</string>
-    <string name="background_tertiary_color">Лончер: третьестепенный цвет</string>
+    <string name="about_changelog">Журнал изменений</string>
+    <string name="article_not_found">Статьи нет на устройстве</string>
+    <string name="background_secondary_color">Лончер: дополнительный цвет</string>
+    <string name="background_tertiary_color">Лончер: третий цвет</string>
     <string name="transparency_mid_transparency">Прозрачно на 50%</string>
     <string name="sources_import_opml">Импортировать ленты из OPML</string>
     <string name="about_channel">Канал</string>
@@ -110,4 +110,5 @@
     <string name="pref_offline_reader">Оффлайн-читалка</string>
     <string name="theme_auto_system_black">Авто (системная; чёрная)</string>
     <string name="theme_black">Чёрная</string>
+    <string name="edit_rss">Изменить ленту</string>
 </resources>
