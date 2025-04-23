@@ -112,4 +112,16 @@
     <string name="no_activity_for_link">Browser web non trovato</string>
     <string name="theme_auto_system_black">Automaticamente (dal sistema; nero)</string>
     <string name="theme_black">Nero</string>
+    <string name="state_modified">Modificato</string>
+    <string name="action_reset">Reimposta</string>
+    <string name="sorting_order">Preferenza di ordinamento</string>
+    <string name="sorting_chronological">Cronologico</string>
+    <string name="sorting_source">Fonte</string>
+    <string name="sort_ascending">Ascendente</string>
+    <string name="sort_descending">Discendente</string>
+    <string name="deselect_all">Deseleziona tutto</string>
+    <string name="action_apply">Applica</string>
+    <string name="sort_filter">Ordina e filtra</string>
+    <string name="sorting_title">Titolo</string>
+    <string name="select_all">Seleziona tutto</string>
 </resources>
