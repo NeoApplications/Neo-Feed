@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_settings">Opções</string>
+    <string name="title_about">Sobre</string>
+    <string name="title_sources">Fontes dos dados</string>
+    <string name="summary_sources">Adicionar ou remover fontes</string>
+    <string name="date_ago_now">agora</string>
+    <string name="date_at">em</string>
+    <string name="today">hoje</string>
+</resources>
