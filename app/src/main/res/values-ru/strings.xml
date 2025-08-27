@@ -123,4 +123,11 @@
     <string name="sorting_source">По источнику</string>
     <string name="sort_ascending">По возрастанию</string>
     <string name="sort_descending">По убыванию</string>
+    <string name="home">Домашняя</string>
+    <string name="pref_dynamic_color">Динамические цвета</string>
+    <string name="source_tags">Метки</string>
+    <string name="transparency_transparent">Прозрачно</string>
+    <string name="item_selected">Элемент выбран</string>
+    <string name="action_show_bookmarks">Показать закладки</string>
+    <string name="action_hide_bookmarks">Скрыть закладки</string>
 </resources>
