@@ -129,4 +129,8 @@
     <string name="pref_dynamic_color">Colore dinamico</string>
     <string name="source_tags">Tag</string>
     <string name="action_show_bookmarks">Mostra segnalibri</string>
+    <string name="item_selected">Elemento selezionato</string>
+    <string name="section_icon_description">Icona sezione</string>
+    <string name="expand_section_description">Espandi sezione</string>
+    <string name="collapse_section_description">Comprimi sezione</string>
 </resources>
