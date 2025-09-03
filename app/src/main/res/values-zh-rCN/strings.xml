@@ -27,7 +27,7 @@
     <string name="pref_transparency">背景透明度</string>
     <string name="pref_compact">紧凑布局</string>
     <string name="overlay_no_permission_snackbar">请检查您是否已经允许应用使用“通知使用权 “并重试。</string>
-    <string name="pref_syscolors_disabled">需求 Android 8.1 版本及以上</string>
+    <string name="pref_syscolors_disabled">需要 Android 8.1 及以上</string>
     <string name="action_reload">重载</string>
     <string name="pm_empty">无已安装的源</string>
     <string name="add_rss">添加新的 RSS 订阅</string>
@@ -128,4 +128,8 @@
     <string name="action_show_bookmarks">显示书签</string>
     <string name="action_hide_bookmarks">隐藏书签</string>
     <string name="item_selected">已选中项目</string>
+    <string name="collapse_handle_description">拖动以折叠底部工作表</string>
+    <string name="section_icon_description">切片图标</string>
+    <string name="expand_section_description">展开切片</string>
+    <string name="collapse_section_description">折叠切片</string>
 </resources>
