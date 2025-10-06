@@ -70,17 +70,17 @@
     <string name="transparency_non_transparent">Непрозрачно</string>
     <string name="add_feed_search_hint">URL-адрес ленты</string>
     <string name="sync_one_hour">Один час</string>
-    <string name="background_primary_color">Лончер: основной цвет</string>
+    <string name="background_primary_color">Лаунчер: основной цвет</string>
     <string name="transparency_high_transparency">Прозрачно на 25%</string>
     <string name="by_author_on_date">%1$s, %2$s</string>
     <string name="debug_logcat_printing">Расширенный вывод logcat</string>
     <string name="transparency_low_transparency">Прозрачно на 75%</string>
-    <string name="debug_content_printing">Запись содержимого уведомлений</string>
+    <string name="debug_content_printing">Записывать тексты уведомлений</string>
     <string name="background_theme_option">В зависимости от темы</string>
     <string name="about_changelog">Журнал изменений</string>
     <string name="article_not_found">Статьи нет на устройстве</string>
-    <string name="background_secondary_color">Лончер: дополнительный цвет</string>
-    <string name="background_tertiary_color">Лончер: третий цвет</string>
+    <string name="background_secondary_color">Лаунчер: вторичный цвет</string>
+    <string name="background_tertiary_color">Лаунчер: третий цвет</string>
     <string name="transparency_mid_transparency">Прозрачно на 50%</string>
     <string name="sources_import_opml">Импортировать ленты из OPML</string>
     <string name="about_channel">Канал</string>
@@ -130,4 +130,8 @@
     <string name="item_selected">Элемент выбран</string>
     <string name="action_show_bookmarks">Показать закладки</string>
     <string name="action_hide_bookmarks">Скрыть закладки</string>
+    <string name="collapse_handle_description">Перетащите, чтобы свернуть нижний лист</string>
+    <string name="section_icon_description">Значок секции</string>
+    <string name="expand_section_description">Раскрыть секцию</string>
+    <string name="collapse_section_description">Свернуть секцию</string>
 </resources>
