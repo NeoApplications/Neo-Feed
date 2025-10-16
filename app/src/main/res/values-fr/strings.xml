@@ -85,4 +85,26 @@
     <string name="fetch_full_articles_by_default">Récupérer les articles complets par défaut</string>
     <string name="article_not_found">Article local non trouvé</string>
     <string name="by_author_on_date">%1$s, %2$s</string>
+    <string name="home">Menu</string>
+    <string name="about_team">Membres de l\'équipe</string>
+    <string name="about_channel">Chaîne</string>
+    <string name="about_community">Communauté</string>
+    <string name="about_community_telegram">Communauté sur Telergram</string>
+    <string name="about_community_matrix">Communauté sur Matrix</string>
+    <string name="about_build_information">Informations de build</string>
+    <string name="back_to_top">Retourner en haut</string>
+    <string name="pref_dynamic_color">Couleur dynamique</string>
+    <string name="no_articles_found">Aucun article trouvé</string>
+    <string name="source_enabled">Est activé</string>
+    <string name="sources_import_opml">Importer des flux depuis un fichier OPML</string>
+    <string name="sources_export_opml">Exporter des flux au format OPML</string>
+    <string name="failed_to_import_OPML">Erreur lors de l\'import du fichier OPML</string>
+    <string name="failed_to_export_OPML">Erreur lors de l\'export au format OPML</string>
+    <string name="share">Partager</string>
+    <string name="delete_feed">Supprimer le flux</string>
+    <string name="bookmark">Marque-page</string>
+    <string name="bookmark_remove">Supprimer le marque-page</string>
+    <string name="action_show_bookmarks">Afficher les marque-pages</string>
+    <string name="action_hide_bookmarks">Cacher les marque-pages</string>
+    <string name="title_bookmarks">Marque-pages</string>
 </resources>
