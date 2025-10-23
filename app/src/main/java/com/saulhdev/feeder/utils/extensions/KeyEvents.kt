@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.saulhdev.feeder.extensions
+package com.saulhdev.feeder.utils.extensions
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key

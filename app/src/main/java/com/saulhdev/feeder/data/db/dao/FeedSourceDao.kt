@@ -51,8 +51,8 @@ interface FeedSourceDao {
     @Query("SELECT * FROM Feeds WHERE id = :id")
     suspend fun loadFeedById(id: Long): Feed?
 
-    @Query("SELECT * FROM Feeds WHERE id = :id")
-    suspend fun findFeedById(id: Long): List<Feed>
+    @Query("SELECT EXISTS (SELECT 1 FROM Feeds WHERE id = :id)")
+    suspend fun existsById(id: Long): Boolean
 
     @Query("SELECT * FROM Feeds WHERE isEnabled IS 1")
     suspend fun loadFeeds(): List<Feed>

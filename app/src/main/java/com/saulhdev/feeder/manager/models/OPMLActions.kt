@@ -24,7 +24,7 @@ import android.net.Uri
 import android.util.Log
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.db.models.Feed
-import com.saulhdev.feeder.extensions.ToastMaker
+import com.saulhdev.feeder.utils.extensions.ToastMaker
 import com.saulhdev.feeder.manager.sync.requestFeedSync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

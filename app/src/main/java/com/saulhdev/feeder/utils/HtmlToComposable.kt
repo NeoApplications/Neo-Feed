@@ -67,7 +67,7 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import coil.size.Scale
 import com.saulhdev.feeder.R
-import com.saulhdev.feeder.extensions.launchView
+import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.ui.components.Table
 import com.saulhdev.feeder.ui.components.TableCell
 import com.saulhdev.feeder.ui.components.TextComposer

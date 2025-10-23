@@ -13,8 +13,8 @@ import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.databinding.FeedCardStoryLargeBinding
-import com.saulhdev.feeder.extensions.isDark
-import com.saulhdev.feeder.extensions.launchView
+import com.saulhdev.feeder.utils.extensions.isDark
+import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.ui.navigation.Routes
 import com.saulhdev.feeder.ui.theme.CardTheme
 import com.saulhdev.feeder.utils.RelativeTimeHelper

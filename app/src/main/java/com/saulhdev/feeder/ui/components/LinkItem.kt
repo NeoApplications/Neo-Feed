@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
-import com.saulhdev.feeder.extensions.launchView
+import com.saulhdev.feeder.utils.extensions.launchView
 
 @Composable
 fun LinkItem(

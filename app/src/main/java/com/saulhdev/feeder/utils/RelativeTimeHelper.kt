@@ -30,30 +30,23 @@ object RelativeTimeHelper {
         calendar.timeInMillis = j
         j4--
         val locale: Locale
-        val str: String
         var format: String
         if (j in j3..j4) {
             locale = Locale.ENGLISH
-            str = "%s %s %d:%02d"
+            val atFormat = resources.getString(R.string.date_at_time_FORMAT)
             val tomorrow = resources.getString(R.string.tomorrow)
-            val at =
-                resources.getString(if (calendar[Calendar.HOUR_OF_DAY] == 1) R.string.date_at_1am else R.string.date_at)
-            val hourOfDay = calendar[Calendar.HOUR_OF_DAY]
-            val minute = calendar[Calendar.MINUTE]
-            format = String.format(locale, str, tomorrow, at, hourOfDay, minute)
+            val timeOfDay = "${calendar[Calendar.HOUR_OF_DAY]}:${calendar[Calendar.MINUTE]}"
+            format = String.format(locale, atFormat, tomorrow, timeOfDay)
             return format
         }
         j3--
         return when {
-            j in timeInMillis..j3 -> {
+            j in timeInMillis..j3       -> {
                 locale = Locale.ENGLISH
-                str = "%s %s %d:%02d"
+                val atFormat = resources.getString(R.string.date_at_time_FORMAT)
                 val today = resources.getString(R.string.today)
-                val at =
-                    resources.getString(if (calendar[Calendar.HOUR_OF_DAY] == 1) R.string.date_at_1am else R.string.date_at)
-                val hourOfDay = calendar[Calendar.HOUR_OF_DAY]
-                val minute = calendar[Calendar.MINUTE]
-                format = String.format(locale, str, today, at, hourOfDay, minute)
+                val timeOfDay = "${calendar[Calendar.HOUR_OF_DAY]}:${calendar[Calendar.MINUTE]}"
+                format = String.format(locale, atFormat, today, timeOfDay)
                 format
             }
 
@@ -78,29 +71,19 @@ object RelativeTimeHelper {
                         )]
                     )
                 }
-                val stringBuilder = StringBuilder()
-                stringBuilder.append(string)
                 locale = Locale.ENGLISH
-                val str2 = " %s %d:%02d"
-                val at =
-                    resources.getString(if (calendar[Calendar.HOUR_OF_DAY] == 1) R.string.date_at_1am else R.string.date_at)
-                val hourOfDay = calendar[Calendar.HOUR_OF_DAY]
-                val minute = calendar[Calendar.MINUTE]
-                format = String.format(locale, str2, at, hourOfDay, minute)
-                stringBuilder.append(format)
-                format = stringBuilder.toString()
+                val atFormat = resources.getString(R.string.date_at_time_FORMAT)
+                val timeOfDay = "${calendar[Calendar.HOUR_OF_DAY]}:${calendar[Calendar.MINUTE]}"
+                format = String.format(locale, atFormat, string, timeOfDay)
                 format
             }
 
-            else -> {
+            else                        -> {
                 locale = Locale.ENGLISH
-                str = "%s %s %d:%02d"
+                val atFormat = resources.getString(R.string.date_at_time_FORMAT)
                 val yesterday = resources.getString(R.string.yesterday)
-                val at =
-                    resources.getString(if (calendar[Calendar.HOUR_OF_DAY] == 1) R.string.date_at_1am else R.string.date_at)
-                val hourOfDay = calendar[Calendar.HOUR_OF_DAY]
-                val minute = calendar[Calendar.MINUTE]
-                format = String.format(locale, str, yesterday, at, hourOfDay, minute)
+                val timeOfDay = "${calendar[Calendar.HOUR_OF_DAY]}:${calendar[Calendar.MINUTE]}"
+                format = String.format(locale, atFormat, yesterday, timeOfDay)
                 format
             }
         }
@@ -122,15 +105,15 @@ object RelativeTimeHelper {
                 resources.getStringArray(R.array.date_ago_hrs)[2]
             }
 
-            currentTime >= 7200 -> {
+            currentTime >= 7200  -> {
                 resources.getStringArray(R.array.date_ago_hrs)[1]
             }
 
-            currentTime >= 3600 -> {
+            currentTime >= 3600  -> {
                 resources.getStringArray(R.array.date_ago_hrs)[0]
             }
 
-            currentTime >= 60 -> {
+            currentTime >= 60    -> {
                 resources.getQuantityString(
                     R.plurals.date_ago_mins,
                     (currentTime / 60).toInt(),
@@ -138,11 +121,11 @@ object RelativeTimeHelper {
                 )
             }
 
-            currentTime <= 10 -> {
+            currentTime <= 10    -> {
                 resources.getString(R.string.date_ago_now)
             }
 
-            else -> {
+            else                 -> {
                 resources.getQuantityString(
                     R.plurals.date_ago_secs,
                     currentTime.toInt(),

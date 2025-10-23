@@ -48,7 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.data.content.StringSelectionPref
-import com.saulhdev.feeder.extensions.blockShadow
+import com.saulhdev.feeder.utils.extensions.blockShadow
 import kotlinx.coroutines.launch
 
 @Composable

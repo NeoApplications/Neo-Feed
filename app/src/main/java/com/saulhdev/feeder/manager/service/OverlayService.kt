@@ -1,4 +1,4 @@
-package com.saulhdev.feeder.service
+package com.saulhdev.feeder.manager.service
 
 import android.app.Service
 import android.content.Intent

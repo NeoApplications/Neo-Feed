@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.IntDef;
 
-import com.saulhdev.feeder.touch.TouchController;
+import com.saulhdev.feeder.ui.touch.TouchController;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

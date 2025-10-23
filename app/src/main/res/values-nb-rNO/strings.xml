@@ -2,7 +2,6 @@
 <resources>
     <string name="today">i dag</string>
     <string name="date_at">klokken</string>
-    <string name="date_at_1am">\@string/date_at</string>
     <string name="yesterday">i går</string>
     <string name="pref_cat_overlay">Utseende</string>
     <string name="pref_cat_debug">Avlusing</string>

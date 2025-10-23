@@ -33,7 +33,7 @@ import com.saulhdev.feeder.databinding.ContentSortingBinding
 import com.saulhdev.feeder.databinding.ContentSourcesBinding
 import com.saulhdev.feeder.databinding.ContentTagsBinding
 import com.saulhdev.feeder.databinding.SortFilterSheetBinding
-import com.saulhdev.feeder.viewmodels.SourceViewModel
+import com.saulhdev.feeder.viewmodels.SortFilterViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -47,7 +47,7 @@ class FilterBottomSheet(
 ) : FrameLayout(context), View.OnClickListener {
 
     private val mainScope = CoroutineScope(Dispatchers.Main + Job())
-    private val viewModel: SourceViewModel by inject(SourceViewModel::class.java)
+    private val viewModel: SortFilterViewModel by inject(SortFilterViewModel::class.java)
     private val prefs: FeedPreferences by inject(FeedPreferences::class.java)
     private var _binding: SortFilterSheetBinding? = null
     private val binding get() = _binding!!
@@ -82,9 +82,9 @@ class FilterBottomSheet(
     private fun getAllTags() {
         mainScope.launch {
             val selectedTags = prefs.tagsFilter.getValue().toCollection(ArrayList())
-            viewModel.allTags.collect { tags ->
+            viewModel.sheetState.collect { state ->
                 tagsBinding.allTagsGroup.removeAllViews()
-                tags.forEach { tagName ->
+                state.activeTags.forEach { tagName ->
                     val chip = createChip(
                         chipName = tagName,
                         checked = selectedTags.contains(tagName),
@@ -107,8 +107,8 @@ class FilterBottomSheet(
     private fun getSources() {
         mainScope.launch {
             val selectedSources = prefs.sourcesFilter.getValue().toCollection(ArrayList())
-            viewModel.allEnabledFeeds.collect { sourceList ->
-                val sources = sourceList.map { it.title }
+            viewModel.sheetState.collect { state ->
+                val sources = state.activeSources.map { it.title }
                 sourcesBinding.allSourcesGroup.removeAllViews()
                 sources.forEach { sourceName ->
                     val chip = createChip(
@@ -181,7 +181,7 @@ class FilterBottomSheet(
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.btn_apply -> {
+            R.id.btn_apply                -> {
                 val selectedSources = sourcesBinding.allSourcesGroup.children
                     .filterIsInstance<Chip>()
                     .filter { it.isChecked }
@@ -215,7 +215,7 @@ class FilterBottomSheet(
                 callback()
             }
 
-            R.id.btn_reset -> {
+            R.id.btn_reset                -> {
                 prefs.sourcesFilter.setValue(emptySet())
                 prefs.tagsFilter.setValue(emptySet())
                 prefs.sortingAsc.setValue(false)
@@ -234,14 +234,14 @@ class FilterBottomSheet(
                 callback()
             }
 
-            R.id.btn_deselect_all_tags -> {
+            R.id.btn_deselect_all_tags    -> {
                 tagsBinding.allTagsGroup.children
                     .filterIsInstance<Chip>()
                     .forEach { it.isChecked = false }
                 updateTagButtonsVisibility()
             }
 
-            R.id.btn_select_all_tags -> {
+            R.id.btn_select_all_tags      -> {
                 tagsBinding.allTagsGroup.children
                     .filterIsInstance<Chip>()
                     .forEach { it.isChecked = true }
@@ -255,7 +255,7 @@ class FilterBottomSheet(
                 updateSourcesButtonsVisibility()
             }
 
-            R.id.btn_select_all_sources -> {
+            R.id.btn_select_all_sources   -> {
                 sourcesBinding.allSourcesGroup.children
                     .filterIsInstance<Chip>()
                     .forEach { it.isChecked = true }

@@ -204,6 +204,7 @@ abstract class NeoFeedDb : RoomDatabase() {
             cursor.close()
         }
 
+        // TODO remove in two releases
         private fun convertZDT2Millis(pubDateStr: String?): Long {
             if (pubDateStr == null) return 0L
             return try {

@@ -20,7 +20,7 @@ package com.saulhdev.feeder.utils
 
 
 import com.saulhdev.feeder.data.entity.JsonFeed
-import com.saulhdev.feeder.extensions.trustAllCerts
+import com.saulhdev.feeder.utils.extensions.trustAllCerts
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

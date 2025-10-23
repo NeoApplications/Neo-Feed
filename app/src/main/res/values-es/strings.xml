@@ -112,4 +112,26 @@
     <string name="title_service">Servicio</string>
     <string name="theme_auto_system_black">Automáticamente (del sistema; negro)</string>
     <string name="theme_black">Negro</string>
+    <string name="home">Inicio</string>
+    <string name="pref_dynamic_color">Color dinámico</string>
+    <string name="source_tags">Etiquetas</string>
+    <string name="action_show_bookmarks">Mostrar marcadores</string>
+    <string name="action_hide_bookmarks">Ocultar marcadores</string>
+    <string name="sort_filter">Ordenar y filtrar</string>
+    <string name="state_modified">Modificado</string>
+    <string name="action_apply">Aplicar</string>
+    <string name="action_reset">Restablecer</string>
+    <string name="sorting_order">Criterio de ordenación</string>
+    <string name="sorting_chronological">Cronológico</string>
+    <string name="sorting_title">Título</string>
+    <string name="sorting_source">Fuente</string>
+    <string name="sort_ascending">Ascendente</string>
+    <string name="sort_descending">Descendente</string>
+    <string name="select_all">Seleccionar todo</string>
+    <string name="deselect_all">No seleccionar nada</string>
+    <string name="item_selected">Elemento seleccionado</string>
+    <string name="collapse_handle_description">Arrastre para contraer la hoja inferior</string>
+    <string name="section_icon_description">Icono de sección</string>
+    <string name="expand_section_description">Expandir sección</string>
+    <string name="collapse_section_description">Contraer sección</string>
 </resources>

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saulhdev.feeder.extensions
+package com.saulhdev.feeder.utils.extensions
 
 import okhttp3.OkHttpClient
 import java.security.KeyManagementException

@@ -1,4 +1,4 @@
-package com.saulhdev.feeder.anim
+package com.saulhdev.feeder.ui.anim
 
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator

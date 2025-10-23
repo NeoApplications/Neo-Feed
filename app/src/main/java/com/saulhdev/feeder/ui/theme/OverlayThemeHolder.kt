@@ -20,9 +20,9 @@ package com.saulhdev.feeder.ui.theme
 
 import android.util.SparseIntArray
 import com.saulhdev.feeder.data.content.FeedPreferences
-import com.saulhdev.feeder.extensions.clearLightFlags
-import com.saulhdev.feeder.extensions.setLightFlags
-import com.saulhdev.feeder.service.OverlayView
+import com.saulhdev.feeder.utils.extensions.clearLightFlags
+import com.saulhdev.feeder.utils.extensions.setLightFlags
+import com.saulhdev.feeder.manager.service.OverlayView
 import org.koin.java.KoinJavaComponent.inject
 
 /**

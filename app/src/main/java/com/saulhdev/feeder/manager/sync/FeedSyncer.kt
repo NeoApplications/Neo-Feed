@@ -103,6 +103,7 @@ fun createForegroundInfo(
     )
 }
 
+// TODO fix manually running sync
 fun requestFeedSync(
     feedId: Long = ID_UNSET,
     feedTag: String = "",
@@ -115,18 +116,16 @@ fun requestFeedSync(
         "force_network" to forceNetwork,
     )
 
-    val workRequestBuilder = OneTimeWorkRequestBuilder<FeedSyncer>()
+    val workRequest = OneTimeWorkRequestBuilder<FeedSyncer>()
         .addTag("FeedSyncer")
         .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
         .keepResultsForAtLeast(1, TimeUnit.MINUTES)
         .setInputData(data)
-
-    val syncWork = workRequestBuilder
-        .addTag("PeriodicFeedSyncer")
         .build()
+
     workManager.enqueueUniqueWork(
         "feeder_sync_onetime_$feedId",
         ExistingWorkPolicy.REPLACE,
-        syncWork
+        workRequest
     )
 }

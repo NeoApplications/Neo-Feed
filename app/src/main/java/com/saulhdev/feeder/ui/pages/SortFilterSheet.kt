@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.content.FeedPreferences
-import com.saulhdev.feeder.extensions.koinNeoViewModel
 import com.saulhdev.feeder.ui.components.ActionButton
 import com.saulhdev.feeder.ui.components.ChipsSwitch
 import com.saulhdev.feeder.ui.components.DeSelectAll
@@ -42,8 +41,8 @@ import com.saulhdev.feeder.ui.icons.phosphor.ArrowUUpLeft
 import com.saulhdev.feeder.ui.icons.phosphor.Check
 import com.saulhdev.feeder.ui.icons.phosphor.SortAscending
 import com.saulhdev.feeder.ui.icons.phosphor.SortDescending
-import com.saulhdev.feeder.viewmodels.ArticleViewModel
-import com.saulhdev.feeder.viewmodels.SourceViewModel
+import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
+import com.saulhdev.feeder.viewmodels.SortFilterViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.compose.koinInject
 
@@ -53,34 +52,30 @@ import org.koin.compose.koinInject
 )
 @Composable
 fun SortFilterSheet(
-    viewModel: ArticleViewModel = koinNeoViewModel(),
-    sourcesViewModel: SourceViewModel = koinNeoViewModel(),
+    viewModel: SortFilterViewModel = koinNeoViewModel(),
     prefs: FeedPreferences = koinInject(),
     onDismiss: () -> Unit,
 ) {
-    val articlesViewModel = koinNeoViewModel<ArticleViewModel>()
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
-    val activeSources by viewModel.activeFeeds.collectAsState()
-    val activeTags by sourcesViewModel.allTags.collectAsState()
-    val sortFilterModel by articlesViewModel.prefSortFilter.collectAsState()
+    val state by viewModel.sheetState.collectAsState()
 
     var sortPrefVar by prefs.sortingFilter
     var sortAscPrefVar by prefs.sortingAsc
     var sourcesPrefVar by prefs.sourcesFilter
     var tagsPrefVar by prefs.tagsFilter
 
-    var sortOption by remember(sortFilterModel.sort) {
-        mutableStateOf(sortFilterModel.sort)
+    var sortOption by remember(state.sortFilter.sort) {
+        mutableStateOf(state.sortFilter.sort)
     }
-    var sortAscOption by remember(sortFilterModel.sortAsc) {
-        mutableStateOf(sortFilterModel.sortAsc)
+    var sortAscOption by remember(state.sortFilter.sortAsc) {
+        mutableStateOf(state.sortFilter.sortAsc)
     }
-    val sourcesOption = remember(sortFilterModel.sourcesFilter) {
-        mutableStateListOf(*sortFilterModel.sourcesFilter.toTypedArray())
+    val sourcesOption = remember(state.sortFilter.sourcesFilter) {
+        mutableStateListOf(*state.sortFilter.sourcesFilter.toTypedArray())
     }
 
-    val tagsOption = remember(sortFilterModel.tagsFilter) {
-        mutableStateListOf(*sortFilterModel.tagsFilter.toTypedArray())
+    val tagsOption = remember(state.sortFilter.tagsFilter) {
+        mutableStateListOf(*state.sortFilter.tagsFilter.toTypedArray())
     }
 
     Scaffold(
@@ -175,12 +170,12 @@ fun SortFilterSheet(
                     heading = stringResource(id = R.string.title_sources),
                     preExpanded = sourcesOption.isNotEmpty(),
                 ) {
-                    DeSelectAll(activeSources.map { it.id.toString() }, sourcesOption)
+                    DeSelectAll(state.activeSources.map { it.id.toString() }, sourcesOption)
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        activeSources.sortedBy { it.title.lowercase() }.forEach {
+                        state.activeSources.sortedBy { it.title.lowercase() }.forEach {
                             val checked by remember(sourcesOption.toString()) {
                                 mutableStateOf(!sourcesOption.contains(it.id.toString()))
                             }
@@ -197,17 +192,17 @@ fun SortFilterSheet(
                 }
             }
 
-            item{
+            item {
                 ExpandableItemsBlock(
                     heading = stringResource(id = R.string.source_tags),
                     preExpanded = tagsOption.isNotEmpty(),
                 ) {
-                    DeSelectAll(activeTags.map { it }, tagsOption)
+                    DeSelectAll(state.activeTags.map { it }, tagsOption)
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        activeTags.sortedBy { it.lowercase() }.forEach {
+                        state.activeTags.sortedBy { it.lowercase() }.forEach {
                             val checked by remember(tagsOption.toString()) {
                                 mutableStateOf(!tagsOption.contains(it))
                             }

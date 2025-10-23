@@ -40,7 +40,6 @@ import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneSca
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -55,7 +54,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.db.models.Feed
-import com.saulhdev.feeder.extensions.koinNeoViewModel
 import com.saulhdev.feeder.manager.models.exportOpml
 import com.saulhdev.feeder.manager.models.importOpml
 import com.saulhdev.feeder.ui.components.FeedItem
@@ -70,7 +68,8 @@ import com.saulhdev.feeder.ui.navigation.LocalNavController
 import com.saulhdev.feeder.ui.navigation.NavRoute
 import com.saulhdev.feeder.utils.ApplicationCoroutineScope
 import com.saulhdev.feeder.utils.FILE_DATETIME_FORMAT
-import com.saulhdev.feeder.viewmodels.SourceViewModel
+import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
+import com.saulhdev.feeder.viewmodels.SourceListViewModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
@@ -82,7 +81,7 @@ import kotlin.time.Clock
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun SourceListPage(
-    viewModel: SourceViewModel = koinNeoViewModel(),
+    viewModel: SourceListViewModel = koinNeoViewModel(),
 ) {
     val context = LocalContext.current
     val navController = LocalNavController.current
@@ -92,10 +91,10 @@ fun SourceListPage(
     // TODO reconsider
     val coroutineScope: ApplicationCoroutineScope by inject(ApplicationCoroutineScope::class.java)
     val showDialog = remember { mutableStateOf(false) }
-    val list: State<List<Feed>> = viewModel.allFeeds.collectAsState()
-    val tagsFeedMap by viewModel.tagsFeedsMap.collectAsState()
-    val removeItem: MutableState<Feed?> =
-        remember { mutableStateOf(list.value.firstOrNull()) }
+    val state by viewModel.state.collectAsState()
+    val removeItem: MutableState<Feed?> = remember {
+        mutableStateOf(state.allSources.firstOrNull())
+    }
     val paneNavigator = rememberListDetailPaneScaffoldNavigator<Any>()
     val sourceId = remember { mutableLongStateOf(-1L) }
 
@@ -106,7 +105,7 @@ fun SourceListPage(
             coroutineScope.launch {
                 context.contentResolver.exportOpml(
                     uri,
-                    tagsFeedMap
+                    state.tagsSourcesMap
                 )
             }
         }
@@ -191,7 +190,7 @@ fun SourceListPage(
                         ),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        items(list.value, key = { it.id }) { item ->
+                        items(state.allSources, key = { it.id }) { item ->
                             FeedItem(
                                 feed = item,
                                 onClickAction = {

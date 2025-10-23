@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.saulhdev.feeder.extensions.launchView
+import com.saulhdev.feeder.utils.extensions.launchView
 
 @ExperimentalCoilApi
 @Composable

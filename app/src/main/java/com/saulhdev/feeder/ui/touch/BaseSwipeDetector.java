@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.saulhdev.feeder.touch;
+package com.saulhdev.feeder.ui.touch;
 
 import static android.view.MotionEvent.INVALID_POINTER_ID;
 

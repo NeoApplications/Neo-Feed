@@ -23,7 +23,7 @@ import com.rometools.rome.io.SyndFeedInput
 import com.rometools.rome.io.XmlReader
 import com.saulhdev.feeder.data.entity.JsonFeed
 import com.saulhdev.feeder.utils.JsonFeedParser
-import com.saulhdev.feeder.extensions.asFeed
+import com.saulhdev.feeder.utils.extensions.asFeed
 import com.saulhdev.feeder.utils.relativeLinkIntoAbsolute
 import com.saulhdev.feeder.utils.relativeLinkIntoAbsoluteOrThrow
 import com.saulhdev.feeder.utils.sloppyLinkToStrictURL

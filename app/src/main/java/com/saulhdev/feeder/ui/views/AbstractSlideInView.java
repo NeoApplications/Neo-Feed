@@ -1,7 +1,7 @@
 package com.saulhdev.feeder.ui.views;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static com.saulhdev.feeder.anim.Interpolators.scrollInterpolatorForVelocity;
+import static com.saulhdev.feeder.ui.anim.Interpolators.scrollInterpolatorForVelocity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -18,9 +18,9 @@ import android.widget.FrameLayout;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import com.saulhdev.feeder.anim.Interpolators;
-import com.saulhdev.feeder.touch.BaseSwipeDetector;
-import com.saulhdev.feeder.touch.SingleAxisSwipeDetector;
+import com.saulhdev.feeder.ui.anim.Interpolators;
+import com.saulhdev.feeder.ui.touch.BaseSwipeDetector;
+import com.saulhdev.feeder.ui.touch.SingleAxisSwipeDetector;
 import com.saulhdev.feeder.utils.Utilities;
 
 import java.util.ArrayList;

@@ -13,7 +13,6 @@
     <string name="pref_transparency">Sovrapponi opacità sfondo</string>
     <string name="pref_ovr_theme">Sovrapposizione tema</string>
     <string name="pref_compact">Disposizione compatta oggetto</string>
-    <string name="date_at_1am">\@string/date_at</string>
     <string name="yesterday">ieri</string>
     <string name="pref_tg">Canale Telegram</string>
     <string name="allow_notify_to_settings">Apri impostazioni</string>
@@ -129,4 +128,9 @@
     <string name="pref_dynamic_color">Colore dinamico</string>
     <string name="source_tags">Tag</string>
     <string name="action_show_bookmarks">Mostra segnalibri</string>
+    <string name="item_selected">Elemento selezionato</string>
+    <string name="section_icon_description">Icona sezione</string>
+    <string name="expand_section_description">Espandi sezione</string>
+    <string name="collapse_section_description">Comprimi sezione</string>
+    <string name="collapse_handle_description">Trascina per comprimere il pannello inferiore</string>
 </resources>

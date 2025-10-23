@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -31,14 +32,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.saulhdev.feeder.MainActivity
 import com.saulhdev.feeder.R
-import com.saulhdev.feeder.extensions.koinNeoViewModel
-import com.saulhdev.feeder.extensions.launchView
-import com.saulhdev.feeder.extensions.shareIntent
 import com.saulhdev.feeder.ui.components.RoundButton
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.components.WithBidiDeterminedLayoutDirection
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowSquareOut
+import com.saulhdev.feeder.ui.icons.phosphor.HeartStraight
+import com.saulhdev.feeder.ui.icons.phosphor.HeartStraightFill
 import com.saulhdev.feeder.ui.icons.phosphor.ShareNetwork
 import com.saulhdev.feeder.ui.navigation.Routes
 import com.saulhdev.feeder.ui.theme.LinkTextStyle
@@ -46,11 +46,13 @@ import com.saulhdev.feeder.utils.blobFile
 import com.saulhdev.feeder.utils.blobFullFile
 import com.saulhdev.feeder.utils.blobFullInputStream
 import com.saulhdev.feeder.utils.blobInputStream
+import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
+import com.saulhdev.feeder.utils.extensions.launchView
+import com.saulhdev.feeder.utils.extensions.shareIntent
 import com.saulhdev.feeder.utils.htmlFormattedText
 import com.saulhdev.feeder.utils.unicodeWrap
 import com.saulhdev.feeder.utils.urlEncode
 import com.saulhdev.feeder.viewmodels.ArticleViewModel
-import com.saulhdev.feeder.viewmodels.SourceViewModel
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -65,28 +67,31 @@ import kotlin.time.Instant
 fun ArticlePage(
     articleId: String,
     viewModel: ArticleViewModel = koinNeoViewModel(),
-    sourceViewModel: SourceViewModel = koinNeoViewModel(),
     onDismiss: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
-    val article by viewModel.articleById(articleId).collectAsState(initial = null)
-    val feed by sourceViewModel.getFeedById(article?.feedId ?: 0).collectAsState(initial = null)
 
-    val showFullArticle by remember {
-        derivedStateOf { feed?.fullTextByDefault ?: false }
+    val state by viewModel.articleState.collectAsState(initial = null)
+
+    LaunchedEffect(articleId) {
+        viewModel.setArticleId(articleId)
     }
 
-    val title by remember { derivedStateOf { article?.title ?: "Neo Feed" } }
-    val currentUrl by remember { derivedStateOf { article?.link ?: "Neo Feed" } }
+    val showFullArticle by remember {
+        derivedStateOf { state?.source?.fullTextByDefault ?: false }
+    }
+
+    val title by remember { derivedStateOf { state?.article?.title ?: "Neo Feed" } }
+    val currentUrl by remember { derivedStateOf { state?.article?.link ?: "Neo Feed" } }
     val subTitle by remember {
         derivedStateOf {
             (if (currentUrl != "Neo Feed") Uri.parse(currentUrl).host else null)
-                ?: feed?.title
+                ?: state?.source?.title
                 ?: "Neo Feed"
         }
     }
-    val feedTitle by remember { derivedStateOf { feed?.title ?: "Neo Feed" } }
+    val feedTitle by remember { derivedStateOf { state?.source?.title ?: "Neo Feed" } }
 
     val navController = rememberNavController()
     BackHandler(onDismiss == null) {
@@ -102,28 +107,29 @@ fun ArticlePage(
             .withLocale(Locale.getDefault())
 
     val authorDate = when {
-        article?.author == null && article?.pubDate != null && (article?.pubDate ?: 0L) > 0L ->
+        state?.article?.author == null && state?.article?.pubDate != null && (state?.article?.pubDate
+            ?: 0L) > 0L ->
             stringResource(
                 R.string.on_date,
-                Instant.fromEpochMilliseconds(article?.pubDate ?: 0L)
+                Instant.fromEpochMilliseconds(state?.article?.pubDate ?: 0L)
                     .toLocalDateTime(TimeZone.currentSystemDefault())
                     .toJavaLocalDateTime()
                     .format(dateTimeFormat)
             )
 
-        article?.author != null && (article?.pubDate ?: 0L) > 0L                             ->
+        state?.article?.author != null && (state?.article?.pubDate ?: 0L) > 0L ->
             stringResource(
                 R.string.by_author_on_date,
                 // Must wrap author in unicode marks to ensure it formats
                 // correctly in RTL
-                context.unicodeWrap(article?.author ?: ""),
-                Instant.fromEpochMilliseconds(article?.pubDate ?: 0L)
+                context.unicodeWrap(state?.article?.author ?: ""),
+                Instant.fromEpochMilliseconds(state?.article?.pubDate ?: 0L)
                     .toLocalDateTime(TimeZone.currentSystemDefault())
                     .toJavaLocalDateTime()
                     .format(dateTimeFormat)
             )
 
-        else                                                                                 -> null
+        else -> null
     }
 
     ViewWithActionBar(
@@ -138,6 +144,13 @@ fun ArticlePage(
                 description = stringResource(id = R.string.pref_browser_theme),
             ) {
                 context.launchView(currentUrl)
+            }
+            RoundButton(
+                icon = if (state?.article?.bookmarked ?: false) Phosphor.HeartStraightFill
+                else Phosphor.HeartStraight,
+                description = stringResource(id = R.string.share),
+            ) {
+                viewModel.bookmarkArticle(articleId, !(state?.article?.bookmarked ?: false))
             }
             RoundButton(
                 icon = Phosphor.ShareNetwork,
@@ -181,7 +194,7 @@ fun ArticlePage(
                                 .clickable {
                                     MainActivity.navigateIntent(
                                         context,
-                                        "${Routes.WEB_VIEW}/${article?.link?.urlEncode()}"
+                                        "${Routes.WEB_VIEW}/${state?.article?.link?.urlEncode()}"
                                     )
                                 }
                         )
@@ -206,7 +219,7 @@ fun ArticlePage(
                         blobFullInputStream(articleId, context.filesDir).use {
                             htmlFormattedText(
                                 inputStream = it,
-                                baseUrl = article?.link ?: "",
+                                baseUrl = state?.article?.link ?: "",
                                 imagePlaceholder = R.drawable.placeholder_image_article_day,
                                 onLinkClick = context::launchView
                             )
@@ -221,7 +234,7 @@ fun ArticlePage(
                         blobInputStream(articleId, context.filesDir).use {
                             htmlFormattedText(
                                 inputStream = it,
-                                baseUrl = article?.link ?: "",
+                                baseUrl = state?.article?.link ?: "",
                                 imagePlaceholder = R.drawable.placeholder_image_article_day,
                                 onLinkClick = context::launchView
                             )

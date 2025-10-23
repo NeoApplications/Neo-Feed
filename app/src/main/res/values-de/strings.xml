@@ -14,7 +14,6 @@
     <string name="title_about">Über</string>
     <string name="title_sources">Datenquellen</string>
     <string name="date_ago_now">jetzt</string>
-    <string name="date_at_1am">\@string/date_at</string>
     <string name="today">heute</string>
     <string name="pref_card_bg">Hintergrund der Karte</string>
     <string name="overlay_no_permission">Keine Erlaubnis erteilt</string>

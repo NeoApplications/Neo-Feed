@@ -181,4 +181,9 @@ dependencies {
     implementation(libs.tagsoup)
     implementation(libs.jsoup)
     implementation(libs.slf4j)
+
+    // Test
+    testImplementation(libs.test.runner)
+    testImplementation(libs.test.rules)
+    testImplementation(libs.test.ext)
 }

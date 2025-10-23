@@ -1,4 +1,4 @@
-package com.saulhdev.feeder.extensions
+package com.saulhdev.feeder.utils.extensions
 
 import android.util.Log
 import androidx.activity.ComponentActivity

@@ -121,7 +121,7 @@ interface FeedArticleDao {
     // Embedded FeedItem
     @Query(
         """
-    SELECT Article.*, Feeds.* FROM Article
+    SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Feeds.isEnabled = 1
     ORDER BY Article.primarySortTime DESC
@@ -131,7 +131,7 @@ interface FeedArticleDao {
 
     @Query(
         """
-    SELECT Article.*, Feeds.* FROM Article
+    SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Article.bookmarked = 1 AND Feeds.isEnabled = 1
     ORDER BY Article.pinned DESC, Article.pubDateV2 DESC
@@ -141,7 +141,7 @@ interface FeedArticleDao {
 
     @Query(
         """
-    SELECT Article.*, Feeds.* FROM Article
+    SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Feeds.isEnabled = 1 AND Feeds.tag IN (:tags)
     ORDER BY Article.primarySortTime DESC
@@ -151,7 +151,7 @@ interface FeedArticleDao {
 
     @Query(
         """
-    SELECT Article.*, Feeds.* FROM Article
+    SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Article.feedId = :feedId AND Feeds.isEnabled = 1
     ORDER BY Article.primarySortTime DESC
@@ -161,7 +161,7 @@ interface FeedArticleDao {
 
     @Query(
         """
-    SELECT Article.*, Feeds.* FROM Article
+    SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Article.pinned = 1 AND Feeds.isEnabled = 1
     ORDER BY Article.primarySortTime DESC
@@ -176,14 +176,14 @@ interface FeedArticleDao {
     suspend fun getFeedItemsByTagsComplex(tags: Set<String>): List<FeedItem> {
         val feedIds = tags.flatMap { tag ->
             getEnabledFeedsByTagPattern("%,$tag,%")
-        }.distinctBy { it.id }.map { it.id }
+        }.map { it.id }.distinct()
 
         return getFeedItemsByFeedIds(feedIds)
     }
 
     @Query(
         """
-    SELECT Article.*, Feeds.* FROM Article
+    SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Article.feedId IN (:feedIds) AND Feeds.isEnabled = 1
     ORDER BY Article.primarySortTime DESC

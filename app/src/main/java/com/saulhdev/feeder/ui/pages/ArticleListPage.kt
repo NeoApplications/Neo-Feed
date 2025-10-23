@@ -73,8 +73,8 @@ import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.NeoApp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.content.FeedPreferences
-import com.saulhdev.feeder.extensions.koinNeoViewModel
-import com.saulhdev.feeder.extensions.launchView
+import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
+import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.manager.sync.SyncRestClient
 import com.saulhdev.feeder.ui.components.ArticleItem
 import com.saulhdev.feeder.ui.components.BookmarkItem
@@ -88,7 +88,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.Filter
 import com.saulhdev.feeder.ui.icons.phosphor.Filtered
 import com.saulhdev.feeder.ui.icons.phosphor.Power
 import com.saulhdev.feeder.utils.openLinkInCustomTab
-import com.saulhdev.feeder.viewmodels.ArticleViewModel
+import com.saulhdev.feeder.viewmodels.ArticleListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -102,7 +102,7 @@ import org.koin.compose.koinInject
 fun ArticleListPage(
     prefs: FeedPreferences = koinInject(),
     syncClient: SyncRestClient = koinInject(),
-    viewModel: ArticleViewModel = koinNeoViewModel(),
+    viewModel: ArticleListViewModel = koinNeoViewModel(),
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -110,10 +110,8 @@ fun ArticleListPage(
     val paneNavigator = rememberListDetailPaneScaffoldNavigator<Any>()
     val articleId = remember { mutableStateOf("") }
 
-    val feedList by viewModel.articlesList.collectAsState()
-    val bookmarked by viewModel.bookmarkedArticlesList.collectAsState()
-    val isSyncing by viewModel.isSyncing.collectAsState(false)
-    val filtered by viewModel.notModifiedFilter.collectAsState()
+    val state by viewModel.articleListState.collectAsState()
+    val bookmarked by viewModel.bookmarksState.collectAsState()
 
     var showBookmarks by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
@@ -169,7 +167,7 @@ fun ArticleListPage(
                                         }
                                     ) {
                                         Icon(
-                                            imageVector = if (filtered) Phosphor.Filter else Phosphor.Filtered,
+                                            imageVector = if (state.isFilterModified) Phosphor.Filter else Phosphor.Filtered,
                                             contentDescription = stringResource(id = R.string.sorting_order),
                                             tint = MaterialTheme.colorScheme.primary
                                         )
@@ -264,7 +262,7 @@ fun ArticleListPage(
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
                                     contentPadding = PaddingValues(8.dp)
                                 ) {
-                                    items(bookmarked, key = { it.id }) { item ->
+                                    items(bookmarked.bookmarkedArticles, key = { it.id }) { item ->
                                         BookmarkItem(
                                             article = item.article,
                                             feed = item.feed,
@@ -302,11 +300,11 @@ fun ArticleListPage(
                                 }
 
                                 else          -> PullToRefreshLazyColumn(
-                                    isRefreshing = isSyncing,
+                                    isRefreshing = state.isSyncing,
                                     onRefresh = syncClient::syncAllFeeds,
                                     listState = listState,
                                     content = {
-                                        items(feedList, key = { it.id }) { item ->
+                                        items(state.articles, key = { it.id }) { item ->
                                             ArticleItem(
                                                 article = item,
                                                 onBookmark = {

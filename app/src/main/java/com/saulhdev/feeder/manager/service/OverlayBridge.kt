@@ -1,4 +1,4 @@
-package com.saulhdev.feeder.service
+package com.saulhdev.feeder.manager.service
 
 class OverlayBridge {
     private var callback: OverlayBridgeCallback? = null

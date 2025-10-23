@@ -13,7 +13,6 @@
     <string name="date_format_day_month_year" translatable="false">%1$d %2$s %3$d</string>
     <string name="date_ago_now">now</string>
     <string name="date_at">at</string>
-    <string name="date_at_1am" translatable="false">@string/date_at</string>
     <string name="today">today</string>
     <string name="tomorrow">tomorrow</string>
     <string name="yesterday">yesterday</string>
@@ -147,4 +146,5 @@
     <string name="section_icon_description">Section icon</string>
     <string name="expand_section_description">Expand section</string>
     <string name="collapse_section_description">Collapse section</string>
+    <string name="date_at_time_FORMAT">%1$s at %2$s</string>
 </resources>

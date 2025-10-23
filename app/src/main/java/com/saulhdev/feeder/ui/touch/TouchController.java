@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.saulhdev.feeder.touch;
+package com.saulhdev.feeder.ui.touch;
 
 import android.view.MotionEvent;
 

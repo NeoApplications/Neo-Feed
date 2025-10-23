@@ -57,8 +57,7 @@ class SourcesRepository(db: NeoFeedDb) {
 
     fun updateSource(feed: Feed, resync: Boolean = false) {
         scope.launch {
-            val list: List<Feed> = feedsDao.findFeedById(feed.id)
-            if (list.isNotEmpty()) {
+            if (feedsDao.existsById(feed.id)) {
                 val newFeed = feed.copy(lastSync = Clock.System.now())
                 feedsDao.update(newFeed)
                 if (resync) requestFeedSync(newFeed.id)

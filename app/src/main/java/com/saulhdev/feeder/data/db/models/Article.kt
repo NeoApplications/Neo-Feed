@@ -118,7 +118,7 @@ data class Article @OptIn(ExperimentalTime::class) constructor(
             link = entry.url,
             pubDate = try {
                 // Allow an actual pubdate to be updated
-                kotlin.time.Instant.parse(entry.date_published ?: "")
+                Instant.parse(entry.date_published?.substringBefore('[') ?: "")
                     .toEpochMilliseconds()
             } catch (_: Throwable) {
                 // If a pubDate is missing, then don't update if one is already set

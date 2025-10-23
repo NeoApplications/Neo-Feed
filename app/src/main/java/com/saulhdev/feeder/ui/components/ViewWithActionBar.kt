@@ -127,21 +127,20 @@ fun ViewWithActionBar(
 @Composable
 fun RoundButton(
     modifier: Modifier = Modifier,
-    size: Dp = 24.dp,
+    size: Dp = 40.dp,
     icon: ImageVector,
     tint: Color = MaterialTheme.colorScheme.onBackground,
     description: String = "",
     onClick: () -> Unit,
 ) {
     IconButton(
-        modifier = modifier,
-        onClick = onClick
+        modifier = modifier.size(size = size),
+        onClick = onClick,
     ) {
         Icon(
-            modifier = Modifier.size(size),
             imageVector = icon,
+            contentDescription = description,
             tint = tint,
-            contentDescription = description
         )
     }
 }

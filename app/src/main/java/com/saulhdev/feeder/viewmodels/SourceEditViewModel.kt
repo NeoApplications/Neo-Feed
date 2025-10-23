@@ -22,7 +22,7 @@ import androidx.lifecycle.viewModelScope
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.entity.SourceEditViewState
 import com.saulhdev.feeder.data.repository.SourcesRepository
-import com.saulhdev.feeder.extensions.NeoViewModel
+import com.saulhdev.feeder.utils.extensions.NeoViewModel
 import com.saulhdev.feeder.utils.sloppyLinkToStrictURL
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +43,7 @@ class SourceEditViewModel : NeoViewModel() {
         _feedId.update { value }
     }
 
-    val feed = _feedId.mapLatest {
+    private val feed = _feedId.mapLatest {
         repository.loadFeedById(it) ?: Feed()
     }.stateIn(
         viewModelScope,

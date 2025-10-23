@@ -59,18 +59,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
-import com.saulhdev.feeder.data.db.models.Feed
-import com.saulhdev.feeder.extensions.StableHolder
-import com.saulhdev.feeder.extensions.interceptKey
-import com.saulhdev.feeder.extensions.koinNeoViewModel
-import com.saulhdev.feeder.extensions.safeSemantics
+import com.saulhdev.feeder.utils.extensions.StableHolder
+import com.saulhdev.feeder.utils.extensions.interceptKey
+import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
+import com.saulhdev.feeder.utils.extensions.safeSemantics
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.navigation.LocalNavController
-import com.saulhdev.feeder.utils.sloppyLinkToStrictURL
 import com.saulhdev.feeder.utils.sloppyLinkToStrictURLNoThrows
 import com.saulhdev.feeder.viewmodels.SearchFeedViewModel
 import com.saulhdev.feeder.viewmodels.SearchResult
-import com.saulhdev.feeder.viewmodels.SourceViewModel
+import com.saulhdev.feeder.viewmodels.SourceListViewModel
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import java.net.MalformedURLException
@@ -79,7 +77,7 @@ import java.net.URL
 @Composable
 fun SourceAddPage(
     searchFeedViewModel: SearchFeedViewModel = koinNeoViewModel(),
-    sourceViewModel: SourceViewModel = koinNeoViewModel(),
+    sourcesViewModel: SourceListViewModel = koinNeoViewModel(),
 ) {
     val coroutineScope = rememberCoroutineScope()
     val navController = LocalNavController.current
@@ -90,14 +88,14 @@ fun SourceAddPage(
     }
 
     BackHandler {
-        sourceViewModel.saveFeed(results)
+        sourcesViewModel.saveFeed(results)
         navController.popBackStack()
     }
 
     ViewWithActionBar(
         title = title,
         onBackAction = {
-            sourceViewModel.saveFeed(results)
+            sourcesViewModel.saveFeed(results)
             navController.popBackStack()
         }
     ) { paddingValues ->
@@ -147,22 +145,6 @@ fun SourceAddPage(
                     //TODO: enable click event when the rss is added
                 }
             )
-        }
-    }
-}
-
-fun SourceViewModel.saveFeed(results: List<SearchResult>) {
-    results.forEach { result ->
-        if (result.isError) {
-            return@forEach
-        } else {
-            val feed = Feed(
-                title = result.title,
-                description = result.description,
-                url = sloppyLinkToStrictURL(result.url),
-                feedImage = sloppyLinkToStrictURL(result.url)
-            )
-            insertFeed(feed)
         }
     }
 }

@@ -13,15 +13,17 @@ import com.saulhdev.feeder.data.content.FeedPreferences.Companion.prefsModule
 import com.saulhdev.feeder.data.db.NeoFeedDb
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.data.repository.SourcesRepository
-import com.saulhdev.feeder.extensions.ToastMaker
-import com.saulhdev.feeder.extensions.restartApp
+import com.saulhdev.feeder.utils.extensions.ToastMaker
+import com.saulhdev.feeder.utils.extensions.restartApp
 import com.saulhdev.feeder.manager.sync.SyncRestClient
-import com.saulhdev.feeder.service.OverlayBridge
+import com.saulhdev.feeder.manager.service.OverlayBridge
 import com.saulhdev.feeder.utils.ApplicationCoroutineScope
+import com.saulhdev.feeder.viewmodels.ArticleListViewModel
 import com.saulhdev.feeder.viewmodels.ArticleViewModel
 import com.saulhdev.feeder.viewmodels.SearchFeedViewModel
+import com.saulhdev.feeder.viewmodels.SortFilterViewModel
 import com.saulhdev.feeder.viewmodels.SourceEditViewModel
-import com.saulhdev.feeder.viewmodels.SourceViewModel
+import com.saulhdev.feeder.viewmodels.SourceListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.koin.androidContext
@@ -49,9 +51,10 @@ class NeoApp : MultiDexApplication(), KoinStartup {
         }
         viewModelOf(::SourceEditViewModel)
         viewModelOf(::SearchFeedViewModel)
+        viewModelOf(::ArticleListViewModel)
+        viewModelOf(::SourceListViewModel)
         viewModelOf(::ArticleViewModel)
-        viewModelOf(::SourceViewModel)
-        viewModelOf(::ArticleViewModel)
+        viewModelOf(::SortFilterViewModel)
     }
 
     // TODO Move to its class
@@ -96,6 +99,7 @@ class NeoApp : MultiDexApplication(), KoinStartup {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        // TODO remove on future release
         AndroidThreeTen.init(this)
         DynamicColors.applyToActivitiesIfAvailable(
             this,
