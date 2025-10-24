@@ -147,4 +147,6 @@
     <string name="expand_section_description">Expand section</string>
     <string name="collapse_section_description">Collapse section</string>
     <string name="date_at_time_FORMAT">%1$s at %2$s</string>
+    <string name="draw_permission_required">This application requires the permission to draw over other apps, without it feed items would not open on click</string>
+    <string name="go_to_settings">Go to settings</string>
 </resources>
