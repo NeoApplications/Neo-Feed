@@ -135,4 +135,12 @@
     <string name="draw_permission_required">このアプリは他のアプリの上に表示する権限が必要です。この権限がないと、フィードの項目をクリックしても開かれません</string>
     <string name="go_to_settings">設定に移動</string>
     <string name="date_at">：</string>
+    <string name="file_share_text">Neo Feedからのファイル</string>
+    <string name="sources_import_bookmarks">ブックマークをインポートする</string>
+    <string name="sources_export_bookmarks">ブックマークをエクスポート</string>
+    <string name="enabled">有効</string>
+    <string name="disabled">無効</string>
+    <string name="action_delete">削除</string>
+    <string name="action_save">保存</string>
+    <string name="action_open_smry">SMRYで開く</string>
 </resources>
