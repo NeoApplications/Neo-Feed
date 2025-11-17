@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_settings">Налаштування</string>
+    <string name="title_about">Про застосунок</string>
+    <string name="summary_sources">Додати або видалити джерела</string>
+    <string name="date_ago_now">зараз</string>
+    <string name="date_at">у</string>
+    <string name="today">сьогодні</string>
+    <string name="tomorrow">завтра</string>
+    <string name="yesterday">вчора</string>
+    <string name="pref_cat_contact">Контакти</string>
+    <string name="about_channel">Канал</string>
+    <string name="about_community">Спільнота</string>
+    <string name="about_community_telegram">Спільнота у Telegram</string>
+    <string name="about_community_matrix">Спільнота у Matrix</string>
+    <string name="author_role">Розробник</string>
+    <string name="about_licenses">Ліцензія</string>
+    <string name="pref_tg">Telegram канал</string>
+    <string name="pref_dynamic_color">Динамічний колір</string>
+    <string name="syncing">Синхронізація</string>
+    <string name="sync_status">Статус синхронізації</string>
+    <string name="allow_notify_to_settings">Відкрити налаштування</string>
+    <string name="overlay_no_permission">Дозвіл не надано</string>
+    <string name="pref_syscolors_disabled">Необхідно Android 8.1 або вище</string>
+    <string name="action_restart">Перезапустити застосунок</string>
+    <string name="add_rss">Додати нове RSS</string>
+    <string name="description">Опис</string>
+    <string name="remove_action_yes">Так</string>
+    <string name="sync_half_hour_minutes">30 хвилин</string>
+    <string name="sync_one_hour">Одну годину</string>
+    <string name="sync_two_hours">Дві години</string>
+    <string name="sync_three_hours">Три години</string>
+    <string name="sync_six_hours">Шість годин</string>
+    <string name="summary_feed_list">Додати або видалити RSS-джерело</string>
+    <string name="share">Поширити</string>
+    <string name="title_other">Інше</string>
+    <string name="add_feed">Додати стрічку</string>
+    <string name="theme_black">Чорна</string>
+    <string name="action_delete">Видалити</string>
+    <string name="action_save">Зберегти</string>
+</resources>
