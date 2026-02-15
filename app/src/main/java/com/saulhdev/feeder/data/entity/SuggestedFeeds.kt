@@ -266,6 +266,38 @@ object SuggestedFeedsData {
                                 ),
                         ),
                         SuggestedCategory(
+                            key = "crypto",
+                            icon = Phosphor.CurrencyDollar,
+                            feeds =
+                                listOf(
+                                    SuggestedFeed(
+                                        title = "Journal du Coin",
+                                        url = "https://journalducoin.com/feed/",
+                                        description = "Actualités crypto, Bitcoin et blockchain",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "Cryptoast",
+                                        url = "https://cryptoast.fr/feed/",
+                                        description = "Guides et actualités crypto en français",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "CoinTribune",
+                                        url = "https://www.cointribune.com/feed/",
+                                        description = "Actualités blockchain et cryptomonnaies",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "CoinAcademy",
+                                        url = "https://coinacademy.fr/feed/",
+                                        description = "Éducation et actualités crypto",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "Cointelegraph FR",
+                                        url = "https://fr.cointelegraph.com/rss",
+                                        description = "Actualités Bitcoin, Ethereum et blockchain",
+                                    ),
+                                ),
+                        ),
+                        SuggestedCategory(
                             key = "auto",
                             icon = Phosphor.Car,
                             feeds =

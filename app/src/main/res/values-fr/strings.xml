@@ -160,6 +160,7 @@
     <string name="cat_cooking">Cuisine</string>
     <string name="cat_sport">Sport</string>
     <string name="cat_gaming">Jeux vidéo</string>
+    <string name="cat_crypto">Crypto</string>
     <string name="cat_auto">Auto / Moto</string>
     <string name="cat_android">Android</string>
     <string name="cat_opensource">Open Source</string>
