@@ -84,6 +84,7 @@ private val categoryStringRes =
         "cooking" to R.string.cat_cooking,
         "sport" to R.string.cat_sport,
         "gaming" to R.string.cat_gaming,
+        "crypto" to R.string.cat_crypto,
         "auto" to R.string.cat_auto,
         "android" to R.string.cat_android,
         "opensource" to R.string.cat_opensource,
