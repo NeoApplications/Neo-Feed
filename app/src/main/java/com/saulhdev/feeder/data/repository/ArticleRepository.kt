@@ -22,6 +22,9 @@ import com.saulhdev.feeder.data.db.NeoFeedDb
 import com.saulhdev.feeder.data.db.models.Article
 import com.saulhdev.feeder.data.db.models.ArticleIdWithLink
 import com.saulhdev.feeder.data.db.models.FeedItem
+import com.saulhdev.feeder.data.entity.SORT_CHRONOLOGICAL
+import com.saulhdev.feeder.data.entity.SORT_SOURCE
+import com.saulhdev.feeder.data.entity.SORT_TITLE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
@@ -30,35 +33,111 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ArticleRepository(db: NeoFeedDb) {
+class ArticleRepository(
+    db: NeoFeedDb,
+) {
     private val cc = Dispatchers.IO
     private val jcc = Dispatchers.IO + SupervisorJob()
     private val articlesDao = db.feedArticleDao()
+    private val feedsDao = db.feedSourceDao()
 
-    suspend fun deleteArticles(ids: List<String>) = withContext(jcc) {
-        articlesDao.deleteArticles(ids)
-    }
+    suspend fun deleteArticles(ids: List<String>) =
+        withContext(jcc) {
+            articlesDao.deleteArticles(ids)
+        }
 
-    suspend fun getArticleByGuid(guid: String, feedId: Long): Article? {
-        return withContext(jcc) {
+    suspend fun getArticleByGuid(
+        guid: String,
+        feedId: Long,
+    ): Article? =
+        withContext(jcc) {
             articlesDao.loadArticle(guid = guid, feedId = feedId)
         }
-    }
 
     fun getArticleById(articleId: String): Flow<Article?> =
-        articlesDao.loadArticleById(id = articleId)
+        articlesDao
+            .loadArticleById(id = articleId)
             .flowOn(cc)
 
-    fun getEnabledFeedItems(): Flow<List<FeedItem>> = articlesDao.getAllEnabledFeedItems()
-        .flowOn(cc)
+    fun getFeedItemsById(feedId: Long): Flow<List<FeedItem>> =
+        articlesDao
+            .getFeedItemsForFeed(feedId)
+            .flowOn(cc)
+
+    fun getEnabledFeedItems(): Flow<List<FeedItem>> =
+        articlesDao
+            .getAllEnabledFeedItems()
+            .flowOn(cc)
+
+    fun getEnabledFeedItemsSorted(
+        sort: String,
+        sortAsc: Boolean,
+    ): Flow<List<FeedItem>> =
+        when (sort) {
+            SORT_TITLE -> {
+                if (sortAsc) {
+                    articlesDao.getAllEnabledFeedItemsTitleAsc()
+                } else {
+                    articlesDao.getAllEnabledFeedItemsTitleDesc()
+                }
+            }
+
+            SORT_SOURCE -> {
+                if (sortAsc) {
+                    articlesDao.getAllEnabledFeedItemsSourceAsc()
+                } else {
+                    articlesDao.getAllEnabledFeedItemsSourceDesc()
+                }
+            }
+
+            else -> {
+                if (sortAsc) {
+                    articlesDao.getAllEnabledFeedItemsTimeAsc()
+                } else {
+                    articlesDao.getAllEnabledFeedItems()
+                }
+            }
+        }.flowOn(cc)
 
     fun getFeedItemsByTags(tags: Set<String>): Flow<List<FeedItem>> =
-        articlesDao.getFeedItemsByTagsSimple(tags)
+        articlesDao
+            .getFeedItemsByTagsSimple(tags)
             .flowOn(cc)
+
+    fun getFeedItemsByTagsSorted(
+        tags: Set<String>,
+        sort: String,
+        sortAsc: Boolean,
+    ): Flow<List<FeedItem>> =
+        when (sort) {
+            SORT_TITLE -> {
+                if (sortAsc) {
+                    articlesDao.getFeedItemsByTagsTitleAsc(tags)
+                } else {
+                    articlesDao.getFeedItemsByTagsTitleDesc(tags)
+                }
+            }
+
+            SORT_SOURCE -> {
+                if (sortAsc) {
+                    articlesDao.getFeedItemsByTagsSourceAsc(tags)
+                } else {
+                    articlesDao.getFeedItemsByTagsSourceDesc(tags)
+                }
+            }
+
+            else -> {
+                if (sortAsc) {
+                    articlesDao.getFeedItemsByTagsTimeAsc(tags)
+                } else {
+                    articlesDao.getFeedItemsByTagsSimple(tags)
+                }
+            }
+        }.flowOn(cc)
 
     suspend fun updateOrInsertArticle(
         itemsWithText: List<Pair<Article, String>>,
-        block: suspend (Article, String) -> Unit
+        block: suspend (Article, String) -> Unit,
     ) = withContext(jcc) {
         articlesDao.insertOrUpdate(itemsWithText, block)
     }
@@ -81,20 +160,28 @@ class ArticleRepository(db: NeoFeedDb) {
         }
     }
 
-    suspend fun getItemsToBeCleanedFromFeed(feedId: Long, minKeptPubDate: Long) = withContext(jcc) {
+    suspend fun getItemsToBeCleanedFromFeed(
+        feedId: Long,
+        minKeptPubDate: Long,
+    ) = withContext(jcc) {
         articlesDao.getItemsToBeCleanedFromFeed(
             feedId = feedId,
-            minKeptPubDate = minKeptPubDate
+            minKeptPubDate = minKeptPubDate,
         )
     }
 
     fun getFeedsItemsWithDefaultFullTextParse(): Flow<List<ArticleIdWithLink>> =
-        articlesDao.getArticleIdLinks()
+        articlesDao
+            .getArticleIdLinks()
             .flowOn(cc)
 
-    fun getBookmarkedFeedItems(): Flow<List<FeedItem>> = articlesDao.getAllBookmarkedFeedItems()
-        .flowOn(cc)
+    fun getBookmarkedFeedItems(): Flow<List<FeedItem>> =
+        articlesDao
+            .getAllBookmarkedFeedItems()
+            .flowOn(cc)
 
-    fun getPinnedFeedItems(): Flow<List<FeedItem>> = articlesDao.getPinnedFeedItems()
-        .flowOn(cc)
+    fun getPinnedFeedItems(): Flow<List<FeedItem>> =
+        articlesDao
+            .getPinnedFeedItems()
+            .flowOn(cc)
 }

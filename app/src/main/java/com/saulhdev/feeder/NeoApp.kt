@@ -7,6 +7,10 @@ import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.multidex.MultiDexApplication
 import androidx.work.WorkManager
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import com.google.android.material.color.DynamicColors
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.saulhdev.feeder.data.content.FeedPreferences.Companion.prefsModule
@@ -26,6 +30,8 @@ import com.saulhdev.feeder.viewmodels.SourceEditViewModel
 import com.saulhdev.feeder.viewmodels.SourceListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Cache
+import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androix.startup.KoinStartup
@@ -36,9 +42,14 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.koinConfiguration
 import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent.inject
+import java.io.File
+import java.util.concurrent.TimeUnit
 
 @OptIn(KoinExperimentalAPI::class)
-class NeoApp : MultiDexApplication(), KoinStartup {
+class NeoApp :
+    MultiDexApplication(),
+    KoinStartup,
+    ImageLoaderFactory {
     val activityHandler = ActivityHandler()
     private val applicationCoroutineScope = ApplicationCoroutineScope()
     private val wm: WorkManager by inject(WorkManager::class.java)
@@ -58,14 +69,24 @@ class NeoApp : MultiDexApplication(), KoinStartup {
     }
 
     // TODO Move to its class
-    private val dataModule = module {
-        single<NeoFeedDb> { NeoFeedDb.getInstance(this@NeoApp) }
-        single { get<NeoFeedDb>().feedArticleDao() }
-        single { get<NeoFeedDb>().feedSourceDao() }
-        singleOf(::ArticleRepository)
-        singleOf(::SourcesRepository)
-        singleOf(::SyncRestClient)
-    }
+    private val dataModule =
+        module {
+            single<OkHttpClient> {
+                OkHttpClient
+                    .Builder()
+                    .cache(Cache(File(this@NeoApp.cacheDir, "http_cache"), 50L * 1024 * 1024))
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build()
+            }
+            single<NeoFeedDb> { NeoFeedDb.getInstance(this@NeoApp) }
+            single { get<NeoFeedDb>().feedArticleDao() }
+            single { get<NeoFeedDb>().feedSourceDao() }
+            singleOf(::ArticleRepository)
+            singleOf(::SourcesRepository)
+            singleOf(::SyncRestClient)
+        }
 
     private val coreModule = module {
         single { contentResolver }
@@ -84,6 +105,23 @@ class NeoApp : MultiDexApplication(), KoinStartup {
         single { applicationCoroutineScope }
         single<NeoApp> { this@NeoApp }
     }
+
+    override fun newImageLoader(): ImageLoader =
+        ImageLoader
+            .Builder(this)
+            .memoryCache {
+                MemoryCache
+                    .Builder(this)
+                    .maxSizePercent(0.25)
+                    .build()
+            }.diskCache {
+                DiskCache
+                    .Builder()
+                    .directory(File(cacheDir, "image_cache"))
+                    .maxSizeBytes(100L * 1024 * 1024)
+                    .build()
+            }.crossfade(true)
+            .build()
 
     fun onAppStarted() {
         registerActivityLifecycleCallbacks(activityHandler)

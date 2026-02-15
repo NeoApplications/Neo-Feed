@@ -57,26 +57,22 @@ interface FeedArticleDao {
     @Query(
         """
         DELETE FROM Article WHERE uuid IN (:ids)
-        """
+        """,
     )
     suspend fun deleteArticles(ids: List<String>): Int
 
     @Query(
         """
-        DELETE FROM Article WHERE uuid IN (:ids)
-        """
-    )
-    suspend fun deleteFeedArticle(ids: List<String>): Int
-
-    @Query(
-        """
         DELETE FROM Article WHERE feedId = :feedId
-        """
+        """,
     )
     suspend fun deleteFeedArticle(feedId: Long?): Int
 
     @Query("SELECT * FROM Article WHERE guid IS :guid AND feedId IS :feedId")
-    suspend fun loadArticle(guid: String, feedId: Long?): Article?
+    suspend fun loadArticle(
+        guid: String,
+        feedId: Long?,
+    ): Article?
 
     @Query("SELECT * FROM Article WHERE guid IS :guid")
     suspend fun loadArticleByGuid(guid: String): Article?
@@ -95,7 +91,7 @@ interface FeedArticleDao {
         SELECT Article.* FROM Article
         JOIN Feeds ON Article.feedId = Feeds.id
         WHERE Feeds.isEnabled = 1
-    """
+    """,
     )
     fun getAllEnabledFeedArticles(): Flow<List<Article>>
 
@@ -120,58 +116,173 @@ interface FeedArticleDao {
             FROM Article
             WHERE bookmarked = 1
             ORDER BY pinned DESC, pubDateV2 DESC
-        """
+        """,
     )
     fun getAllBookmarked(): Flow<List<Article>>
 
-    // Embedded FeedItem
+    // Embedded FeedItem - sorted queries
+    @Transaction
     @Query(
         """
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Feeds.isEnabled = 1
     ORDER BY Article.primarySortTime DESC
-    """
+    """,
     )
     fun getAllEnabledFeedItems(): Flow<List<FeedItem>>
 
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Feeds.isEnabled = 1
+    ORDER BY Article.primarySortTime ASC
+    """,
+    )
+    fun getAllEnabledFeedItemsTimeAsc(): Flow<List<FeedItem>>
+
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Feeds.isEnabled = 1
+    ORDER BY Article.title ASC
+    """,
+    )
+    fun getAllEnabledFeedItemsTitleAsc(): Flow<List<FeedItem>>
+
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Feeds.isEnabled = 1
+    ORDER BY Article.title DESC
+    """,
+    )
+    fun getAllEnabledFeedItemsTitleDesc(): Flow<List<FeedItem>>
+
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Feeds.isEnabled = 1
+    ORDER BY Feeds.title ASC
+    """,
+    )
+    fun getAllEnabledFeedItemsSourceAsc(): Flow<List<FeedItem>>
+
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Feeds.isEnabled = 1
+    ORDER BY Feeds.title DESC
+    """,
+    )
+    fun getAllEnabledFeedItemsSourceDesc(): Flow<List<FeedItem>>
+
+    @Transaction
     @Query(
         """
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Article.bookmarked = 1 AND Feeds.isEnabled = 1
     ORDER BY Article.pinned DESC, Article.pubDateV2 DESC
-    """
+    """,
     )
     fun getAllBookmarkedFeedItems(): Flow<List<FeedItem>>
 
+    @Transaction
     @Query(
         """
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Feeds.isEnabled = 1 AND Feeds.tag IN (:tags)
     ORDER BY Article.primarySortTime DESC
-    """
+    """,
     )
     fun getFeedItemsByTagsSimple(tags: Set<String>): Flow<List<FeedItem>>
 
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Feeds.isEnabled = 1 AND Feeds.tag IN (:tags)
+    ORDER BY Article.primarySortTime ASC
+    """,
+    )
+    fun getFeedItemsByTagsTimeAsc(tags: Set<String>): Flow<List<FeedItem>>
+
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Feeds.isEnabled = 1 AND Feeds.tag IN (:tags)
+    ORDER BY Article.title ASC
+    """,
+    )
+    fun getFeedItemsByTagsTitleAsc(tags: Set<String>): Flow<List<FeedItem>>
+
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Feeds.isEnabled = 1 AND Feeds.tag IN (:tags)
+    ORDER BY Article.title DESC
+    """,
+    )
+    fun getFeedItemsByTagsTitleDesc(tags: Set<String>): Flow<List<FeedItem>>
+
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Feeds.isEnabled = 1 AND Feeds.tag IN (:tags)
+    ORDER BY Feeds.title ASC
+    """,
+    )
+    fun getFeedItemsByTagsSourceAsc(tags: Set<String>): Flow<List<FeedItem>>
+
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Feeds.isEnabled = 1 AND Feeds.tag IN (:tags)
+    ORDER BY Feeds.title DESC
+    """,
+    )
+    fun getFeedItemsByTagsSourceDesc(tags: Set<String>): Flow<List<FeedItem>>
+
+    @Transaction
     @Query(
         """
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Article.feedId = :feedId AND Feeds.isEnabled = 1
     ORDER BY Article.primarySortTime DESC
-    """
+    """,
     )
     fun getFeedItemsForFeed(feedId: Long): Flow<List<FeedItem>>
 
+    @Transaction
     @Query(
         """
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Article.pinned = 1 AND Feeds.isEnabled = 1
     ORDER BY Article.primarySortTime DESC
-    """
+    """,
     )
     fun getPinnedFeedItems(): Flow<List<FeedItem>>
 
@@ -180,38 +291,44 @@ interface FeedArticleDao {
 
     @Transaction
     suspend fun getFeedItemsByTagsComplex(tags: Set<String>): List<FeedItem> {
-        val feedIds = tags.flatMap { tag ->
-            getEnabledFeedsByTagPattern("%,$tag,%")
-        }.map { it.id }.distinct()
+        val feedIds =
+            tags
+                .flatMap { tag ->
+                    getEnabledFeedsByTagPattern("%,$tag,%")
+                }.map { it.id }
+                .distinct()
 
         return getFeedItemsByFeedIds(feedIds)
     }
 
+    @Transaction
     @Query(
         """
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Article.feedId IN (:feedIds) AND Feeds.isEnabled = 1
     ORDER BY Article.primarySortTime DESC
-    """
+    """,
     )
     suspend fun getFeedItemsByFeedIds(feedIds: List<Long>): List<FeedItem>
 
     @Transaction
     suspend fun insertOrUpdate(
         itemsWithText: List<Pair<Article, String>>,
-        block: suspend (Article, String) -> Unit
+        block: suspend (Article, String) -> Unit,
     ) {
-        val (toUpdateItems, toInsertItems) = itemsWithText.partition { (item, _) ->
-            item.uuid.isNotEmpty()
-        }
+        val (toUpdateItems, toInsertItems) =
+            itemsWithText.partition { (item, _) ->
+                item.uuid.isNotEmpty()
+            }
 
         updateFeedArticle(toUpdateItems.map { (item, _) -> item })
         toUpdateItems.forEach { (item, text) ->
             block(item, text)
         }
 
-        toInsertItems.map { (item, text) -> item.copy(uuid = UUID.randomUUID().toString()) to text }
+        toInsertItems
+            .map { (item, text) -> item.copy(uuid = UUID.randomUUID().toString()) to text }
             .apply {
                 forEach { (article, text) ->
                     insertFeedArticle(article)

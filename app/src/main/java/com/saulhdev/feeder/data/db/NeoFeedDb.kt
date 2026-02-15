@@ -46,7 +46,7 @@ const val ID_ALL: Long = -1L
         Feed::class,
         Article::class,
     ],
-    version = 8,
+    version = 9,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -72,6 +72,10 @@ const val ID_ALL: Long = -1L
         AutoMigration(
             from = 7,
             to = 8,
+        ),
+        AutoMigration(
+            from = 8,
+            to = 9,
         ),
     ],
     views = [
