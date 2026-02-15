@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -173,6 +174,16 @@ fun SourceListPage(
                         }
                     },
                     actions = {
+                        IconButton(
+                            onClick = {
+                                navController.navigate(NavRoute.SuggestedFeeds)
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Phosphor.Megaphone,
+                                contentDescription = stringResource(id = R.string.suggested_feeds),
+                            )
+                        }
                         OverflowMenu {
                             DropdownMenuItem(
                                 leadingIcon = {
@@ -239,19 +250,6 @@ fun SourceListPage(
                                     bookmarksExporter.launch("NF-$localTime.bkm")
                                 },
                                 text = { Text(text = stringResource(id = R.string.sources_export_bookmarks)) },
-                            )
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        Phosphor.Megaphone,
-                                        contentDescription = stringResource(id = R.string.suggested_feeds),
-                                    )
-                                },
-                                onClick = {
-                                    hideMenu()
-                                    navController.navigate(NavRoute.SuggestedFeeds)
-                                },
-                                text = { Text(text = stringResource(id = R.string.suggested_feeds)) },
                             )
                         }
                     },

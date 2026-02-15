@@ -68,6 +68,44 @@ object SuggestedFeedsData {
                         description = "Android, computing, and tech enthusiast community",
                     ),
                 ),
+            "France" to
+                listOf(
+                    SuggestedFeed(
+                        title = "Le Monde",
+                        url = "https://www.lemonde.fr/rss/une.xml",
+                        description = "Actualités internationales et françaises",
+                    ),
+                    SuggestedFeed(
+                        title = "Libération",
+                        url = "https://www.liberation.fr/arc/outboundfeeds/rss-all/collection/accueil-702702/",
+                        description = "Actualités, opinions et culture",
+                    ),
+                    SuggestedFeed(
+                        title = "France 24",
+                        url = "https://www.france24.com/fr/rss",
+                        description = "Actualités internationales en français",
+                    ),
+                    SuggestedFeed(
+                        title = "Numerama",
+                        url = "https://www.numerama.com/feed/",
+                        description = "Tech, science et culture numérique",
+                    ),
+                    SuggestedFeed(
+                        title = "Frandroid",
+                        url = "https://www.frandroid.com/feed",
+                        description = "Android, tech et objets connectés",
+                    ),
+                    SuggestedFeed(
+                        title = "Next",
+                        url = "https://next.ink/feed/",
+                        description = "Actualités informatiques et numériques",
+                    ),
+                    SuggestedFeed(
+                        title = "Korben",
+                        url = "https://korben.info/feed",
+                        description = "Tech, hacking et culture geek",
+                    ),
+                ),
             "News" to
                 listOf(
                     SuggestedFeed(
@@ -79,11 +117,6 @@ object SuggestedFeedsData {
                         title = "BBC News",
                         url = "https://feeds.bbci.co.uk/news/rss.xml",
                         description = "World news from the BBC",
-                    ),
-                    SuggestedFeed(
-                        title = "Le Monde",
-                        url = "https://www.lemonde.fr/rss/une.xml",
-                        description = "Actualités internationales et françaises",
                     ),
                 ),
             "Science" to
