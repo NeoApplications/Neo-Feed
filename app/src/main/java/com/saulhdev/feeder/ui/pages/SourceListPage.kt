@@ -62,6 +62,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import com.saulhdev.feeder.ui.icons.phosphor.Bookmarks
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowDown
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowUp
+import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
 import com.saulhdev.feeder.ui.icons.phosphor.Plus
 import com.saulhdev.feeder.ui.navigation.LocalNavController
 import com.saulhdev.feeder.ui.navigation.NavRoute
@@ -85,63 +86,70 @@ fun SourceListPage(
     val context = LocalContext.current
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
-    val localTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        .format(FILE_DATETIME_FORMAT)
+    val localTime =
+        Clock.System
+            .now()
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .format(FILE_DATETIME_FORMAT)
     // TODO reconsider
     val coroutineScope: ApplicationCoroutineScope by inject(ApplicationCoroutineScope::class.java)
     val state by viewModel.state.collectAsState()
     val paneNavigator = rememberListDetailPaneScaffoldNavigator<Any>()
     val sourceId = remember { mutableLongStateOf(-1L) }
 
-    val opmlExporter = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("application/opml")
-    ) { uri ->
-        if (uri != null) {
-            coroutineScope.launch {
-                context.contentResolver.exportOpml(
-                    uri,
-                    state.tagsSourcesMap
-                )
+    val opmlExporter =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.CreateDocument("application/opml"),
+        ) { uri ->
+            if (uri != null) {
+                coroutineScope.launch {
+                    context.contentResolver.exportOpml(
+                        uri,
+                        state.tagsSourcesMap,
+                    )
+                }
             }
         }
-    }
 
-    val opmlImporter = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        if (uri != null) {
-            coroutineScope.launch {
-                context.contentResolver.importOpml(uri)
+    val opmlImporter =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.OpenDocument(),
+        ) { uri ->
+            if (uri != null) {
+                coroutineScope.launch {
+                    context.contentResolver.importOpml(uri)
+                }
             }
         }
-    }
 
-    val bookmarksExporter = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("application/opml")
-    ) { uri ->
-        if (uri != null) {
-            coroutineScope.launch {
-                context.contentResolver.exportBookmarks(
-                    context,
-                    uri,
-                    state.bookmarked
-                )
+    val bookmarksExporter =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.CreateDocument("application/opml"),
+        ) { uri ->
+            if (uri != null) {
+                coroutineScope.launch {
+                    context.contentResolver.exportBookmarks(
+                        context,
+                        uri,
+                        state.bookmarked,
+                    )
+                }
             }
         }
-    }
 
-    val bookmarksImporter = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        if (uri != null) {
-            coroutineScope.launch {
-                context.contentResolver.importBookmarks(
-                    context,
-                    uri,
-                )
+    val bookmarksImporter =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.OpenDocument(),
+        ) { uri ->
+            if (uri != null) {
+                coroutineScope.launch {
+                    context.contentResolver.importBookmarks(
+                        context,
+                        uri,
+                    )
+                }
             }
         }
-    }
 
     NavigableListDetailPaneScaffold(
         navigator = paneNavigator,
@@ -156,7 +164,7 @@ fun SourceListPage(
                                 navController.navigate(NavRoute.SourceAdd)
                             },
                             modifier = Modifier.padding(16.dp),
-                            shape = MaterialTheme.shapes.extraLarge
+                            shape = MaterialTheme.shapes.extraLarge,
                         ) {
                             Icon(
                                 imageVector = Phosphor.Plus,
@@ -180,11 +188,11 @@ fun SourceListPage(
                                             "text/plain",
                                             "text/xml",
                                             "text/opml",
-                                            "*/*"
-                                        )
+                                            "*/*",
+                                        ),
                                     )
                                 },
-                                text = { Text(text = stringResource(id = R.string.sources_import_opml)) }
+                                text = { Text(text = stringResource(id = R.string.sources_import_opml)) },
                             )
                             DropdownMenuItem(
                                 leadingIcon = {
@@ -195,9 +203,9 @@ fun SourceListPage(
                                 },
                                 onClick = {
                                     hideMenu()
-                                    opmlExporter.launch("NF-${localTime}.opml")
+                                    opmlExporter.launch("NF-$localTime.opml")
                                 },
-                                text = { Text(text = stringResource(id = R.string.sources_export_opml)) }
+                                text = { Text(text = stringResource(id = R.string.sources_export_opml)) },
                             )
                             DropdownMenuItem(
                                 leadingIcon = {
@@ -213,11 +221,11 @@ fun SourceListPage(
                                             "text/plain",
                                             "text/xml",
                                             "text/bkm",
-                                            "*/*"
-                                        )
+                                            "*/*",
+                                        ),
                                     )
                                 },
-                                text = { Text(text = stringResource(id = R.string.sources_import_bookmarks)) }
+                                text = { Text(text = stringResource(id = R.string.sources_import_bookmarks)) },
                             )
                             DropdownMenuItem(
                                 leadingIcon = {
@@ -228,21 +236,36 @@ fun SourceListPage(
                                 },
                                 onClick = {
                                     hideMenu()
-                                    bookmarksExporter.launch("NF-${localTime}.bkm")
+                                    bookmarksExporter.launch("NF-$localTime.bkm")
                                 },
-                                text = { Text(text = stringResource(id = R.string.sources_export_bookmarks)) }
+                                text = { Text(text = stringResource(id = R.string.sources_export_bookmarks)) },
+                            )
+                            DropdownMenuItem(
+                                leadingIcon = {
+                                    Icon(
+                                        Phosphor.Megaphone,
+                                        contentDescription = stringResource(id = R.string.suggested_feeds),
+                                    )
+                                },
+                                onClick = {
+                                    hideMenu()
+                                    navController.navigate(NavRoute.SuggestedFeeds)
+                                },
+                                text = { Text(text = stringResource(id = R.string.suggested_feeds)) },
                             )
                         }
-                    }
+                    },
                 ) { paddingValues ->
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            start = 8.dp,
-                            end = 8.dp,
-                            top = paddingValues.calculateTopPadding()
-                        ),
+                        modifier =
+                            Modifier
+                                .fillMaxSize(),
+                        contentPadding =
+                            PaddingValues(
+                                start = 8.dp,
+                                end = 8.dp,
+                                top = paddingValues.calculateTopPadding(),
+                            ),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         item {
@@ -256,16 +279,16 @@ fun SourceListPage(
                                     scope.launch {
                                         paneNavigator.navigateTo(
                                             ListDetailPaneScaffoldRole.Detail,
-                                            item.id
+                                            item.id,
                                         )
                                     }
                                 },
                                 onSwitch = {
                                     viewModel.updateFeed(
                                         it.copy(isEnabled = false),
-                                        false
+                                        false,
                                     )
-                                }
+                                },
                             )
                         }
                         item {
@@ -279,7 +302,7 @@ fun SourceListPage(
                                     scope.launch {
                                         paneNavigator.navigateTo(
                                             ListDetailPaneScaffoldRole.Detail,
-                                            item.id
+                                            item.id,
                                         )
                                     }
                                 },
@@ -288,7 +311,7 @@ fun SourceListPage(
                                         it.copy(isEnabled = true),
                                         true,
                                     )
-                                }
+                                },
                             )
                         }
                         item {
@@ -299,9 +322,12 @@ fun SourceListPage(
             }
         },
         detailPane = {
-            sourceId.longValue = paneNavigator.currentDestination
-                ?.takeIf { it.pane == this.paneRole }?.contentKey
-                .toString().toLongOrDefault(-1L)
+            sourceId.longValue =
+                paneNavigator.currentDestination
+                    ?.takeIf { it.pane == this.paneRole }
+                    ?.contentKey
+                    .toString()
+                    .toLongOrDefault(-1L)
 
             sourceId.longValue.takeIf { it != -1L }?.let { id ->
                 AnimatedPane {
@@ -312,6 +338,6 @@ fun SourceListPage(
                     }
                 }
             }
-        }
+        },
     )
 }
