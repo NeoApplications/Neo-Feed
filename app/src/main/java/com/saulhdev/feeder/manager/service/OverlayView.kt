@@ -46,9 +46,11 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.java.KoinJavaComponent.inject
 
-class OverlayView(val context: Context) :
-    OverlayController(context, R.style.AppTheme, R.style.WindowTheme),
-    KoinComponent, OverlayBridge.OverlayBridgeCallback {
+class OverlayView(
+    val context: Context,
+) : OverlayController(context, R.style.AppTheme, R.style.WindowTheme),
+    KoinComponent,
+    OverlayBridge.OverlayBridgeCallback {
     private lateinit var themeHolder: OverlayThemeHolder
     private val syncScope = CoroutineScope(Dispatchers.IO) + CoroutineName("NeoFeedSync")
     private val mainScope = CoroutineScope(Dispatchers.Main)
@@ -65,16 +67,21 @@ class OverlayView(val context: Context) :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        rootView = View.inflate(
-            ContextThemeWrapper(this, R.style.AppTheme),
-            R.layout.overlay_layout,
-            this.container
-        )
+        rootView =
+            View.inflate(
+                ContextThemeWrapper(this, R.style.AppTheme),
+                R.layout.overlay_layout,
+                this.container,
+            )
         val mainContainer = rootView.findViewById<ViewGroup>(R.id.overlay_root)
         AbstractFloatingView.container = mainContainer
         AbstractFloatingView.closeAllOpenViews(context)
 
         themeHolder = OverlayThemeHolder(this)
+        setTheme(force = null)
+        val bgColor = themeHolder.currentTheme.get(CardTheme.Colors.OVERLAY_BG.ordinal)
+        val color = (prefs.overlayTransparency.getValue() * 255.0f).toInt() shl 24 or (bgColor and 0x00ffffff)
+        getWindow().setBackgroundDrawable(ColorDrawable(color))
 
         initRecyclerView()
         initHeader()
@@ -136,44 +143,50 @@ class OverlayView(val context: Context) :
         themeHolder.setTheme(
             when (force ?: prefs.overlayTheme.getValue()) {
                 "auto_system_black" -> CardTheme.getThemeBySystem(context, true)
-                "auto_system"       -> CardTheme.getThemeBySystem(context, false)
-                "dark"              -> CardTheme.defaultDarkThemeColors
-                "black"             -> CardTheme.defaultBlackThemeColors
-                else                -> CardTheme.defaultLightThemeColors
-            }
+                "auto_system" -> CardTheme.getThemeBySystem(context, false)
+                "dark" -> CardTheme.defaultDarkThemeColors
+                "black" -> CardTheme.defaultBlackThemeColors
+                else -> CardTheme.defaultLightThemeColors
+            },
         )
         setCustomTheme()
     }
 
     private fun updateStubUi() {
-        val theme = if (themeHolder.currentTheme.get(CardTheme.Colors.OVERLAY_BG.ordinal)
-                .isDark()
-        ) CardTheme.defaultDarkThemeColors else CardTheme.defaultLightThemeColors
+        val theme =
+            if (themeHolder.currentTheme
+                    .get(CardTheme.Colors.OVERLAY_BG.ordinal)
+                    .isDark()
+            ) {
+                CardTheme.defaultDarkThemeColors
+            } else {
+                CardTheme.defaultLightThemeColors
+            }
         rootView.findViewById<MaterialButton>(R.id.header_settings).iconTint =
             ColorStateList.valueOf(
                 theme.get(
-                    CardTheme.Colors.TEXT_COLOR_PRIMARY.ordinal
-                )
+                    CardTheme.Colors.TEXT_COLOR_PRIMARY.ordinal,
+                ),
             )
 
         rootView.findViewById<MaterialButton>(R.id.header_filter).iconTint =
             ColorStateList.valueOf(
                 theme.get(
-                    CardTheme.Colors.TEXT_COLOR_PRIMARY.ordinal
-                )
+                    CardTheme.Colors.TEXT_COLOR_PRIMARY.ordinal,
+                ),
             )
 
         rootView.findViewById<MaterialButton>(R.id.header_bookmark).iconTint =
             ColorStateList.valueOf(
                 theme.get(
-                    CardTheme.Colors.TEXT_COLOR_PRIMARY.ordinal
-                )
+                    CardTheme.Colors.TEXT_COLOR_PRIMARY.ordinal,
+                ),
             )
 
-        rootView.findViewById<TextView>(R.id.header_title)
+        rootView
+            .findViewById<TextView>(R.id.header_title)
             .setTextColor(theme.get(CardTheme.Colors.TEXT_COLOR_PRIMARY.ordinal))
     }
-
 
     private fun initRecyclerView() {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recycler)
@@ -183,7 +196,6 @@ class OverlayView(val context: Context) :
                 setOnClickListener {
                     visibility = View.GONE
                     recyclerView.smoothScrollToPosition(0)
-
                 }
             }
 
@@ -198,52 +210,71 @@ class OverlayView(val context: Context) :
             adapter = this@OverlayView.adapter
         }
 
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if ((recyclerView.layoutManager as LinearLayoutManager)
-                        .findFirstCompletelyVisibleItemPosition() < 5
+        recyclerView.addOnScrollListener(
+            object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int,
                 ) {
-                    buttonReturnToTop.visibility = View.GONE
-                } else if ((recyclerView.layoutManager as LinearLayoutManager)
-                        .findFirstCompletelyVisibleItemPosition() > 5
-                ) {
-                    buttonReturnToTop.visibility = View.VISIBLE
+                    super.onScrolled(recyclerView, dx, dy)
+                    if ((recyclerView.layoutManager as LinearLayoutManager)
+                            .findFirstCompletelyVisibleItemPosition() < 5
+                    ) {
+                        buttonReturnToTop.visibility = View.GONE
+                    } else if ((recyclerView.layoutManager as LinearLayoutManager)
+                            .findFirstCompletelyVisibleItemPosition() > 5
+                    ) {
+                        buttonReturnToTop.visibility = View.VISIBLE
+                    }
                 }
-            }
-        })
+            },
+        )
     }
 
-    private fun updateToggleColor(button: MaterialButton, isChecked: Boolean) {
+    private fun updateToggleColor(
+        button: MaterialButton,
+        isChecked: Boolean,
+    ) {
         val context = button.context
         val darkTheme = themeHolder.currentTheme.get(CardTheme.Colors.OVERLAY_BG.ordinal).isDark()
         val a14 = Android.sdk(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
         val a12 = Android.sdk(Build.VERSION_CODES.S)
-        val backgroundTint = when {
-            !isChecked       -> Color.TRANSPARENT
+        val backgroundTint =
+            when {
+                !isChecked -> {
+                    Color.TRANSPARENT
+                }
 
-            a14 && darkTheme -> ContextCompat.getColor(
-                context,
-                android.R.color.system_on_primary_container_dark
-            )
+                a14 && darkTheme -> {
+                    ContextCompat.getColor(
+                        context,
+                        android.R.color.system_on_primary_container_dark,
+                    )
+                }
 
-            a14              -> ContextCompat.getColor(
-                context,
-                android.R.color.system_primary_container_light
-            )
+                a14 -> {
+                    ContextCompat.getColor(
+                        context,
+                        android.R.color.system_primary_container_light,
+                    )
+                }
 
-            a12              -> ContextCompat.getColor(
-                context,
-                android.R.color.system_accent1_400
-            )
+                a12 -> {
+                    ContextCompat.getColor(
+                        context,
+                        android.R.color.system_accent1_400,
+                    )
+                }
 
-            else             -> ContextCompat.getColor(
-                context,
-                R.color.md_theme_primary
-            )
-        }
+                else -> {
+                    ContextCompat.getColor(
+                        context,
+                        R.color.md_theme_primary,
+                    )
+                }
+            }
         button.backgroundTintList = ColorStateList.valueOf(backgroundTint)
-
     }
 
     private fun initHeader() {
@@ -283,7 +314,6 @@ class OverlayView(val context: Context) :
             }
         }
 
-
         rootView.findViewById<MaterialButton>(R.id.header_settings).apply {
             setOnClickListener {
                 openMenu(it)
@@ -296,18 +326,18 @@ class OverlayView(val context: Context) :
         popup.show(createMenuList()) {
             popup.dismiss()
             when (it.id) {
-                "config"  -> {
+                "config" -> {
                     mainScope.launch {
                         view.context.safeStartActivity(
                             MainActivity.navigateIntent(
                                 view.context,
                                 "${Routes.MAIN}/1",
-                            )
+                            ),
                         )
                     }
                 }
 
-                "reload"  -> {
+                "reload" -> {
                     rootView.findViewById<RecyclerView>(R.id.recycler).recycledViewPool.clear()
                     refreshNotifications()
                 }
@@ -364,11 +394,10 @@ class OverlayView(val context: Context) :
         }
     }
 
-    private fun createMenuList(): List<MenuItem> {
-        return listOf(
+    private fun createMenuList(): List<MenuItem> =
+        listOf(
             MenuItem(R.drawable.ic_arrow_clockwise, R.string.action_reload, 0, "reload"),
             MenuItem(R.drawable.ic_gear, R.string.title_settings, 2, "config"),
-            MenuItem(R.drawable.ic_power, R.string.action_restart, 2, "restart")
+            MenuItem(R.drawable.ic_power, R.string.action_restart, 2, "restart"),
         )
-    }
 }
