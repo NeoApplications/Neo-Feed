@@ -125,6 +125,39 @@ object SuggestedFeedsData {
                                     description = "Actualités scientifiques",
                                 ),
                             ),
+                        "Lifestyle & Féminin" to
+                            listOf(
+                                SuggestedFeed(
+                                    title = "Madmoizelle",
+                                    url = "https://www.madmoizelle.com/feed",
+                                    description = "Culture, société et féminisme",
+                                ),
+                                SuggestedFeed(
+                                    title = "Cosmopolitan FR",
+                                    url = "https://www.cosmopolitan.fr/feed",
+                                    description = "Mode, beauté et lifestyle",
+                                ),
+                                SuggestedFeed(
+                                    title = "Marie Claire FR",
+                                    url = "https://www.marieclaire.fr/feed",
+                                    description = "Mode, beauté et culture",
+                                ),
+                                SuggestedFeed(
+                                    title = "Elle FR",
+                                    url = "https://www.elle.fr/rss",
+                                    description = "Mode, beauté et société",
+                                ),
+                                SuggestedFeed(
+                                    title = "Grazia FR",
+                                    url = "https://www.grazia.fr/feed",
+                                    description = "Mode, beauté et célébrités",
+                                ),
+                                SuggestedFeed(
+                                    title = "Aufeminin",
+                                    url = "https://www.aufeminin.com/rss",
+                                    description = "Lifestyle, bien-être et société",
+                                ),
+                            ),
                     ),
             ),
             FeedLanguageGroup(
@@ -229,6 +262,11 @@ object SuggestedFeedsData {
                     mapOf(
                         "YouTube" to
                             listOf(
+                                SuggestedFeed(
+                                    title = "AlloCiné Bandes Annonces",
+                                    url = "https://www.youtube.com/feeds/videos.xml?channel_id=UC5i9ji_nljs6-mp0jz_hOHg",
+                                    description = "Bandes-annonces et extraits de films en français",
+                                ),
                                 SuggestedFeed(
                                     title = "MovieClips Trailers",
                                     url = "https://www.youtube.com/feeds/videos.xml?channel_id=UCi8e0iOVk1fEOogdfu4YgfA",
