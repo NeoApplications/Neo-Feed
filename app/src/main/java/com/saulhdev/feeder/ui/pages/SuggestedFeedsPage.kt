@@ -22,6 +22,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
@@ -34,7 +35,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.entity.SuggestedFeed
@@ -53,7 +56,7 @@ fun SuggestedFeedsPage(
     viewModel: SourceListViewModel = koinNeoViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    val existingUrls = state.allSources.map { it.url.toString() }.toSet()
+    val existingUrlMap = state.allSources.associate { it.url.toString() to it.id }
 
     ViewWithActionBar(
         title = stringResource(R.string.suggested_feeds),
@@ -70,25 +73,41 @@ fun SuggestedFeedsPage(
                 ),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            SuggestedFeedsData.categories.forEach { (category, feeds) ->
-                item(key = "header_$category") {
-                    PreferenceGroupHeading(heading = category)
-                }
-                items(feeds, key = { it.url }) { suggestedFeed ->
-                    SuggestedFeedItem(
-                        feed = suggestedFeed,
-                        isAdded = existingUrls.contains(suggestedFeed.url),
-                        onAdd = {
-                            viewModel.insertFeed(
-                                Feed(
-                                    title = suggestedFeed.title,
-                                    url = sloppyLinkToStrictURL(suggestedFeed.url),
-                                    description = suggestedFeed.description,
-                                    tag = category,
-                                ),
-                            )
-                        },
+            SuggestedFeedsData.groups.forEach { group ->
+                item(key = "lang_${group.language}") {
+                    Text(
+                        text = group.language,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 4.dp, start = 8.dp),
                     )
+                }
+                group.categories.forEach { (category, feeds) ->
+                    item(key = "header_${group.language}_$category") {
+                        PreferenceGroupHeading(heading = category)
+                    }
+                    items(feeds, key = { "${group.language}_${it.url}" }) { suggestedFeed ->
+                        val feedId = existingUrlMap[suggestedFeed.url]
+                        SuggestedFeedItem(
+                            feed = suggestedFeed,
+                            isAdded = feedId != null,
+                            onAdd = {
+                                viewModel.insertFeed(
+                                    Feed(
+                                        title = suggestedFeed.title,
+                                        url = sloppyLinkToStrictURL(suggestedFeed.url),
+                                        description = suggestedFeed.description,
+                                        tag = category,
+                                    ),
+                                )
+                            },
+                            onRemove = {
+                                feedId?.let { viewModel.deleteFeed(it) }
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -100,9 +119,10 @@ private fun SuggestedFeedItem(
     feed: SuggestedFeed,
     isAdded: Boolean,
     onAdd: () -> Unit,
+    onRemove: () -> Unit,
 ) {
     ListItem(
-        modifier = if (!isAdded) Modifier.clickable(onClick = onAdd) else Modifier,
+        modifier = Modifier.clickable(onClick = if (isAdded) onRemove else onAdd),
         headlineContent = {
             Text(text = feed.title)
         },
@@ -111,11 +131,13 @@ private fun SuggestedFeedItem(
         },
         trailingContent = {
             if (isAdded) {
-                Icon(
-                    imageVector = Phosphor.CheckCircle,
-                    contentDescription = stringResource(R.string.feed_already_added),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
+                IconButton(onClick = onRemove) {
+                    Icon(
+                        imageVector = Phosphor.CheckCircle,
+                        contentDescription = stringResource(R.string.feed_already_added),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
             } else {
                 IconButton(onClick = onAdd) {
                     Icon(

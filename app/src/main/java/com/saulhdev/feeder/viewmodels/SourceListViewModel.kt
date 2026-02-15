@@ -20,27 +20,29 @@ class SourceListViewModel(
 ) : NeoViewModel() {
     private val ioScope = viewModelScope.plus(Dispatchers.IO)
 
-    val state = combine(
-        feedsRepo.getAllSourcesFlow(),
-        feedsRepo.getAllTagsFlow(),
-        // TODO move the getter eventually to SourcesRepository
-        articleRepo.getBookmarkedFeedItems()
-    ) { allSources, allTags, bookmarked ->
-        val (enabledSources, disabledSources) = allSources.partition { it.isEnabled }
-        SourceListState(
-            allSources = allSources,
-            enabledSources = enabledSources,
-            disabledSources = disabledSources,
-            tagsSourcesMap = allTags.plus("").associateWith { tag ->
-                allSources.filter { it.tag.contains(tag) }
-            },
-            bookmarked = bookmarked,
+    val state =
+        combine(
+            feedsRepo.getAllSourcesFlow(),
+            feedsRepo.getAllTagsFlow(),
+            // TODO move the getter eventually to SourcesRepository
+            articleRepo.getBookmarkedFeedItems(),
+        ) { allSources, allTags, bookmarked ->
+            val (enabledSources, disabledSources) = allSources.partition { it.isEnabled }
+            SourceListState(
+                allSources = allSources,
+                enabledSources = enabledSources,
+                disabledSources = disabledSources,
+                tagsSourcesMap =
+                    allTags.plus("").associateWith { tag ->
+                        allSources.filter { it.tag.contains(tag) }
+                    },
+                bookmarked = bookmarked,
+            )
+        }.stateIn(
+            ioScope,
+            SharingStarted.Eagerly,
+            SourceListState(),
         )
-    }.stateIn(
-        ioScope,
-        SharingStarted.Eagerly,
-        SourceListState()
-    )
 
     fun insertFeed(feed: Feed) {
         viewModelScope.launch {
@@ -48,7 +50,16 @@ class SourceListViewModel(
         }
     }
 
-    fun updateFeed(source: Feed, enable: Boolean) {
+    fun deleteFeed(feedId: Long) {
+        viewModelScope.launch {
+            feedsRepo.deleteFeed(feedId)
+        }
+    }
+
+    fun updateFeed(
+        source: Feed,
+        enable: Boolean,
+    ) {
         viewModelScope.launch {
             feedsRepo.updateSource(source, enable)
         }
@@ -59,12 +70,13 @@ class SourceListViewModel(
             if (result.isError) {
                 return@forEach
             } else {
-                val feed = Feed(
-                    title = result.title,
-                    description = result.description,
-                    url = sloppyLinkToStrictURL(result.url),
-                    feedImage = sloppyLinkToStrictURL(result.url)
-                )
+                val feed =
+                    Feed(
+                        title = result.title,
+                        description = result.description,
+                        url = sloppyLinkToStrictURL(result.url),
+                        feedImage = sloppyLinkToStrictURL(result.url),
+                    )
                 insertFeed(feed)
             }
         }
