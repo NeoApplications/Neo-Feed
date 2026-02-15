@@ -21,9 +21,6 @@ package com.saulhdev.feeder.viewmodels
 import androidx.lifecycle.viewModelScope
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.db.models.FeedItem
-import com.saulhdev.feeder.data.entity.SORT_CHRONOLOGICAL
-import com.saulhdev.feeder.data.entity.SORT_SOURCE
-import com.saulhdev.feeder.data.entity.SORT_TITLE
 import com.saulhdev.feeder.data.entity.SortFilterModel
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.data.repository.SourcesRepository
@@ -45,56 +42,62 @@ class ArticleListViewModel(
 ) : NeoViewModel() {
     private val ioScope = viewModelScope.plus(Dispatchers.IO)
 
-    private val sortFilterState = combine(
-        prefs.sortingFilter.get(),
-        prefs.sortingAsc.get(),
-        prefs.sourcesFilter.get(),
-        prefs.tagsFilter.get(),
-    ) { sort, sortAsc, sources, tags ->
-        SortFilterModel(sort, sortAsc, sources, tags)
-    }
-        .stateIn(
+    private val sortFilterState =
+        combine(
+            prefs.sortingFilter.get(),
+            prefs.sortingAsc.get(),
+            prefs.sourcesFilter.get(),
+            prefs.tagsFilter.get(),
+        ) { sort, sortAsc, sources, tags ->
+            SortFilterModel(sort, sortAsc, sources, tags)
+        }.stateIn(
             ioScope,
             SharingStarted.Eagerly,
-            SortFilterModel()
+            SortFilterModel(),
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val articleListState: StateFlow<ArticleListState> = combine(
-        prefs.tagsFilter.get().flatMapLatest { tags ->
-            if (tags.any()) articleRepo.getFeedItemsByTags(tags)
-            else articleRepo.getEnabledFeedItems()
-        },
-        sortFilterState,
-        prefs.removeDuplicates.get(),
-        feedsRepo.isSyncing
-    ) { articles, sfm, removeDuplicate, isSyncing ->
-        ArticleListState(
-            articles = processArticles(articles, sfm, removeDuplicate),
-            isFilterModified = sfm != SortFilterModel(),
-            isSyncing = isSyncing
+    val articleListState: StateFlow<ArticleListState> =
+        combine(
+            sortFilterState.flatMapLatest { sfm ->
+                val tags = sfm.tagsFilter
+                if (tags.any()) {
+                    articleRepo.getFeedItemsByTagsSorted(tags, sfm.sort, sfm.sortAsc)
+                } else {
+                    articleRepo.getEnabledFeedItemsSorted(sfm.sort, sfm.sortAsc)
+                }
+            },
+            sortFilterState,
+            prefs.removeDuplicates.get(),
+            feedsRepo.isSyncing,
+        ) { articles, sfm, removeDuplicate, isSyncing ->
+            ArticleListState(
+                articles = filterArticles(articles, sfm, removeDuplicate),
+                isFilterModified = sfm != SortFilterModel(),
+                isSyncing = isSyncing,
+            )
+        }.stateIn(
+            ioScope,
+            SharingStarted.Eagerly,
+            ArticleListState(),
         )
-    }.stateIn(
-        ioScope,
-        SharingStarted.Eagerly,
-        ArticleListState()
-    )
 
-    val bookmarksState: StateFlow<BookmarksState> = combine(
-        articleRepo.getBookmarkedFeedItems(),
-        sortFilterState,
-        prefs.removeDuplicates.get(),
-        feedsRepo.isSyncing
-    ) { articles, sfm, removeDuplicate, isSyncing ->
-        BookmarksState(
-            bookmarkedArticles = processArticles(articles, sfm, removeDuplicate),
-            isSyncing = isSyncing
+    val bookmarksState: StateFlow<BookmarksState> =
+        combine(
+            articleRepo.getBookmarkedFeedItems(),
+            sortFilterState,
+            prefs.removeDuplicates.get(),
+            feedsRepo.isSyncing,
+        ) { articles, sfm, removeDuplicate, isSyncing ->
+            BookmarksState(
+                bookmarkedArticles = filterArticles(articles, sfm, removeDuplicate),
+                isSyncing = isSyncing,
+            )
+        }.stateIn(
+            ioScope,
+            SharingStarted.Eagerly,
+            BookmarksState(),
         )
-    }.stateIn(
-        ioScope,
-        SharingStarted.Eagerly,
-        BookmarksState()
-    )
 
     fun unpinArticle(id: String) {
         viewModelScope.launch {
@@ -102,54 +105,29 @@ class ArticleListViewModel(
         }
     }
 
-    fun bookmarkArticle(id: String, boolean: Boolean) {
+    fun bookmarkArticle(
+        id: String,
+        boolean: Boolean,
+    ) {
         viewModelScope.launch {
             articleRepo.bookmarkArticle(id, boolean)
         }
     }
 
-    // HELPERS
-    private fun processArticles(
+    private fun filterArticles(
         articles: List<FeedItem>,
         sfm: SortFilterModel,
-        removeDuplicate: Boolean
-    ): List<FeedItem> {
-        return articles
+        removeDuplicate: Boolean,
+    ): List<FeedItem> =
+        articles
             .let { if (removeDuplicate) it.distinctBy { item -> item.link } else it }
             .let { list ->
-                if (sfm.sourcesFilter.isEmpty()) list
-                else list.filterNot { it.sourceId in sfm.sourcesFilter }
-            }
-            .let { list ->
-                if (sfm.tagsFilter.isEmpty()) list
-                else list.filterNot { it.feedTag in sfm.tagsFilter }
-            }
-            .let { list ->
-                when (sfm.sort) {
-                    SORT_CHRONOLOGICAL if !sfm.sortAsc ->
-                        list.sortedByDescending(FeedItem::timeMillis)
-
-                    SORT_CHRONOLOGICAL if sfm.sortAsc  ->
-                        list.sortedBy(FeedItem::timeMillis)
-
-                    SORT_TITLE if sfm.sortAsc          ->
-                        list.sortedBy(FeedItem::contentTitle)
-
-                    SORT_TITLE if !sfm.sortAsc         ->
-                        list.sortedByDescending(FeedItem::contentTitle)
-
-                    SORT_SOURCE if sfm.sortAsc         ->
-                        list.sortedBy(FeedItem::displayTitle)
-
-                    SORT_SOURCE if !sfm.sortAsc        ->
-                        list.sortedByDescending(FeedItem::displayTitle)
-
-                    else                               -> list.sortedByDescending(
-                        FeedItem::timeMillis
-                    )
+                if (sfm.sourcesFilter.isEmpty()) {
+                    list
+                } else {
+                    list.filterNot { it.sourceId in sfm.sourcesFilter }
                 }
             }
-    }
 }
 
 data class ArticleListState(

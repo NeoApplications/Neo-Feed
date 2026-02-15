@@ -23,46 +23,47 @@ import java.util.concurrent.TimeUnit
 
 fun scheduleFullTextParse() {
     Log.i("FeederFullText", "Scheduling a full text parse work")
-    val workRequest = OneTimeWorkRequestBuilder<FullTextWorker>()
-        .addTag("FullTextWorker")
-        .keepResultsForAtLeast(1, TimeUnit.MINUTES)
+    val workRequest =
+        OneTimeWorkRequestBuilder<FullTextWorker>()
+            .addTag("FullTextWorker")
+            .keepResultsForAtLeast(1, TimeUnit.MINUTES)
     val workManager: WorkManager by inject(WorkManager::class.java)
     workManager.enqueueUniqueWork(
         "FullTextWorker",
         ExistingWorkPolicy.REPLACE,
-        workRequest.build()
+        workRequest.build(),
     )
 }
 
 class FullTextWorker(
     val context: Context,
-    workerParams: WorkerParameters
+    workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
-
-    private val okHttpClient: OkHttpClient = OkHttpClient.Builder().build()
+    private val okHttpClient: OkHttpClient by inject(OkHttpClient::class.java)
     val repository: ArticleRepository by inject(ArticleRepository::class.java)
 
     override suspend fun doWork(): Result {
         Log.i("FeederFullText", "Parsing full texts for articles if missing")
         val itemsToSync: List<ArticleIdWithLink> =
-            repository.getFeedsItemsWithDefaultFullTextParse()
+            repository
+                .getFeedsItemsWithDefaultFullTextParse()
                 .firstOrNull()
                 ?: return Result.success()
 
-        val success: Boolean = itemsToSync
-            .map { feedItem ->
-                parseFullArticleIfMissing(
-                    feedItem = feedItem,
-                    okHttpClient = okHttpClient,
-                    filesDir = context.filesDir
-                )
-            }
-            .fold(true) { acc, value ->
-                acc && value
-            }
+        val success: Boolean =
+            itemsToSync
+                .map { feedItem ->
+                    parseFullArticleIfMissing(
+                        feedItem = feedItem,
+                        okHttpClient = okHttpClient,
+                        filesDir = context.filesDir,
+                    )
+                }.fold(true) { acc, value ->
+                    acc && value
+                }
 
         return when (success) {
-            true  -> Result.success()
+            true -> Result.success()
             false -> Result.failure()
         }
     }
@@ -71,46 +72,48 @@ class FullTextWorker(
 suspend fun parseFullArticleIfMissing(
     feedItem: ArticleIdWithLink,
     okHttpClient: OkHttpClient,
-    filesDir: File
+    filesDir: File,
 ): Boolean {
     val fullArticleFile = blobFullFile(itemId = feedItem.uuid, filesDir = filesDir)
-    return fullArticleFile.isFile || parseFullArticle(
-        feedItem = feedItem,
-        okHttpClient = okHttpClient,
-        filesDir = filesDir
-    ).first
+    return fullArticleFile.isFile ||
+        parseFullArticle(
+            feedItem = feedItem,
+            okHttpClient = okHttpClient,
+            filesDir = filesDir,
+        ).first
 }
 
 suspend fun parseFullArticle(
     feedItem: ArticleIdWithLink,
     okHttpClient: OkHttpClient,
-    filesDir: File
-): Pair<Boolean, Throwable?> = withContext(Dispatchers.Default) {
-    return@withContext try {
-        val url = feedItem.link ?: return@withContext false to null
-        Log.d("FeederFullText", "Fetching full page ${feedItem.link}")
-        val html: String = okHttpClient.curl(URL(url)) ?: return@withContext false to null
+    filesDir: File,
+): Pair<Boolean, Throwable?> =
+    withContext(Dispatchers.Default) {
+        return@withContext try {
+            val url = feedItem.link
+            Log.d("FeederFullText", "Fetching full page ${feedItem.link}")
+            val html: String = okHttpClient.curl(URL(url)) ?: return@withContext false to null
 
-        // TODO verify encoding is respected in reader
-        Log.i("FeederFullText", "Parsing article ${feedItem.link}")
-        val article = Readability4JExtended(url, html).parse()
+            // TODO verify encoding is respected in reader
+            Log.i("FeederFullText", "Parsing article ${feedItem.link}")
+            val article = Readability4JExtended(url, html).parse()
 
-        // TODO set image on item if none already
-        // naiveFindImageLink(article.content)?.let { Parser.unescapeEntities(it, true) }
+            // TODO set image on item if none already
+            // naiveFindImageLink(article.content)?.let { Parser.unescapeEntities(it, true) }
 
-        Log.d("FeederFullText", "Writing article ${feedItem.link}")
-        withContext(Dispatchers.IO) {
-            blobFullOutputStream(feedItem.uuid, filesDir).bufferedWriter().use { writer ->
-                writer.write(article.contentWithUtf8Encoding)
+            Log.d("FeederFullText", "Writing article ${feedItem.link}")
+            withContext(Dispatchers.IO) {
+                blobFullOutputStream(feedItem.uuid, filesDir).bufferedWriter().use { writer ->
+                    writer.write(article.contentWithUtf8Encoding)
+                }
             }
+            true to null
+        } catch (e: Throwable) {
+            Log.e(
+                "FeederFullText",
+                "Failed to get fulltext for ${feedItem.link}: ${e.message}",
+                e,
+            )
+            false to e
         }
-        true to null
-    } catch (e: Throwable) {
-        Log.e(
-            "FeederFullText",
-            "Failed to get fulltext for ${feedItem.link}: ${e.message}",
-            e
-        )
-        false to e
     }
-}

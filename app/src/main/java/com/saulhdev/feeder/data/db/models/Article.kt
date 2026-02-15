@@ -43,6 +43,9 @@ import kotlin.time.Instant
         Index(value = ["feedId", "guid"]),
         Index(value = ["uuid", "link"]),
         Index(value = ["feedId"]),
+        Index(value = ["primarySortTime"]),
+        Index(value = ["bookmarked"]),
+        Index(value = ["pinned"]),
     ],
     foreignKeys = [
         ForeignKey(
