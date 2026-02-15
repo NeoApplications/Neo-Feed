@@ -147,4 +147,23 @@
     <string name="share_chooser_title">Où envoyer ?</string>
     <string name="suggested_feeds">Flux suggérés</string>
     <string name="feed_already_added">Déjà ajouté</string>
+    <string name="search_feeds">Rechercher des flux</string>
+    <string name="add_all">Tout ajouter</string>
+    <string name="remove_all">Tout retirer</string>
+    <string name="lang_fr">Français</string>
+    <string name="lang_en">English</string>
+    <string name="lang_youtube">YouTube</string>
+    <string name="cat_news">Actualités</string>
+    <string name="cat_tech">Tech &amp; Numérique</string>
+    <string name="cat_science">Science &amp; Espace</string>
+    <string name="cat_lifestyle">Lifestyle &amp; Féminin</string>
+    <string name="cat_cooking">Cuisine</string>
+    <string name="cat_sport">Sport</string>
+    <string name="cat_gaming">Jeux vidéo</string>
+    <string name="cat_auto">Auto / Moto</string>
+    <string name="cat_android">Android</string>
+    <string name="cat_opensource">Open Source</string>
+    <string name="cat_design">Design</string>
+    <string name="cat_finance">Finance</string>
+    <string name="cat_youtube">YouTube</string>
 </resources>
