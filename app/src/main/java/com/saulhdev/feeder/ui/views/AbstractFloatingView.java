@@ -3,7 +3,6 @@ package com.saulhdev.feeder.ui.views;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,8 +54,7 @@ public abstract class AbstractFloatingView extends LinearLayout implements Touch
     public static boolean isAnyOpen() {
         for (int i = 0; i < container.getChildCount(); i++) {
             View child = container.getChildAt(i);
-            if (child instanceof AbstractFloatingView) {
-                AbstractFloatingView abs = (AbstractFloatingView) child;
+            if (child instanceof AbstractFloatingView abs) {
                 if (abs.isOpen()) {
                     return true;
                 }
@@ -78,11 +76,8 @@ public abstract class AbstractFloatingView extends LinearLayout implements Touch
     public static void closeOpenViews(Context context, boolean animate, @FloatingViewType int type) {
         for (int i = container.getChildCount() - 1; i >= 0; i--) {
             View child = container.getChildAt(i);
-            if (child instanceof AbstractFloatingView) {
-                AbstractFloatingView abs = (AbstractFloatingView) child;
-                Log.d("AbstractBottomSheet", "Closing view of type: " + type);
+            if (child instanceof AbstractFloatingView abs) {
                 if (abs.isOfType(type)) {
-                    Log.d("AbstractBottomSheet", "Closing view of type2: " + type);
                     abs.close(animate);
                 }
             }
