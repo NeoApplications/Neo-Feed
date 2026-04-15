@@ -53,8 +53,8 @@ public abstract class AbstractSlideInView extends AbstractFloatingView implement
     private long mScrollDuration;
     protected boolean mNoIntercept;
     protected List<OnCloseListener> mOnCloseListeners = new ArrayList<>();
-    private Rect mHitRect =new Rect();
-    private float[] mTmpXY = new float[2];
+    private final Rect mHitRect = new Rect();
+    private final float[] mTmpXY = new float[2];
 
     public AbstractSlideInView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -190,10 +190,10 @@ public abstract class AbstractSlideInView extends AbstractFloatingView implement
     }
 
     public void close(boolean animate) {
-        handleClose(animate, mScrollDuration);
+        handleClose(animate);
     }
 
-    protected void handleClose(boolean animate, long defaultDuration) {
+    protected void handleClose(boolean animate) {
         if (!mIsOpen) {
             return;
         }
