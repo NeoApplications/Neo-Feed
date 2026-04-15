@@ -34,7 +34,6 @@ import com.saulhdev.feeder.utils.sloppyLinkToStrictURL
 import java.net.URI
 import java.net.URL
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @Entity(
@@ -54,7 +53,7 @@ import kotlin.time.Instant
         )
     ],
 )
-data class Article @OptIn(ExperimentalTime::class) constructor(
+data class Article constructor(
     @PrimaryKey
     val uuid: String = "",
     val guid: String = "",
@@ -127,10 +126,14 @@ data class Article @OptIn(ExperimentalTime::class) constructor(
                 this.pubDate.takeIf { it > 0L }
                     ?: Clock.System.now().toEpochMilliseconds()
             },
-            primarySortTime = minOf(
-                firstSyncedTime,
-                Instant.fromEpochMilliseconds(pubDate) ?: firstSyncedTime
-            ),
+            primarySortTime = if (pubDate > 0L) {
+                minOf(
+                    firstSyncedTime,
+                    Instant.fromEpochMilliseconds(pubDate) ?: firstSyncedTime
+                )
+            } else {
+                firstSyncedTime
+            },
             feedId = feedId,
         )
     }
