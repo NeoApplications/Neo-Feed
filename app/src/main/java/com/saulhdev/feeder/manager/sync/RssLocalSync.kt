@@ -33,6 +33,7 @@ import com.saulhdev.feeder.manager.models.getResponse
 import com.saulhdev.feeder.manager.models.scheduleFullTextParse
 import com.saulhdev.feeder.utils.blobFile
 import com.saulhdev.feeder.utils.blobOutputStream
+import com.saulhdev.feeder.utils.getSyncDays
 import com.saulhdev.feeder.utils.sloppyLinkToStrictURLNoThrows
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +44,9 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -209,11 +212,14 @@ private suspend fun syncFeed(
     val syncedFeed = feedSql.copy(lastSync = Clock.System.now())
     val items = feed.items
     Log.d(TAG, "Parsed ${items?.size ?: 0} items for ${feedSql.title}")
-
+    val days = getSyncDays(prefs)
+    val minKeptPubDate = Clock.System.now().minus(
+        period = DateTimePeriod(days = days),
+        timeZone = TimeZone.currentSystemDefault()
+    ).toEpochMilliseconds()
     val articles =
         items?.reversed()
             ?.map { item ->
-                // Robust GUID fallback: try item id, then item url
                 val itemGuid = (item.id ?: item.url).toString()
                 val article = (articleRepo.getArticleByGuid(
                     guid = itemGuid,
@@ -221,6 +227,9 @@ private suspend fun syncFeed(
                 ) ?: Article(firstSyncedTime = downloadTime))
                     .updateFromParsedEntry(item, itemGuid, feed, syncedFeed.id)
                 article to (item.content_html ?: item.content_text ?: "")
+            }
+            ?.filter { (article, _) ->
+                article.pubDate !in 1..<minKeptPubDate
             } ?: emptyList()
 
     Log.d(TAG, "Prepared ${articles.size} articles for ${feedSql.title}")
@@ -242,7 +251,11 @@ private suspend fun syncFeed(
 
     val ids = articleRepo.getItemsToBeCleanedFromFeed(
         feedId = syncedFeed.id,
-        keepCount = maxFeedItemCount
+        minKeptPubDate = minKeptPubDate
+    )
+    Log.d(
+        TAG,
+        "Cleanup ${feedSql.title}: days=$days cutoff=$minKeptPubDate deleting=${ids.size}"
     )
 
     for (id in ids) {

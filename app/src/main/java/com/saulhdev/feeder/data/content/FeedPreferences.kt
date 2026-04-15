@@ -29,7 +29,6 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.entity.SORT_CHRONOLOGICAL
-import com.saulhdev.feeder.ui.navigation.NavRoute
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import com.saulhdev.feeder.ui.icons.phosphor.Browser
@@ -43,9 +42,11 @@ import com.saulhdev.feeder.ui.icons.phosphor.PaintRoller
 import com.saulhdev.feeder.ui.icons.phosphor.SubtractSquare
 import com.saulhdev.feeder.ui.icons.phosphor.Swatches
 import com.saulhdev.feeder.ui.icons.phosphor.WifiHigh
+import com.saulhdev.feeder.ui.navigation.NavRoute
 import com.saulhdev.feeder.utils.getItemsPerFeed
 import com.saulhdev.feeder.utils.getSortingOptions
 import com.saulhdev.feeder.utils.getSyncFrequency
+import com.saulhdev.feeder.utils.getSyncRange
 import com.saulhdev.feeder.utils.getThemes
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -135,6 +136,15 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         dataStore = dataStore,
         defaultValue = "1",
         entries = getSyncFrequency(context)
+    )
+
+    var syncRange = StringSelectionPref(
+        titleId = R.string.pref_sync_range,
+        icon = Phosphor.Clock,
+        key = SYNC_RANGE,
+        dataStore = dataStore,
+        defaultValue = "1w",
+        entries = getSyncRange(context)
     )
 
     var itemsPerFeed = StringSelectionPref(
@@ -234,6 +244,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val SHOW_BOOKMARKS = booleanPreferencesKey("pref_show_bookmarks")
         val SYNC_ON_WIFI = booleanPreferencesKey("pref_sync_only_wifi")
         val SYNC_FREQUENCY = stringPreferencesKey("pref_sync_frequency")
+        val SYNC_RANGE = stringPreferencesKey("pref_sync_range")
         val ITEMS_PER_FEED = stringPreferencesKey("pref_items_per_feed")
         val PLUGINS = stringSetPreferencesKey("pref_enabled_plugins")
         val ABOUT = stringPreferencesKey("pref_about")

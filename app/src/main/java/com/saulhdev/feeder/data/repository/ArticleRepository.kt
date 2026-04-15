@@ -81,8 +81,11 @@ class ArticleRepository(db: NeoFeedDb) {
         }
     }
 
-    suspend fun getItemsToBeCleanedFromFeed(feedId: Long, keepCount: Int) = withContext(jcc) {
-        articlesDao.getItemsToBeCleanedFromFeed(feedId = feedId, keepCount = keepCount)
+    suspend fun getItemsToBeCleanedFromFeed(feedId: Long, minKeptPubDate: Long) = withContext(jcc) {
+        articlesDao.getItemsToBeCleanedFromFeed(
+            feedId = feedId,
+            minKeptPubDate = minKeptPubDate
+        )
     }
 
     fun getFeedsItemsWithDefaultFullTextParse(): Flow<List<ArticleIdWithLink>> =

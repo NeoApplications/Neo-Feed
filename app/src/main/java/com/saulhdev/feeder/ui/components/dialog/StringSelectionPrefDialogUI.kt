@@ -22,14 +22,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -40,13 +41,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.saulhdev.feeder.data.content.StringSelectionPref
 import com.saulhdev.feeder.utils.extensions.blockShadow
 import kotlinx.coroutines.launch
@@ -74,17 +75,14 @@ fun StringSelectionPrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
+                    .padding(top = 16.dp, bottom = 8.dp)
                     .weight(1f, false)
                     .blockShadow(),
             ) {
                 items(items = entryPairs, key = { it.first }) {
-                    val isSelected = rememberSaveable(selected) {
-                        mutableStateOf(selected == it.first)
-                    }
                     SingleSelectionListItem(
                         text = it.second,
-                        isSelected = isSelected.value
+                        isSelected = selected == it.first
                     ) {
                         selected = it.first
                     }
@@ -120,28 +118,36 @@ fun SingleSelectionListItem(
     text: String,
     isSelected: Boolean,
     isEnabled: Boolean = true,
+    endWidget: (@Composable () -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
-    ListItem(
+    Row(
         modifier = modifier
             .fillMaxWidth()
+            .height(48.dp)
             .clickable(onClick = onClick, enabled = isEnabled),
-        colors = ListItemDefaults.colors(
-            containerColor = Color.Transparent
-        ),
-        leadingContent = {
-            RadioButton(
-                selected = isSelected,
-                enabled = isEnabled,
-                onClick = onClick,
-                colors = RadioButtonDefaults.colors(
-                    selectedColor = MaterialTheme.colorScheme.primary,
-                    unselectedColor = MaterialTheme.colorScheme.onSurface
-                )
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = isSelected,
+            enabled = isEnabled,
+            onClick = onClick,
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+            colors = RadioButtonDefaults.colors(
+                selectedColor = MaterialTheme.colorScheme.primary,
+                unselectedColor = MaterialTheme.colorScheme.onSurface
             )
-        },
-        headlineContent = {
-            Text(text = text)
+        )
+        Text(
+            modifier = Modifier
+                .weight(1f),
+            text = text,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+        if (endWidget != null) {
+            Spacer(modifier = Modifier.width(8.dp))
+            endWidget()
         }
-    )
+    }
 }

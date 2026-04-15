@@ -41,6 +41,7 @@
     <string name="pref_offline_reader">Offline reader</string>
     <string name="pref_sync_wifi">Sync on Wifi Only</string>
     <string name="pref_sync_frequency">Sync Frequency</string>
+    <string name="pref_sync_range">Sync Range</string>
     <string name="pref_items_per_feed">Max items per feed</string>
     <string name="syncing">Syncing</string>
     <string name="sync_status">Sync status</string>
@@ -79,6 +80,11 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="sync_half_hour_minutes">30 minutes</string>
+    <string name="sync_range_one_day">1 day</string>
+    <string name="sync_range_two_days">2 days</string>
+    <string name="sync_range_three_days">3 days</string>
+    <string name="sync_range_one_week">1 week</string>
+    <string name="sync_range_one_month">1 month</string>
     <string name="sync_one_hour">One Hour</string>
     <string name="sync_two_hours">Two Hours</string>
     <string name="sync_three_hours">Three Hours</string>

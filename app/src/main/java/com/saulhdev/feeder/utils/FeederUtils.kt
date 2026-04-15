@@ -22,6 +22,7 @@ import android.content.Context
 import android.os.Build
 import android.text.BidiFormatter
 import com.saulhdev.feeder.R
+import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.entity.SORT_CHRONOLOGICAL
 import com.saulhdev.feeder.data.entity.SORT_SOURCE
 import com.saulhdev.feeder.data.entity.SORT_TITLE
@@ -60,6 +61,27 @@ fun getSyncFrequency(context: Context): Map<String, String> {
         "3" to context.resources.getString(R.string.sync_three_hours),
         "6" to context.resources.getString(R.string.sync_six_hours)
     )
+}
+
+fun getSyncRange(context: Context): Map<String, String> {
+    return mapOf(
+        "1d" to context.resources.getString(R.string.sync_range_one_day),
+        "2d" to context.resources.getString(R.string.sync_range_two_days),
+        "3d" to context.resources.getString(R.string.sync_range_three_days),
+        "1w" to context.resources.getString(R.string.sync_range_one_week),
+        "1m" to context.resources.getString(R.string.sync_range_one_month)
+    )
+}
+
+fun getSyncDays(prefs: FeedPreferences): Int {
+    return when (prefs.syncRange.getValue()) {
+        "1d" -> 1
+        "2d" -> 2
+        "3d" -> 3
+        "1w" -> 7
+        "1m" -> 30
+        else -> 7
+    }
 }
 
 fun getItemsPerFeed(): Map<String, String> {

@@ -60,6 +60,7 @@ fun PreferencesPage(
     val servicePrefs = listOf(
         prefs.itemsPerFeed,
         prefs.syncFrequency,
+        prefs.syncRange,
         prefs.syncOnlyOnWifi,
         prefs.openInBrowser,
         prefs.offlineReader,
