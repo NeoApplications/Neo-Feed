@@ -114,37 +114,45 @@ internal suspend fun syncFeeds(
                     repository = sRepository,
                     feedId = feedId,
                     tag = feedTag,
-                    staleTime = staleTime
+                    staleTime = staleTime,
+                    forceNetwork = forceNetwork
                 )
-                val jobs = feedsToFetch.map {
-                    needFullTextSync = needFullTextSync || it.fullTextByDefault
+
+                Log.d(TAG, "Feeds to sync: ${feedsToFetch.size}")
+
+                val jobs = feedsToFetch.map { feed ->
+                    needFullTextSync = needFullTextSync || feed.fullTextByDefault
                     launch(coroutineContext) {
                         try {
-                            feedsRepo.setCurrentlySyncingOn(
-                                feedId = it.id,
-                                syncing = true,
-                                lastSync = Clock.System.now(),
-                            )
+                            // Mark as syncing START
+                            feedsRepo.setCurrentlySyncingOn(feedId = feed.id, syncing = true)
+
                             syncFeed(
                                 feedsRepo = feedsRepo,
                                 articleRepo = articlesRepo,
-                                feedSql = it,
+                                feedSql = feed,
                                 filesDir = context.filesDir,
                                 maxFeedItemCount = maxFeedItemCount,
                                 forceNetwork = forceNetwork,
                                 downloadTime = downloadTime
                             )
+
+                            // Successful sync, update lastSync
+                            feedsRepo.setCurrentlySyncingOn(
+                                feedId = feed.id,
+                                syncing = false,
+                                lastSync = Clock.System.now(),
+                            )
                         } catch (e: Throwable) {
-                            Log.e(TAG, "Failed to sync ${it.title}: ${it.url}", e)
-                        } finally {
-                            Log.d(TAG, "Sync finished ${it.title}")
-                            feedsRepo.setCurrentlySyncingOn(feedId = it.id, syncing = false)
+                            Log.e(TAG, "Failed to sync ${feed.title}: ${feed.url}", e)
+                            // Error, clear syncing flag but don't update lastSync
+                            feedsRepo.setCurrentlySyncingOn(feedId = feed.id, syncing = false)
                         }
                     }
                 }
 
                 jobs.joinAll()
-                result = true
+                result = feedsToFetch.isNotEmpty()
 
             }
         } catch (e: Throwable) {
@@ -200,17 +208,22 @@ private suspend fun syncFeed(
 
     val syncedFeed = feedSql.copy(lastSync = Clock.System.now())
     val items = feed.items
+    Log.d(TAG, "Parsed ${items?.size ?: 0} items for ${feedSql.title}")
 
     val articles =
         items?.reversed()
             ?.map { item ->
+                // Robust GUID fallback: try item id, then item url
+                val itemGuid = (item.id ?: item.url).toString()
                 val article = (articleRepo.getArticleByGuid(
-                    guid = item.id.toString(),
+                    guid = itemGuid,
                     feedId = syncedFeed.id
                 ) ?: Article(firstSyncedTime = downloadTime))
-                    .updateFromParsedEntry(item, item.id.toString(), feed, syncedFeed.id)
+                    .updateFromParsedEntry(item, itemGuid, feed, syncedFeed.id)
                 article to (item.content_html ?: item.content_text ?: "")
             } ?: emptyList()
+
+    Log.d(TAG, "Prepared ${articles.size} articles for ${feedSql.title}")
 
     feedsRepo.updateSource(
         syncedFeed.copy(
@@ -252,29 +265,41 @@ internal suspend fun feedsToSync(
     repository: SourcesRepository,
     feedId: Long,
     tag: String,
-    staleTime: Long = -1L
+    staleTime: Long = -1L,
+    forceNetwork: Boolean = false,
 ): List<Feed> {
 
-    return when {
+    val sources = when {
         feedId > 0 -> {
-            val feed = if (staleTime > 0) repository.loadFeedIfStale(
-                feedId = feedId,
-                staleTime = staleTime
-            ) else repository.loadFeedById(feedId)
-            if (feed != null) {
-                listOf(feed)
+            if (forceNetwork) {
+                repository.loadFeedById(feedId)?.let { listOf(it) } ?: emptyList()
             } else {
-                emptyList()
+                repository.loadFeedIfStale(feedId = feedId, staleTime = staleTime)
             }
         }
 
-        feedId == ID_ALL -> repository.loadFeedIds().mapNotNull {
-            if (staleTime > 0) repository.loadFeedIfStale(
-                feedId = it,
-                staleTime = staleTime
-            ) else repository.loadFeedById(it)
+        feedId == ID_ALL -> {
+            Log.d(TAG, "Checking all feeds  = $forceNetwork")
+            if (forceNetwork) {
+                repository.getAllSources()
+
+            } else {
+                repository.loadFeedIfStale(ID_ALL, staleTime)
+            }
+        }
+
+        tag.isNotEmpty() -> {
+            repository.loadFeedsByTag(tag)
         }
 
         else -> repository.getAllSources()
+    }
+
+    return if (tag.isNotEmpty() && feedId == ID_ALL) {
+        Log.d(TAG, "Filtering by tag: $tag")
+        sources.filter { it.tag.contains(tag) }
+    } else {
+        Log.d(TAG, "No tag filtering applied $sources")
+        sources
     }
 }

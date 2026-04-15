@@ -18,7 +18,6 @@
 
 package com.saulhdev.feeder.ui.views
 
-import android.net.Uri
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -40,9 +39,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.navigation.compose.rememberNavController
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
-import androidx.core.net.toUri
 
 @Composable
 fun ComposeWebView(

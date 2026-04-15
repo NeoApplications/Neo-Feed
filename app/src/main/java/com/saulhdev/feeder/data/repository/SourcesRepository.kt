@@ -42,7 +42,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import org.koin.java.KoinJavaComponent.inject
-import kotlin.time.Clock
 
 class SourcesRepository(db: NeoFeedDb) {
     private val cc = Dispatchers.IO
@@ -58,10 +57,9 @@ class SourcesRepository(db: NeoFeedDb) {
     fun updateSource(feed: Feed, resync: Boolean = false) {
         scope.launch {
             if (feedsDao.existsById(feed.id)) {
-                val newFeed = feed.copy(lastSync = Clock.System.now())
-                feedsDao.update(newFeed)
-                if (resync) requestFeedSync(newFeed.id)
-                if (newFeed.fullTextByDefault) scheduleFullTextParse()
+                feedsDao.update(feed)
+                if (resync) requestFeedSync(feed.id)
+                if (feed.fullTextByDefault) scheduleFullTextParse()
             }
         }
     }
@@ -85,11 +83,11 @@ class SourcesRepository(db: NeoFeedDb) {
         feedsDao.loadFeedById(feedId)
     }
 
-    suspend fun loadFeedIfStale(feedId: Long, staleTime: Long): Feed? = withContext(jcc) {
+    suspend fun loadFeedIfStale(feedId: Long, staleTime: Long): List<Feed> = withContext(jcc) {
         if (feedId == ID_ALL)
             feedsDao.loadFeedIfStale(staleTime)
         else
-            feedsDao.loadFeedIfStale(feedId, staleTime)
+            feedsDao.loadFeedIfStale(feedId, staleTime)?.let { listOf(it) } ?: emptyList()
     }
 
     suspend fun getAllTags(): List<String> {

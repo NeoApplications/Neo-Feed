@@ -25,10 +25,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PullToRefreshLazyColumn(
+    modifier: Modifier = Modifier,
     isRefreshing: Boolean = false,
     onRefresh: suspend () -> Unit,
     content: LazyListScope.() -> Unit,
-    modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(8.dp),
 ) {

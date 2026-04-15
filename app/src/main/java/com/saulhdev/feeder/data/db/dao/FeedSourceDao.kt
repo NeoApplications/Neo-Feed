@@ -100,7 +100,7 @@ interface FeedSourceDao {
        WHERE lastSync < :staleTime and isEnabled IS 1
     """
     )
-    suspend fun loadFeedIfStale(staleTime: Long): Feed?
+    suspend fun loadFeedIfStale(staleTime: Long): List<Feed>
 
     @Query(
         """
