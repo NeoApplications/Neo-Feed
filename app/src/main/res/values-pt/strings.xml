@@ -1,3 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="title_settings">Configurações</string>
+    <string name="title_about">Sobre</string>
+    <string name="title_sources">Fontes dos dados</string>
+    <string name="summary_sources">Adicionar ou remover fontes</string>
+    <string name="date_ago_now">agora</string>
+    <string name="date_at">em</string>
+    <string name="today">hoje</string>
+    <string name="tomorrow">amanhã</string>
+    <string name="yesterday">ontem</string>
+    <string name="pref_cat_contact">Contactos</string>
+    <string name="about_team">Membros da equipa</string>
+    <string name="about_channel">Canal</string>
+    <string name="about_community">Comunidade</string>
+    <string name="about_community_telegram">Comunidade do Telegram</string>
+    <string name="about_community_matrix">Comunidade no Matriz</string>
+    <string name="about_build_information">Informação da build</string>
+    <string name="author_role">Programadora</string>
+    <string name="about_licenses">Licença</string>
+    <string name="back_to_top">Voltar ao topo</string>
+    <string name="about_changelog">Relatório de Mudanças</string>
+    <string name="about_open_source">Bibliotecas de código aberto</string>
+    <string name="pref_tg">Canal do Telegram</string>
+    <string name="about_source_code">Código-fonte</string>
+    <string name="pref_cat_overlay">Aparência</string>
+    <string name="pref_cat_debug">Depurar</string>
 </resources>
