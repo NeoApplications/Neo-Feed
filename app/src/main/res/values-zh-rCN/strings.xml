@@ -144,5 +144,9 @@
     <string name="action_open_smry">在 SMRY 中打开</string>
     <string name="file_share_text">文件来自 Neo Feed</string>
     <string name="sync_range_one_week">1 周</string>
-    <string name="sync_range_one_month">1 个月</string>
+    <string name="sync_range_one_month"></string>
+    <string name="sync_range_one_day">1 天</string>
+    <string name="sync_range_three_days">3 天</string>
+    <string name="pref_sync_range">同步范围</string>
+    <string name="sync_range_two_days">2 天</string>
 </resources>
