@@ -148,5 +148,5 @@
     <string name="sync_range_three_days">3 天</string>
     <string name="pref_sync_range">同步范围</string>
     <string name="sync_range_two_days">2 天</string>
-    <string name="sync_range_one_month"></string>
+    <string name="sync_range_one_month">1 个月</string>
 </resources>
