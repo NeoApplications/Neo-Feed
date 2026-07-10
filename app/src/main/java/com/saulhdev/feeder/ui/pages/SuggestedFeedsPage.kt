@@ -72,6 +72,7 @@ private val languageStringRes =
     mapOf(
         "fr" to R.string.lang_fr,
         "en" to R.string.lang_en,
+        "es" to R.string.lang_es,
         "youtube" to R.string.lang_youtube,
     )
 
