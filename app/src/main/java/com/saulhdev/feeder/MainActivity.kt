@@ -64,6 +64,20 @@ class MainActivity : ComponentActivity() {
 
         configurePeriodicSync()
         observePrefs()
+        handleDeepLink(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleDeepLink(intent)
+    }
+
+    private fun handleDeepLink(intent: Intent?) {
+        if (intent == null) return
+        if (::navController.isInitialized) {
+            navController.handleDeepLink(intent)
+        }
     }
 
     @Composable
