@@ -62,6 +62,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import com.saulhdev.feeder.ui.icons.phosphor.Bookmarks
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowDown
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowUp
+import com.saulhdev.feeder.ui.icons.phosphor.Hash
 import com.saulhdev.feeder.ui.icons.phosphor.Plus
 import com.saulhdev.feeder.ui.navigation.LocalNavController
 import com.saulhdev.feeder.ui.navigation.NavRoute
@@ -166,6 +167,19 @@ fun SourceListPage(
                     },
                     actions = {
                         OverflowMenu {
+                            DropdownMenuItem(
+                                leadingIcon = {
+                                    Icon(
+                                        Phosphor.Hash,
+                                        contentDescription = stringResource(id = R.string.add_mastodon_account),
+                                    )
+                                },
+                                onClick = {
+                                    hideMenu()
+                                    navController.navigate(NavRoute.MastodonAdd)
+                                },
+                                text = { Text(text = stringResource(id = R.string.add_mastodon_account)) }
+                            )
                             DropdownMenuItem(
                                 leadingIcon = {
                                     Icon(

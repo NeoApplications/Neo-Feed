@@ -50,4 +50,6 @@ data class Feed(
     val tag: String = "",
     val currentlySyncing: Boolean = false,
     val isEnabled: Boolean = true,
+    @ColumnInfo(defaultValue = "rss")
+    val sourceType: String = "rss",
 )

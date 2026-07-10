@@ -59,6 +59,7 @@ fun PreferencesPage(
 
     val servicePrefs = listOf(
         prefs.itemsPerFeed,
+        prefs.mastodonItemsPerFeed,
         prefs.syncFrequency,
         prefs.syncRange,
         prefs.syncOnlyOnWifi,

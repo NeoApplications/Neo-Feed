@@ -25,6 +25,7 @@ readability4j = "1.0.8"
 retrofit = "3.0.0"
 rome = "2.1.0"
 room = "2.8.3"
+security-crypto = "1.1.0"
 serialization = "1.9.0"
 simple-storage = "2.2.0"
 slf4j = "1.7.36"
@@ -71,6 +72,8 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 
 accompanist-webview = { group = "com.google.accompanist", name = "accompanist-webview", version.ref = "compose-accompanist" }
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "compose-accompanist" }

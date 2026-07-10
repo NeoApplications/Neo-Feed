@@ -43,6 +43,7 @@
     <string name="pref_sync_frequency">Sync Frequency</string>
     <string name="pref_sync_range">Sync Range</string>
     <string name="pref_items_per_feed">Max items per feed</string>
+    <string name="pref_mastodon_items_per_feed">Max Mastodon items per feed</string>
     <string name="syncing">Syncing</string>
     <string name="sync_status">Sync status</string>
     <string name="pref_compact">Compact item layout</string>
@@ -163,4 +164,12 @@
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
     <string name="action_open_smry">Open in SMRY</string>
+
+    <string name="add_mastodon_account">Add Mastodon account</string>
+    <string name="mastodon_instance_hint">Instance (e.g. mastodon.social)</string>
+    <string name="mastodon_connect">Connect account</string>
+    <string name="mastodon_auth_loading">Opening Mastodon authorization…</string>
+    <string name="mastodon_auth_error">Mastodon authorization failed: %1$s</string>
+    <string name="mastodon_account_added">Mastodon account added</string>
+    <string name="mastodon_no_token">No Mastodon token found for this account</string>
 </resources>

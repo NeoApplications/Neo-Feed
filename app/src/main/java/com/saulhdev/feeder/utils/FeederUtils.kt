@@ -94,6 +94,18 @@ fun getItemsPerFeed(): Map<String, String> {
     )
 }
 
+fun getMastodonItemsPerFeed(): Map<String, String> {
+    return mapOf(
+        "5" to "5",
+        "10" to "10",
+        "20" to "20",
+        "40" to "40",
+        "60" to "60",
+        "80" to "80",
+        "100" to "100"
+    )
+}
+
 fun getBackgroundOptions(context: Context): Map<String, String> {
     return mapOf(
         "theme" to context.resources.getString(R.string.background_theme_option),

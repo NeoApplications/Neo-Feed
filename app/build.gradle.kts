@@ -153,6 +153,9 @@ dependencies {
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
 
+    //Security
+    implementation(libs.security.crypto)
+
     //Squareup
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)

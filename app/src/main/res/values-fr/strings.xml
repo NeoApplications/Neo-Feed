@@ -106,4 +106,12 @@
     <string name="action_show_bookmarks">Afficher les marque-pages</string>
     <string name="action_hide_bookmarks">Cacher les marque-pages</string>
     <string name="title_bookmarks">Marque-pages</string>
+    <string name="add_mastodon_account">Ajouter un compte Mastodon</string>
+    <string name="mastodon_instance_hint">Instance (p. ex. mastodon.social)</string>
+    <string name="mastodon_connect">Connecter le compte</string>
+    <string name="mastodon_auth_loading">Ouverture de l’autorisation Mastodon…</string>
+    <string name="mastodon_auth_error">Échec de l’autorisation Mastodon : %1$s</string>
+    <string name="mastodon_account_added">Compte Mastodon ajouté</string>
+    <string name="mastodon_no_token">Aucun jeton Mastodon trouvé pour ce compte</string>
+    <string name="pref_mastodon_items_per_feed">Nombre maximal d’éléments Mastodon par flux</string>
 </resources>
