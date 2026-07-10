@@ -37,10 +37,11 @@ object MastodonFeedParser {
     ): List<Pair<Article, String>> {
         val converter = HtmlToPlainTextConverter()
         return statuses.map { status ->
+            val original = status.reblog ?: status
             val guid = status.id
             val existing = articleRepo.getArticleByGuid(guid, feedId)
-            val author = status.account.displayName.ifBlank { status.account.acct }
-            val plainSnippet = converter.convert(status.content).take(200)
+            val author = original.account.displayName.ifBlank { original.account.acct }
+            val plainSnippet = converter.convert(original.content).take(200)
             val pubDate = parseDate(status.createdAt)
             val primarySortTime = if (pubDate > 0L) {
                 minOf(downloadTime, Instant.fromEpochMilliseconds(pubDate))
@@ -52,16 +53,16 @@ object MastodonFeedParser {
                 guid = guid,
                 title = author,
                 plainTitle = author,
-                description = status.content,
+                description = original.content,
                 plainSnippet = plainSnippet,
-                imageUrl = status.mediaAttachments.firstOrNull()?.previewUrl,
+                imageUrl = original.mediaAttachments.firstOrNull()?.previewUrl,
                 author = author,
-                link = status.url ?: status.uri,
+                link = original.url ?: original.uri,
                 pubDate = pubDate,
                 primarySortTime = primarySortTime,
                 feedId = feedId,
             )
-            article to status.content
+            article to original.content
         }
     }
 

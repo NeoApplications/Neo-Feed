@@ -54,4 +54,5 @@ data class MastodonStatus(
     val url: String? = null,
     val account: MastodonAccount,
     @SerialName("media_attachments") val mediaAttachments: List<MastodonMediaAttachment> = emptyList(),
+    val reblog: MastodonStatus? = null,
 )
