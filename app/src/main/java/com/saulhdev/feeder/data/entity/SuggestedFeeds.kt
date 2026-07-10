@@ -390,6 +390,21 @@ object SuggestedFeedsData {
                                         url = "https://feeds.bbci.co.uk/news/rss.xml",
                                         description = "World news from the BBC",
                                     ),
+                                    SuggestedFeed(
+                                        title = "The Guardian",
+                                        url = "https://www.theguardian.com/uk/rss",
+                                        description = "UK and international news from The Guardian",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "teleSUR English",
+                                        url = "https://www.telesurenglish.net/rss",
+                                        description = "Latin American news in English",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "Granma English",
+                                        url = "https://en.granma.cu/feed",
+                                        description = "Cuban official newspaper in English",
+                                    ),
                                 ),
                         ),
                         SuggestedCategory(
@@ -494,6 +509,35 @@ object SuggestedFeedsData {
                                         title = "MarketWatch",
                                         url = "https://www.marketwatch.com/rss/topstories",
                                         description = "Stock market and financial news",
+                                    ),
+                                ),
+                        ),
+                    ),
+            ),
+            FeedLanguageGroup(
+                key = "es",
+                icon = Phosphor.Globe,
+                categories =
+                    listOf(
+                        SuggestedCategory(
+                            key = "news",
+                            icon = Phosphor.Newspaper,
+                            feeds =
+                                listOf(
+                                    SuggestedFeed(
+                                        title = "La Jornada",
+                                        url = "https://www.jornada.com.mx/rss/edicion.xml?v=1",
+                                        description = "Noticias de México y el mundo",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "teleSUR",
+                                        url = "https://www.telesurtv.net/rss",
+                                        description = "Noticias latinoamericanas",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "Granma",
+                                        url = "https://www.granma.cu/feed",
+                                        description = "Periódico oficial de Cuba",
                                     ),
                                 ),
                         ),
