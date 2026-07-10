@@ -28,4 +28,7 @@ data class SourceEditViewState(
     val tag: String = "",
     val fullTextByDefault: Boolean = true,
     val isEnabled: Boolean = true,
+    val sourceType: String = "rss",
+    val requireLink: Boolean = false,
+    val requireImage: Boolean = false,
 )

@@ -60,6 +60,8 @@ class SourceEditViewModel : NeoViewModel() {
                 tag = state.tag,
                 fullTextByDefault = state.fullTextByDefault,
                 isEnabled = state.isEnabled,
+                requireLink = state.requireLink,
+                requireImage = state.requireImage,
             ),
             resync = feed.value.fullTextByDefault != state.fullTextByDefault
                     || feed.value.isEnabled != state.isEnabled
@@ -78,7 +80,10 @@ class SourceEditViewModel : NeoViewModel() {
             url = feed.url.toString(),
             tag = feed.tag,
             fullTextByDefault = feed.fullTextByDefault,
-            isEnabled = feed.isEnabled
+            isEnabled = feed.isEnabled,
+            sourceType = feed.sourceType,
+            requireLink = feed.requireLink,
+            requireImage = feed.requireImage,
         )
     }.stateIn(
         viewModelScope,

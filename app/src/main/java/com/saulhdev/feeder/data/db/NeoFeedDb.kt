@@ -46,7 +46,7 @@ const val ID_ALL: Long = -1L
         Feed::class,
         Article::class,
     ],
-    version = 9,
+    version = 10,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -220,7 +220,28 @@ abstract class NeoFeedDb : RoomDatabase() {
     class RemoveLegacyPubDate : AutoMigrationSpec
 }
 
-val allMigrations = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_7_8, MIGRATION_8_9)
+val allMigrations = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
+
+@Suppress("ClassName")
+object MIGRATION_9_10 : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            ALTER TABLE Feeds ADD COLUMN requireLink INTEGER NOT NULL DEFAULT 0
+            """.trimIndent()
+        )
+        db.execSQL(
+            """
+            ALTER TABLE Feeds ADD COLUMN requireImage INTEGER NOT NULL DEFAULT 0
+            """.trimIndent()
+        )
+        db.execSQL(
+            """
+            UPDATE Feeds SET requireLink = 1, requireImage = 1 WHERE sourceType = 'mastodon'
+            """.trimIndent()
+        )
+    }
+}
 
 @Suppress("ClassName")
 object MIGRATION_7_8 : Migration(7, 8) {

@@ -37,7 +37,7 @@ class StringPref(
     val icon: ImageVector,
     val key: Preferences.Key<String>,
     val dataStore: DataStore<Preferences>,
-    defaultValue: String = "",
+    val defaultValue: String = "",
     val onClick: (() -> Unit)? = null,
     val route: NavRoute? = null,
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue)
@@ -58,7 +58,9 @@ class StringSetPref(
     val icon: ImageVector,
     val key: Preferences.Key<Set<String>>,
     val dataStore: DataStore<Preferences>,
-    val defaultValue: Set<String> = emptySet()
+    val defaultValue: Set<String> = emptySet(),
+    val route: NavRoute? = null,
+    val onClick: (() -> Unit)? = null,
 ) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue)
 
 class BooleanPref(

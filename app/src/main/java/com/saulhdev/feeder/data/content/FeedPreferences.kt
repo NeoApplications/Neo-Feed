@@ -166,6 +166,15 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         entries = getMastodonItemsPerFeed()
     )
 
+    var blockedWords = StringSetPref(
+        titleId = R.string.pref_blocked_words,
+        summaryId = R.string.pref_blocked_words_summary,
+        icon = Phosphor.Hash,
+        key = BLOCKED_WORDS,
+        dataStore = dataStore,
+        defaultValue = emptySet()
+    )
+
     /* Others */
     var enabledPlugins = StringSetPref(
         titleId = R.string.title_plugin_list,
@@ -257,6 +266,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val SYNC_RANGE = stringPreferencesKey("pref_sync_range")
         val ITEMS_PER_FEED = stringPreferencesKey("pref_items_per_feed")
         val MASTODON_ITEMS_PER_FEED = stringPreferencesKey("pref_mastodon_items_per_feed")
+        val BLOCKED_WORDS = stringSetPreferencesKey("pref_blocked_words")
         val PLUGINS = stringSetPreferencesKey("pref_enabled_plugins")
         val ABOUT = stringPreferencesKey("pref_about")
         val DEBUG = booleanPreferencesKey("pref_debugging")

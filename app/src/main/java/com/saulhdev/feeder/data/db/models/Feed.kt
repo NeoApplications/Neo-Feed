@@ -52,4 +52,8 @@ data class Feed(
     val isEnabled: Boolean = true,
     @ColumnInfo(defaultValue = "rss")
     val sourceType: String = "rss",
+    @ColumnInfo(defaultValue = "0")
+    val requireLink: Boolean = false,
+    @ColumnInfo(defaultValue = "0")
+    val requireImage: Boolean = false,
 )

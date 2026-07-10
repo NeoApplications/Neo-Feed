@@ -67,6 +67,9 @@ fun PreferencesPage(
         prefs.offlineReader,
         prefs.removeDuplicates,
     )
+    val filterPrefs = listOf(
+        prefs.blockedWords,
+    )
     val themePrefs = listOf(
         prefs.dynamicColor,
         prefs.overlayTheme,
@@ -100,6 +103,13 @@ fun PreferencesPage(
                 PreferenceGroup(
                     stringResource(id = R.string.title_service),
                     prefs = servicePrefs,
+                    onPrefDialog = onPrefDialog
+                )
+            }
+            item(key = R.string.pref_cat_filters) {
+                PreferenceGroup(
+                    stringResource(id = R.string.pref_cat_filters),
+                    prefs = filterPrefs,
                     onPrefDialog = onPrefDialog
                 )
             }

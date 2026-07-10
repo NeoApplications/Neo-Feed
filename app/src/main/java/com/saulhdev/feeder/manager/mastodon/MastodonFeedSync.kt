@@ -24,6 +24,7 @@ import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.manager.sync.ResponseFailure
+import com.saulhdev.feeder.manager.sync.filterBlockedWords
 import com.saulhdev.feeder.utils.blobFile
 import com.saulhdev.feeder.utils.blobOutputStream
 import com.saulhdev.feeder.utils.getSyncDays
@@ -68,10 +69,12 @@ object MastodonFeedSync {
 
         val articles = MastodonFeedParser.toArticles(
             statuses = statuses,
-            feedId = feedSql.id,
+            feed = feedSql,
             downloadTime = downloadTime,
             articleRepo = articleRepo,
-        )
+        ).filterBlockedWords()
+
+        Log.d(TAG, "Prepared ${articles.size} Mastodon articles for ${feedSql.title}")
 
         val days = getSyncDays(prefs)
         val minKeptPubDate = Clock.System.now().minus(

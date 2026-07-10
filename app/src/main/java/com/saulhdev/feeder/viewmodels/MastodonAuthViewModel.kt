@@ -126,6 +126,8 @@ class MastodonAuthViewModel(
                                 url = sloppyLinkToStrictURL(buildMastodonFeedUrl(instance, username)),
                                 feedImage = sloppyLinkToStrictURLNoThrows(""),
                                 sourceType = "mastodon",
+                                requireLink = true,
+                                requireImage = true,
                             )
                             sourcesRepo.insertSource(feed)
                             _uiState.update { it.copy(isLoading = false) }

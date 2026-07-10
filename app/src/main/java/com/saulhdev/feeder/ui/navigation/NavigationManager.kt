@@ -42,6 +42,7 @@ import com.saulhdev.feeder.ui.pages.AboutPage
 import com.saulhdev.feeder.ui.pages.ArticleListPage
 import com.saulhdev.feeder.ui.pages.ArticlePage
 import com.saulhdev.feeder.ui.pages.ChangelogPage
+import com.saulhdev.feeder.ui.pages.BlockedWordsPage
 import com.saulhdev.feeder.ui.pages.LicensePage
 import com.saulhdev.feeder.ui.pages.MainPage
 import com.saulhdev.feeder.ui.pages.MastodonAddPage
@@ -86,6 +87,7 @@ fun NavigationManager(
             composable<NavRoute.License> { LicensePage() }
             composable<NavRoute.Changelog> { ChangelogPage() }
             composable<NavRoute.SourceAdd> { SourceAddPage() }
+            composable<NavRoute.BlockedWords> { BlockedWordsPage() }
             composable<NavRoute.MastodonAdd> { MastodonAddPage() }
             composable<NavRoute.MastodonCallback>(
                 deepLinks = listOf(
@@ -150,6 +152,9 @@ open class NavRoute {
 
     @Serializable
     data object SourceAdd : NavRoute()
+
+    @Serializable
+    data object BlockedWords : NavRoute()
 
     @Serializable
     data object MastodonAdd : NavRoute()

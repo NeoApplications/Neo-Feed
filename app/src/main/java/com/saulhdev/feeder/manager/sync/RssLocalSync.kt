@@ -244,7 +244,8 @@ private suspend fun syncFeed(
             }
             ?.filter { (article, _) ->
                 article.pubDate !in 1..<minKeptPubDate
-            } ?: emptyList()
+            }
+            ?.filterBlockedWords() ?: emptyList()
 
     Log.d(TAG, "Prepared ${articles.size} articles for ${feedSql.title}")
 
@@ -287,6 +288,25 @@ private suspend fun syncFeed(
 }
 
 class ResponseFailure(message: String?) : Exception(message)
+
+fun List<Pair<Article, String>>.filterBlockedWords(): List<Pair<Article, String>> {
+    val blocked = prefs.blockedWords.getValue()
+        .map { it.lowercase() }
+        .filter { it.isNotBlank() }
+    if (blocked.isEmpty()) return this
+    return filter { (article, text) ->
+        val haystack = buildString {
+            append(article.title)
+            append(article.plainTitle)
+            append(article.description)
+            append(article.plainSnippet)
+            article.author?.let { append(it) }
+            article.link?.let { append(it) }
+            append(text)
+        }.lowercase()
+        blocked.none { haystack.contains(it) }
+    }
+}
 
 internal suspend fun feedsToSync(
     repository: SourcesRepository,

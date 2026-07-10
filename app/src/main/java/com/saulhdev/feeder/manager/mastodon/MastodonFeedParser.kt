@@ -20,6 +20,7 @@ package com.saulhdev.feeder.manager.mastodon
 
 import android.util.Log
 import com.saulhdev.feeder.data.db.models.Article
+import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.utils.HtmlToPlainTextConverter
 import kotlin.time.Clock
@@ -28,18 +29,23 @@ import kotlin.time.Instant
 object MastodonFeedParser {
 
     private const val TAG = "MastodonFeedParser"
+    private val hrefRegex = """<a[^>]+href=\"(https?://[^\"]+)\"[^>]*>""".toRegex(RegexOption.IGNORE_CASE)
 
     suspend fun toArticles(
         statuses: List<MastodonStatus>,
-        feedId: Long,
+        feed: Feed,
         downloadTime: Instant,
         articleRepo: ArticleRepository,
     ): List<Pair<Article, String>> {
         val converter = HtmlToPlainTextConverter()
-        return statuses.map { status ->
+        return statuses.mapNotNull { status ->
             val original = status.reblog ?: status
+
+            if (feed.requireLink && !hasExternalLink(original.content)) return@mapNotNull null
+            if (feed.requireImage && !hasPicture(original.mediaAttachments)) return@mapNotNull null
+
             val guid = status.id
-            val existing = articleRepo.getArticleByGuid(guid, feedId)
+            val existing = articleRepo.getArticleByGuid(guid, feed.id)
             val author = original.account.displayName.ifBlank { original.account.acct }
             val plainSnippet = converter.convert(original.content).take(200)
             val pubDate = parseDate(status.createdAt)
@@ -60,9 +66,24 @@ object MastodonFeedParser {
                 link = original.url ?: original.uri,
                 pubDate = pubDate,
                 primarySortTime = primarySortTime,
-                feedId = feedId,
+                feedId = feed.id,
             )
             article to original.content
+        }
+    }
+
+    private fun hasExternalLink(content: String): Boolean {
+        return hrefRegex.findAll(content).any { match ->
+            val path = match.groupValues[1]
+                .substringAfter("://")
+                .substringAfter('/', "")
+            !(path.startsWith("@") || path.startsWith("tags/", ignoreCase = true))
+        }
+    }
+
+    private fun hasPicture(attachments: List<MastodonMediaAttachment>): Boolean {
+        return attachments.any {
+            it.type.equals("image", ignoreCase = true) || it.type.equals("gifv", ignoreCase = true)
         }
     }
 

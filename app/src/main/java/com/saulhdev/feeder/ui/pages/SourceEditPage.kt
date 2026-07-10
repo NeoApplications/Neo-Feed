@@ -280,7 +280,7 @@ fun SourceEditView(
                     editState.value = editState.value.copy(fullTextByDefault = it)
                 },
                 index = 0,
-                groupSize = 2
+                groupSize = if (editState.value.sourceType == "mastodon") 4 else 2
             )
             Spacer(modifier = Modifier.height(4.dp))
             ComposeSwitchView(
@@ -290,8 +290,30 @@ fun SourceEditView(
                     editState.value = editState.value.copy(isEnabled = it)
                 },
                 index = 1,
-                groupSize = 2
+                groupSize = if (editState.value.sourceType == "mastodon") 4 else 2
             )
+            if (editState.value.sourceType == "mastodon") {
+                Spacer(modifier = Modifier.height(4.dp))
+                ComposeSwitchView(
+                    titleId = R.string.mastodon_require_link,
+                    isChecked = editState.value.requireLink,
+                    onCheckedChange = {
+                        editState.value = editState.value.copy(requireLink = it)
+                    },
+                    index = 2,
+                    groupSize = 4
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                ComposeSwitchView(
+                    titleId = R.string.mastodon_require_image,
+                    isChecked = editState.value.requireImage,
+                    onCheckedChange = {
+                        editState.value = editState.value.copy(requireImage = it)
+                    },
+                    index = 3,
+                    groupSize = 4
+                )
+            }
         }
     }
 }
