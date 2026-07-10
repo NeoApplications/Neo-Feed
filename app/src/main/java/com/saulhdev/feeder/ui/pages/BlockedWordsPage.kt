@@ -39,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,7 +57,6 @@ import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.TrashSimple
 import com.saulhdev.feeder.ui.navigation.LocalNavController
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -67,17 +67,12 @@ fun BlockedWordsPage(
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
-    var words by remember { mutableStateOf(emptySet<String>()) }
+    val words by prefs.blockedWords.get().collectAsState(initial = emptySet())
     var newWord by remember { mutableStateOf("") }
-
-    rememberCoroutineScope().launch {
-        words = prefs.blockedWords.get().first()
-    }
 
     fun save(updated: Set<String>) {
         scope.launch {
             prefs.blockedWords.setValue(updated)
-            words = updated
         }
     }
 

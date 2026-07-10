@@ -40,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component1
@@ -57,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.saulhdev.feeder.R
+import kotlinx.coroutines.launch
 import com.saulhdev.feeder.data.entity.SourceEditViewState
 import com.saulhdev.feeder.ui.components.ActionButton
 import com.saulhdev.feeder.ui.components.ComposeSwitchView
@@ -82,6 +84,7 @@ fun SourceEditPage(
         mutableStateOf(viewState)
     }
     val showDialog = remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(feedId) {
         viewModel.setFeedId(feedId)
@@ -113,8 +116,10 @@ fun SourceEditPage(
                         modifier = Modifier.weight(1f),
                         positive = true,
                     ) {
-                        viewModel.updateFeed(editState.value)
-                        onDismiss()
+                        scope.launch {
+                            viewModel.updateFeed(editState.value)
+                            onDismiss()
+                        }
                     }
                 }
             }
@@ -280,7 +285,7 @@ fun SourceEditView(
                     editState.value = editState.value.copy(fullTextByDefault = it)
                 },
                 index = 0,
-                groupSize = if (editState.value.sourceType == "mastodon") 4 else 2
+                groupSize = if (editState.value.sourceType == "mastodon") 5 else 2
             )
             Spacer(modifier = Modifier.height(4.dp))
             ComposeSwitchView(
@@ -290,9 +295,19 @@ fun SourceEditView(
                     editState.value = editState.value.copy(isEnabled = it)
                 },
                 index = 1,
-                groupSize = if (editState.value.sourceType == "mastodon") 4 else 2
+                groupSize = if (editState.value.sourceType == "mastodon") 5 else 2
             )
             if (editState.value.sourceType == "mastodon") {
+                Spacer(modifier = Modifier.height(4.dp))
+                ComposeSwitchView(
+                    titleId = R.string.mastodon_exclude_replies,
+                    isChecked = editState.value.excludeReplies,
+                    onCheckedChange = {
+                        editState.value = editState.value.copy(excludeReplies = it)
+                    },
+                    index = 2,
+                    groupSize = 5
+                )
                 Spacer(modifier = Modifier.height(4.dp))
                 ComposeSwitchView(
                     titleId = R.string.mastodon_require_link,
@@ -300,8 +315,8 @@ fun SourceEditView(
                     onCheckedChange = {
                         editState.value = editState.value.copy(requireLink = it)
                     },
-                    index = 2,
-                    groupSize = 4
+                    index = 3,
+                    groupSize = 5
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 ComposeSwitchView(
@@ -310,8 +325,8 @@ fun SourceEditView(
                     onCheckedChange = {
                         editState.value = editState.value.copy(requireImage = it)
                     },
-                    index = 3,
-                    groupSize = 4
+                    index = 4,
+                    groupSize = 5
                 )
             }
         }

@@ -56,4 +56,6 @@ data class Feed(
     val requireLink: Boolean = false,
     @ColumnInfo(defaultValue = "0")
     val requireImage: Boolean = false,
+    @ColumnInfo(defaultValue = "1")
+    val excludeReplies: Boolean = true,
 )

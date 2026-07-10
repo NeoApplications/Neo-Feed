@@ -128,6 +128,7 @@ class MastodonAuthViewModel(
                                 sourceType = "mastodon",
                                 requireLink = true,
                                 requireImage = true,
+                                excludeReplies = true,
                             )
                             sourcesRepo.insertSource(feed)
                             _uiState.update { it.copy(isLoading = false) }

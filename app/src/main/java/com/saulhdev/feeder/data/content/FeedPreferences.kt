@@ -172,7 +172,8 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         icon = Phosphor.Hash,
         key = BLOCKED_WORDS,
         dataStore = dataStore,
-        defaultValue = emptySet()
+        defaultValue = emptySet(),
+        route = NavRoute.BlockedWords,
     )
 
     /* Others */

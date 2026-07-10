@@ -173,6 +173,7 @@
     <string name="mastodon_account_added">Mastodon account added</string>
     <string name="mastodon_require_link">Must contain a link</string>
     <string name="mastodon_require_image">Must contain a picture</string>
+    <string name="mastodon_exclude_replies">Hide replies</string>
     <string name="pref_cat_filters">Filters</string>
     <string name="pref_blocked_words">Blocked words</string>
     <string name="pref_blocked_words_summary">Hide articles containing these words</string>

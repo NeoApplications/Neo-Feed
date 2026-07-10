@@ -31,4 +31,5 @@ data class SourceEditViewState(
     val sourceType: String = "rss",
     val requireLink: Boolean = false,
     val requireImage: Boolean = false,
+    val excludeReplies: Boolean = true,
 )

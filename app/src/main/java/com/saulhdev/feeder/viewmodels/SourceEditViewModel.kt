@@ -55,32 +55,33 @@ class SourceEditViewModel : NeoViewModel() {
         Feed()
     )
 
-    fun updateFeed(state: SourceEditViewState) {
-        viewModelScope.launch {
-            val currentFeed = repository.loadFeedById(_feedId.value) ?: return@launch
-            val filtersChanged = currentFeed.sourceType == "mastodon" &&
-                    (currentFeed.requireLink != state.requireLink || currentFeed.requireImage != state.requireImage)
-            val needsResync = currentFeed.fullTextByDefault != state.fullTextByDefault
-                    || currentFeed.isEnabled != state.isEnabled
-                    || filtersChanged
+    suspend fun updateFeed(state: SourceEditViewState) {
+        val currentFeed = repository.loadFeedById(_feedId.value) ?: return
+        val filtersChanged = currentFeed.sourceType == "mastodon" &&
+                (currentFeed.requireLink != state.requireLink
+                        || currentFeed.requireImage != state.requireImage
+                        || currentFeed.excludeReplies != state.excludeReplies)
+        val needsResync = currentFeed.fullTextByDefault != state.fullTextByDefault
+                || currentFeed.isEnabled != state.isEnabled
+                || filtersChanged
 
-            repository.updateSource(
-                feed = currentFeed.copy(
-                    title = state.title,
-                    url = sloppyLinkToStrictURL(state.url),
-                    tag = state.tag,
-                    fullTextByDefault = state.fullTextByDefault,
-                    isEnabled = state.isEnabled,
-                    requireLink = state.requireLink,
-                    requireImage = state.requireImage,
-                ),
-                resync = needsResync
-            )
+        repository.updateSource(
+            feed = currentFeed.copy(
+                title = state.title,
+                url = sloppyLinkToStrictURL(state.url),
+                tag = state.tag,
+                fullTextByDefault = state.fullTextByDefault,
+                isEnabled = state.isEnabled,
+                requireLink = state.requireLink,
+                requireImage = state.requireImage,
+                excludeReplies = state.excludeReplies,
+            ),
+            resync = needsResync
+        )
 
-            if (filtersChanged) {
-                articleRepository.deleteArticlesForFeed(currentFeed.id)
-                requestFeedSync(feedId = currentFeed.id, forceNetwork = true)
-            }
+        if (filtersChanged) {
+            articleRepository.deleteArticlesForFeed(currentFeed.id)
+            requestFeedSync(feedId = currentFeed.id, forceNetwork = true)
         }
     }
 
@@ -100,6 +101,7 @@ class SourceEditViewModel : NeoViewModel() {
             sourceType = feed.sourceType,
             requireLink = feed.requireLink,
             requireImage = feed.requireImage,
+            excludeReplies = feed.excludeReplies,
         )
     }.stateIn(
         viewModelScope,

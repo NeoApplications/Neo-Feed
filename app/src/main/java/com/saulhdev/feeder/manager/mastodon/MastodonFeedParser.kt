@@ -41,6 +41,7 @@ object MastodonFeedParser {
         return statuses.mapNotNull { status ->
             val original = status.reblog ?: status
 
+            if (feed.excludeReplies && original.inReplyToId != null) return@mapNotNull null
             if (feed.requireLink && !hasExternalLink(original.content)) return@mapNotNull null
             if (feed.requireImage && !hasPicture(original.mediaAttachments)) return@mapNotNull null
 
