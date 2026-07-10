@@ -34,13 +34,13 @@ data class MastodonToken(
 
 @Serializable
 data class MastodonAccount(
-    @SerialName("display_name") val displayName: String,
+    @SerialName("display_name") val displayName: String = "",
     val acct: String,
 )
 
 @Serializable
 data class MastodonMediaAttachment(
-    @SerialName("preview_url") val previewUrl: String,
+    @SerialName("preview_url") val previewUrl: String? = null,
     val url: String? = null,
     val type: String? = null,
 )
@@ -48,9 +48,10 @@ data class MastodonMediaAttachment(
 @Serializable
 data class MastodonStatus(
     val id: String,
+    val uri: String = "",
     @SerialName("created_at") val createdAt: String,
-    val content: String,
-    val url: String,
+    val content: String = "",
+    val url: String? = null,
     val account: MastodonAccount,
     @SerialName("media_attachments") val mediaAttachments: List<MastodonMediaAttachment> = emptyList(),
 )

@@ -56,7 +56,7 @@ object MastodonFeedParser {
                 plainSnippet = plainSnippet,
                 imageUrl = status.mediaAttachments.firstOrNull()?.previewUrl,
                 author = author,
-                link = status.url,
+                link = status.url ?: status.uri,
                 pubDate = pubDate,
                 primarySortTime = primarySortTime,
                 feedId = feedId,
