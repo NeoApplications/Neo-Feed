@@ -401,6 +401,16 @@ object SuggestedFeedsData {
                                         description = "Latin American news in English",
                                     ),
                                     SuggestedFeed(
+                                        title = "The Tico Times",
+                                        url = "https://ticotimes.net/feed/",
+                                        description = "Costa Rican news in English",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "Q Costa Rica",
+                                        url = "https://qcostarica.com/feed/",
+                                        description = "Costa Rican news in English",
+                                    ),
+                                    SuggestedFeed(
                                         title = "Granma English",
                                         url = "https://en.granma.cu/feed",
                                         description = "Cuban official newspaper in English",
@@ -538,6 +548,21 @@ object SuggestedFeedsData {
                                         title = "Granma",
                                         url = "https://www.granma.cu/feed",
                                         description = "Periódico oficial de Cuba",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "La Nación",
+                                        url = "https://www.nacion.com/arc/outboundfeeds/rss/",
+                                        description = "Noticias de Costa Rica",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "El Ciudadano",
+                                        url = "https://www.elciudadano.com/feed",
+                                        description = "Noticias de Chile",
+                                    ),
+                                    SuggestedFeed(
+                                        title = "Tiempo Argentino",
+                                        url = "https://www.tiempoar.com.ar/rss",
+                                        description = "Noticias de Argentina",
                                     ),
                                 ),
                         ),
