@@ -21,7 +21,9 @@ package com.saulhdev.feeder.viewmodels
 import androidx.lifecycle.viewModelScope
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.entity.SourceEditViewState
+import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.data.repository.SourcesRepository
+import com.saulhdev.feeder.manager.sync.requestFeedSync
 import com.saulhdev.feeder.utils.extensions.NeoViewModel
 import com.saulhdev.feeder.utils.sloppyLinkToStrictURL
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,6 +39,7 @@ import org.koin.java.KoinJavaComponent.inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class SourceEditViewModel : NeoViewModel() {
     private val repository: SourcesRepository by inject(SourcesRepository::class.java)
+    private val articleRepository: ArticleRepository by inject(ArticleRepository::class.java)
 
     private val _feedId: MutableStateFlow<Long> = MutableStateFlow(-1L)
 
@@ -53,8 +56,15 @@ class SourceEditViewModel : NeoViewModel() {
     )
 
     fun updateFeed(state: SourceEditViewState) {
+        val currentFeed = feed.value
+        val filtersChanged = currentFeed.sourceType == "mastodon" &&
+                (currentFeed.requireLink != state.requireLink || currentFeed.requireImage != state.requireImage)
+        val needsResync = currentFeed.fullTextByDefault != state.fullTextByDefault
+                || currentFeed.isEnabled != state.isEnabled
+                || filtersChanged
+
         repository.updateSource(
-            feed = feed.value.copy(
+            feed = currentFeed.copy(
                 title = state.title,
                 url = sloppyLinkToStrictURL(state.url),
                 tag = state.tag,
@@ -63,9 +73,15 @@ class SourceEditViewModel : NeoViewModel() {
                 requireLink = state.requireLink,
                 requireImage = state.requireImage,
             ),
-            resync = feed.value.fullTextByDefault != state.fullTextByDefault
-                    || feed.value.isEnabled != state.isEnabled
+            resync = needsResync
         )
+
+        if (filtersChanged) {
+            viewModelScope.launch {
+                articleRepository.deleteArticlesForFeed(currentFeed.id)
+                requestFeedSync(feedId = currentFeed.id, forceNetwork = true)
+            }
+        }
     }
 
     fun deleteFeed(feedId: Long) {

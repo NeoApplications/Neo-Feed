@@ -39,6 +39,10 @@ class ArticleRepository(db: NeoFeedDb) {
         articlesDao.deleteArticles(ids)
     }
 
+    suspend fun deleteArticlesForFeed(feedId: Long) = withContext(jcc) {
+        articlesDao.deleteFeedArticle(feedId)
+    }
+
     suspend fun getArticleByGuid(guid: String, feedId: Long): Article? {
         return withContext(jcc) {
             articlesDao.loadArticle(guid = guid, feedId = feedId)
