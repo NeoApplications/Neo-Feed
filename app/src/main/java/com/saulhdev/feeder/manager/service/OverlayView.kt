@@ -79,9 +79,6 @@ class OverlayView(
 
         themeHolder = OverlayThemeHolder(this)
         setTheme(force = null)
-        val bgColor = themeHolder.currentTheme.get(CardTheme.Colors.OVERLAY_BG.ordinal)
-        val color = (prefs.overlayTransparency.getValue() * 255.0f).toInt() shl 24 or (bgColor and 0x00ffffff)
-        getWindow().setBackgroundDrawable(ColorDrawable(color))
 
         // Start fully transparent so the overlay never covers the launcher/folders
         // while it is closed (for example, before the first onScroll callback arrives).
