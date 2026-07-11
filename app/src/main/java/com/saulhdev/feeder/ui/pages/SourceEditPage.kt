@@ -41,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component1
@@ -72,6 +73,7 @@ import com.saulhdev.feeder.utils.extensions.interceptKey
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.viewmodels.SourceEditViewModel
 
+
 @Composable
 fun SourceEditPage(
     feedId: Long = -1,
@@ -80,14 +82,41 @@ fun SourceEditPage(
 ) {
     val title = stringResource(id = R.string.edit_rss)
     val viewState by viewModel.viewState.collectAsState()
-    val editState = remember(viewState) {
+    // Initialise once per feed and do not overwrite user edits when viewState re-emits.
+    val editState = remember(feedId) {
         mutableStateOf(viewState)
     }
+    var hasLoaded by remember { mutableStateOf(false) }
+    var hasEdited by remember { mutableStateOf(false) }
     val showDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(feedId) {
         viewModel.setFeedId(feedId)
+        if (!hasEdited && feedId != -1L) {
+            val freshFeed = viewModel.loadFeed(feedId)
+            if (freshFeed != null) {
+                editState.value = SourceEditViewState(
+                    title = freshFeed.title,
+                    url = freshFeed.url.toString(),
+                    tag = freshFeed.tag,
+                    fullTextByDefault = freshFeed.fullTextByDefault,
+                    isEnabled = freshFeed.isEnabled,
+                    sourceType = freshFeed.sourceType,
+                    requireLink = freshFeed.requireLink,
+                    requireImage = freshFeed.requireImage,
+                    excludeReplies = freshFeed.excludeReplies,
+                )
+                hasLoaded = true
+            }
+        }
+    }
+
+    LaunchedEffect(viewState) {
+        if (!hasLoaded && !hasEdited && viewState.url.isNotBlank()) {
+            editState.value = viewState
+            hasLoaded = true
+        }
     }
 
     ViewWithActionBar(
@@ -135,7 +164,8 @@ fun SourceEditPage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             SourceEditView(
-                editState = editState
+                editState = editState,
+                onEdited = { hasEdited = true }
             )
         }
     }
@@ -168,6 +198,7 @@ fun SourceEditPage(
 @Composable
 fun SourceEditView(
     editState: MutableState<SourceEditViewState>,
+    onEdited: () -> Unit = {},
 ) {
     val (focusTitle, focusTag) = createRefs()
     val focusManager = LocalFocusManager.current
@@ -180,6 +211,7 @@ fun SourceEditView(
                 value = editState.value.url,
                 onValueChange = {
                     editState.value = editState.value.copy(url = it)
+                    onEdited()
                 },
                 label = {
                     Text(stringResource(id = R.string.add_input_hint))
@@ -213,6 +245,7 @@ fun SourceEditView(
                 value = editState.value.title,
                 onValueChange = {
                     editState.value = editState.value.copy(title = it)
+                    onEdited()
                 },
                 label = {
                     Text(stringResource(id = R.string.title))
@@ -247,6 +280,7 @@ fun SourceEditView(
                 value = editState.value.tag,
                 onValueChange = {
                     editState.value = editState.value.copy(tag = it)
+                    onEdited()
                 },
                 label = {
                     Text(stringResource(id = R.string.source_tags))
@@ -283,6 +317,7 @@ fun SourceEditView(
                 isChecked = editState.value.fullTextByDefault,
                 onCheckedChange = {
                     editState.value = editState.value.copy(fullTextByDefault = it)
+                    onEdited()
                 },
                 index = 0,
                 groupSize = if (editState.value.sourceType == "mastodon") 5 else 2
@@ -293,6 +328,7 @@ fun SourceEditView(
                 isChecked = editState.value.isEnabled,
                 onCheckedChange = {
                     editState.value = editState.value.copy(isEnabled = it)
+                    onEdited()
                 },
                 index = 1,
                 groupSize = if (editState.value.sourceType == "mastodon") 5 else 2
@@ -304,6 +340,7 @@ fun SourceEditView(
                     isChecked = editState.value.excludeReplies,
                     onCheckedChange = {
                         editState.value = editState.value.copy(excludeReplies = it)
+                        onEdited()
                     },
                     index = 2,
                     groupSize = 5
@@ -314,6 +351,7 @@ fun SourceEditView(
                     isChecked = editState.value.requireLink,
                     onCheckedChange = {
                         editState.value = editState.value.copy(requireLink = it)
+                        onEdited()
                     },
                     index = 3,
                     groupSize = 5
@@ -324,6 +362,7 @@ fun SourceEditView(
                     isChecked = editState.value.requireImage,
                     onCheckedChange = {
                         editState.value = editState.value.copy(requireImage = it)
+                        onEdited()
                     },
                     index = 4,
                     groupSize = 5

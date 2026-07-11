@@ -27,12 +27,11 @@ import com.saulhdev.feeder.manager.sync.requestFeedSync
 import com.saulhdev.feeder.utils.extensions.NeoViewModel
 import com.saulhdev.feeder.utils.sloppyLinkToStrictURL
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 
@@ -41,11 +40,13 @@ class SourceEditViewModel : NeoViewModel() {
     private val repository: SourcesRepository by inject(SourcesRepository::class.java)
     private val articleRepository: ArticleRepository by inject(ArticleRepository::class.java)
 
-    private val _feedId: MutableStateFlow<Long> = MutableStateFlow(-1L)
+    private val _feedId: MutableSharedFlow<Long> = MutableSharedFlow(replay = 1)
 
     fun setFeedId(value: Long) {
-        _feedId.update { value }
+        _feedId.tryEmit(value)
     }
+
+    suspend fun loadFeed(feedId: Long): Feed? = repository.loadFeedById(feedId)
 
     private val feed = _feedId.mapLatest {
         repository.loadFeedById(it) ?: Feed()
@@ -56,7 +57,8 @@ class SourceEditViewModel : NeoViewModel() {
     )
 
     suspend fun updateFeed(state: SourceEditViewState) {
-        val currentFeed = repository.loadFeedById(_feedId.value) ?: return
+        val feedId = _feedId.replayCache.firstOrNull() ?: -1L
+        val currentFeed = repository.loadFeedById(feedId) ?: return
         val filtersChanged = currentFeed.sourceType == "mastodon" &&
                 (currentFeed.requireLink != state.requireLink
                         || currentFeed.requireImage != state.requireImage
