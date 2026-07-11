@@ -47,12 +47,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.content.FeedPreferences
+import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.TrashSimple
@@ -63,8 +65,10 @@ import org.koin.compose.koinInject
 @Composable
 fun BlockedWordsPage(
     prefs: FeedPreferences = koinInject(),
+    articleRepository: ArticleRepository = koinInject(),
 ) {
     val navController = LocalNavController.current
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
     val words by prefs.blockedWords.get().collectAsState(initial = emptySet())
@@ -73,6 +77,7 @@ fun BlockedWordsPage(
     fun save(updated: Set<String>) {
         scope.launch {
             prefs.blockedWords.setValue(updated)
+            articleRepository.deleteArticlesMatchingWords(updated, context.filesDir)
         }
     }
 

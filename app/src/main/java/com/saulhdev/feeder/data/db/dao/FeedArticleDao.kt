@@ -101,6 +101,15 @@ interface FeedArticleDao {
 
     @Query(
         """
+        SELECT Article.* FROM Article
+        JOIN Feeds ON Article.feedId = Feeds.id
+        WHERE Feeds.isEnabled = 1
+    """
+    )
+    suspend fun loadAllEnabledArticles(): List<Article>
+
+    @Query(
+        """
         SELECT uuid FROM Article
         WHERE feedId = :feedId AND pinned = 0 AND bookmarked = 0
         AND pubDateV2 < :minKeptPubDate
