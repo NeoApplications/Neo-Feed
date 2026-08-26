@@ -144,4 +144,10 @@
     <string name="action_save">Salva</string>
     <string name="action_open_smry">Apri in SMRY</string>
     <string name="date_at_time_FORMAT">%1$s alle %2$s</string>
+    <string name="pref_sync_range">Intervallo di sincronizzazione</string>
+    <string name="sync_range_one_day">1 giorno</string>
+    <string name="sync_range_two_days">2 giorni</string>
+    <string name="sync_range_three_days">3 giorni</string>
+    <string name="sync_range_one_week">1 settimana</string>
+    <string name="sync_range_one_month">1 mese</string>
 </resources>
