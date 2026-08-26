@@ -47,6 +47,7 @@ import com.saulhdev.feeder.ui.pages.MainPage
 import com.saulhdev.feeder.ui.pages.PreferencesPage
 import com.saulhdev.feeder.ui.pages.SourceAddPage
 import com.saulhdev.feeder.ui.pages.SourceListPage
+import com.saulhdev.feeder.ui.pages.SuggestedFeedsPage
 import com.saulhdev.feeder.ui.views.ComposeWebView
 import kotlinx.serialization.Serializable
 
@@ -84,6 +85,7 @@ fun NavigationManager(
             composable<NavRoute.License> { LicensePage() }
             composable<NavRoute.Changelog> { ChangelogPage() }
             composable<NavRoute.SourceAdd> { SourceAddPage() }
+            composable<NavRoute.SuggestedFeeds> { SuggestedFeedsPage() }
             composable<NavRoute.WebView>(
                 deepLinks = listOf(navDeepLink { uriPattern = "$NAV_BASE${Routes.WEB_VIEW}/{url}" })
             ) {
@@ -149,6 +151,9 @@ open class NavRoute {
 
     @Serializable
     data object License : NavRoute()
+
+    @Serializable
+    data object SuggestedFeeds : NavRoute()
 
     @Serializable
     data class WebView(val url: String = "") : NavRoute()

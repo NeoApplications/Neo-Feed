@@ -46,17 +46,13 @@ import java.util.concurrent.TimeUnit
 
 private const val YOUTUBE_CHANNEL_ID_ATTR = "data-channel-external-id"
 
-class FeedParser {
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .build()
-
+class FeedParser(
+    private val client: OkHttpClient,
+) {
     private val jsonFeedParser: JsonFeedParser = JsonFeedParser()
 
-    private suspend fun getFeedIconAtUrl(url: URL): String? {
-        return try {
+    private suspend fun getFeedIconAtUrl(url: URL): String? =
+        try {
             val html = curl(url)
             when {
                 html != null -> getFeedIconInHtml(html, baseUrl = url)
@@ -66,7 +62,6 @@ class FeedParser {
             Log.e("FeedParser", "Error when fetching feed icon", t)
             null
         }
-    }
 
     private fun getFeedIconInHtml(
         html: String,
@@ -75,19 +70,22 @@ class FeedParser {
         val doc = Jsoup.parse(html.byteInputStream(), "UTF-8", "")
 
         return (
-                doc.getElementsByAttributeValue("rel", "apple-touch-icon") +
-                        doc.getElementsByAttributeValue("rel", "icon") +
-                        doc.getElementsByAttributeValue("rel", "shortcut icon")
-                )
-            .filter { it.hasAttr("href") }
+            doc.getElementsByAttributeValue("rel", "apple-touch-icon") +
+                doc.getElementsByAttributeValue("rel", "icon") +
+                doc.getElementsByAttributeValue("rel", "shortcut icon")
+        ).filter { it.hasAttr("href") }
             .map {
                 when {
-                    baseUrl != null -> relativeLinkIntoAbsolute(
-                        base = baseUrl,
-                        link = it.attr("href")
-                    )
+                    baseUrl != null -> {
+                        relativeLinkIntoAbsolute(
+                            base = baseUrl,
+                            link = it.attr("href"),
+                        )
+                    }
 
-                    else -> sloppyLinkToStrictURL(it.attr("href")).toString()
+                    else -> {
+                        sloppyLinkToStrictURL(it.attr("href")).toString()
+                    }
                 }
             }.firstOrNull()
     }
@@ -95,8 +93,8 @@ class FeedParser {
     /**
      * Returns all alternate links in the header of an HTML/XML document pointing to feeds.
      */
-    suspend fun getAlternateFeedLinksAtUrl(url: URL): List<Pair<String, String>> {
-        return try {
+    suspend fun getAlternateFeedLinksAtUrl(url: URL): List<Pair<String, String>> =
+        try {
             val html = curl(url)
             when {
                 html != null -> getAlternateFeedLinksInHtml(html, baseUrl = url)
@@ -106,7 +104,6 @@ class FeedParser {
             Log.e("FeedParser", "Error when fetching alternate links", t)
             emptyList()
         }
-    }
 
     /**
      * Returns all alternate links in the HTML/XML document pointing to feeds.
@@ -117,58 +114,74 @@ class FeedParser {
     ): List<Pair<String, String>> {
         val doc = Jsoup.parse(html.byteInputStream(), "UTF-8", "")
 
-        val feeds = doc.getElementsByAttributeValue("rel", "alternate")
-            .filter { element ->
-                element.hasAttr("href") && element.hasAttr("type")
-            }
-            .filter { element ->
-                val t = element.attr("type").lowercase(Locale.getDefault())
-                when {
-                    t.contains("application/atom") -> true
-                    t.contains("application/rss") -> true
-                    // Youtube for example has alternate links with application/json+oembed type.
-                    t == "application/json" -> true
-                    else -> false
-                }
-            }
-            .filter { element ->
-                val l = element.attr("href").lowercase(Locale.getDefault())
-                try {
-                    if (baseUrl != null) {
-                        relativeLinkIntoAbsoluteOrThrow(base = baseUrl, link = l)
-                    } else {
-                        URL(l)
-                    }
-                    true
-                } catch (_: MalformedURLException) {
-                    false
-                }
-            }
-            .map {
-                when {
-                    baseUrl != null -> relativeLinkIntoAbsolute(
-                        base = baseUrl,
-                        link = it.attr("href")
-                    ) to it.attr("type")
+        val feeds =
+            doc
+                .getElementsByAttributeValue("rel", "alternate")
+                .filter { element ->
+                    element.hasAttr("href") && element.hasAttr("type")
+                }.filter { element ->
+                    val t = element.attr("type").lowercase(Locale.getDefault())
+                    when {
+                        t.contains("application/atom") -> true
 
-                    else -> sloppyLinkToStrictURL(it.attr("href")).toString() to it.attr("type")
+                        t.contains("application/rss") -> true
+
+                        // Youtube for example has alternate links with application/json+oembed type.
+                        t == "application/json" -> true
+
+                        else -> false
+                    }
+                }.filter { element ->
+                    val l = element.attr("href").lowercase(Locale.getDefault())
+                    try {
+                        if (baseUrl != null) {
+                            relativeLinkIntoAbsoluteOrThrow(base = baseUrl, link = l)
+                        } else {
+                            URL(l)
+                        }
+                        true
+                    } catch (_: MalformedURLException) {
+                        false
+                    }
+                }.map {
+                    when {
+                        baseUrl != null -> {
+                            relativeLinkIntoAbsolute(
+                                base = baseUrl,
+                                link = it.attr("href"),
+                            ) to it.attr("type")
+                        }
+
+                        else -> {
+                            sloppyLinkToStrictURL(it.attr("href")).toString() to it.attr("type")
+                        }
+                    }
                 }
-            }
 
         return when {
-            feeds.isNotEmpty() -> feeds
-            baseUrl?.host == "www.youtube.com" || baseUrl?.host == "youtube.com" -> findFeedLinksForYoutube(
-                doc
-            )
+            feeds.isNotEmpty() -> {
+                feeds
+            }
 
-            else -> emptyList()
+            baseUrl?.host == "www.youtube.com" || baseUrl?.host == "youtube.com" -> {
+                findFeedLinksForYoutube(
+                    doc,
+                )
+            }
+
+            else -> {
+                emptyList()
+            }
         }
     }
 
     private fun findFeedLinksForYoutube(doc: Document): List<Pair<String, String>> {
-        val channelId: String? = doc.body().getElementsByAttribute(YOUTUBE_CHANNEL_ID_ATTR)
-            .firstOrNull()
-            ?.attr(YOUTUBE_CHANNEL_ID_ATTR)
+        val channelId: String? =
+            doc
+                .body()
+                .getElementsByAttribute(YOUTUBE_CHANNEL_ID_ATTR)
+                .firstOrNull()
+                ?.attr(YOUTUBE_CHANNEL_ID_ATTR)
 
         return when (channelId) {
             null -> emptyList()
@@ -184,8 +197,10 @@ class FeedParser {
     /**
      * @throws IOException if request fails due to network issue for example
      */
-    private suspend fun curlAndOnResponse(url: URL, block: (suspend (Response) -> Unit)) =
-        client.curlAndOnResponse(url, block)
+    private suspend fun curlAndOnResponse(
+        url: URL,
+        block: (suspend (Response) -> Unit),
+    ) = client.curlAndOnResponse(url, block)
 
     @Throws(FeedParsingError::class)
     suspend fun parseFeedUrl(url: URL): JsonFeed? {
@@ -202,15 +217,14 @@ class FeedParser {
     }
 
     @Throws(FeedParsingError::class)
-    suspend fun parseFeedResponse(response: Response): JsonFeed {
-        return response.body.use {
+    suspend fun parseFeedResponse(response: Response): JsonFeed =
+        response.body.use {
             // OkHttp string method handles BOM and Content-Type header in request
             parseFeedResponse(
                 response.request.url.toUrl(),
                 it,
             )
         }
-    }
 
     /**
      * Takes body as bytes to handle encoding correctly
@@ -221,10 +235,11 @@ class FeedParser {
         responseBody: ResponseBody,
     ): JsonFeed {
         try {
-            val feed = when (responseBody.contentType()?.subtype?.contains("json")) {
-                true -> jsonFeedParser.parseJson(responseBody)
-                else -> parseRssAtom(url, responseBody)
-            }
+            val feed =
+                when (responseBody.contentType()?.subtype?.contains("json")) {
+                    true -> jsonFeedParser.parseJson(responseBody)
+                    else -> parseRssAtom(url, responseBody)
+                }
 
             return if (feed.feed_url == null) {
                 // Nice to return non-null value here
@@ -238,16 +253,19 @@ class FeedParser {
     }
 
     @Throws(FeedParsingError::class)
-    internal suspend fun parseRssAtom(baseUrl: URL, responseBody: ResponseBody): JsonFeed {
+    internal suspend fun parseRssAtom(
+        baseUrl: URL,
+        responseBody: ResponseBody,
+    ): JsonFeed {
         try {
             responseBody.byteStream().use { bs ->
-                val feed = XmlReader(bs, true, responseBody.contentType()?.charset()?.name()).use {
-                    SyndFeedInput()
-                        .apply {
-                            isPreserveWireFeed = true
-                        }
-                        .build(it)
-                }
+                val feed =
+                    XmlReader(bs, true, responseBody.contentType()?.charset()?.name()).use {
+                        SyndFeedInput()
+                            .apply {
+                                isPreserveWireFeed = true
+                            }.build(it)
+                    }
                 return feed.asFeed(baseUrl = baseUrl) { siteUrl ->
                     getFeedIconAtUrl(siteUrl)
                 }
@@ -257,73 +275,84 @@ class FeedParser {
         }
     }
 
-    class FeedParsingError(val url: URL, e: Throwable) : Exception(e.message, e)
+    class FeedParsingError(
+        val url: URL,
+        e: Throwable,
+    ) : Exception(e.message, e)
 }
 
-suspend fun OkHttpClient.getResponse(url: URL, forceNetwork: Boolean = false): Response {
-    val request = Request.Builder()
-        .url(url)
-        .cacheControl(
-            CacheControl.Builder()
-                .let {
-                    if (forceNetwork) {
-                        // Force a cache revalidation
-                        it.maxAge(0, TimeUnit.SECONDS)
-                    } else {
-                        // Do a cache revalidation at most every minute
-                        it.maxAge(1, TimeUnit.MINUTES)
-                    }
-                }
-                .build()
-        )
-        .build()
+suspend fun OkHttpClient.getResponse(
+    url: URL,
+    forceNetwork: Boolean = false,
+): Response {
+    val request =
+        Request
+            .Builder()
+            .url(url)
+            .cacheControl(
+                CacheControl
+                    .Builder()
+                    .let {
+                        if (forceNetwork) {
+                            // Force a cache revalidation
+                            it.maxAge(0, TimeUnit.SECONDS)
+                        } else {
+                            // Do a cache revalidation at most every minute
+                            it.maxAge(1, TimeUnit.MINUTES)
+                        }
+                    }.build(),
+            ).build()
 
-    val clientToUse = if (url.userInfo?.isNotBlank() == true) {
-        val parts = url.userInfo.split(':')
-        val user = parts.first()
-        val pass = if (parts.size > 1) {
-            parts[1]
+    val clientToUse =
+        if (url.userInfo?.isNotBlank() == true) {
+            val parts = url.userInfo.split(':')
+            val user = parts.first()
+            val pass =
+                if (parts.size > 1) {
+                    parts[1]
+                } else {
+                    ""
+                }
+            val decodedUser =
+                withContext(IO) {
+                    URLDecoder.decode(user, "UTF-8")
+                }
+            val decodedPass =
+                withContext(IO) {
+                    URLDecoder.decode(pass, "UTF-8")
+                }
+            val credentials = Credentials.basic(decodedUser, decodedPass)
+            newBuilder()
+                .authenticator { _, response ->
+                    when {
+                        response.request.header("Authorization") != null -> {
+                            null
+                        }
+
+                        else -> {
+                            response.request
+                                .newBuilder()
+                                .header("Authorization", credentials)
+                                .build()
+                        }
+                    }
+                }.proxyAuthenticator { _, response ->
+                    when {
+                        response.request.header("Proxy-Authorization") != null -> {
+                            null
+                        }
+
+                        else -> {
+                            response.request
+                                .newBuilder()
+                                .header("Proxy-Authorization", credentials)
+                                .build()
+                        }
+                    }
+                }.build()
         } else {
-            ""
+            this
         }
-        val decodedUser = withContext(IO) {
-            URLDecoder.decode(user, "UTF-8")
-        }
-        val decodedPass = withContext(IO) {
-            URLDecoder.decode(pass, "UTF-8")
-        }
-        val credentials = Credentials.basic(decodedUser, decodedPass)
-        newBuilder()
-            .authenticator { _, response ->
-                when {
-                    response.request.header("Authorization") != null -> {
-                        null
-                    }
-
-                    else -> {
-                        response.request.newBuilder()
-                            .header("Authorization", credentials)
-                            .build()
-                    }
-                }
-            }
-            .proxyAuthenticator { _, response ->
-                when {
-                    response.request.header("Proxy-Authorization") != null -> {
-                        null
-                    }
-
-                    else -> {
-                        response.request.newBuilder()
-                            .header("Proxy-Authorization", credentials)
-                            .build()
-                    }
-                }
-            }
-            .build()
-    } else {
-        this
-    }
 
     return withContext(IO) {
         clientToUse.newCall(request).execute()
@@ -333,12 +362,15 @@ suspend fun OkHttpClient.getResponse(url: URL, forceNetwork: Boolean = false): R
 suspend fun OkHttpClient.curl(url: URL): String? {
     var result: String? = null
     curlAndOnResponse(url) {
-        result = it.body?.string()
+        result = it.body.string()
     }
     return result
 }
 
-suspend fun OkHttpClient.curlAndOnResponse(url: URL, block: (suspend (Response) -> Unit)) {
+suspend fun OkHttpClient.curlAndOnResponse(
+    url: URL,
+    block: (suspend (Response) -> Unit),
+) {
     val response = getResponse(url)
 
     if (!response.isSuccessful) {

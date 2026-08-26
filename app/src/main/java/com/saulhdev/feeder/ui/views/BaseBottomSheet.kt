@@ -37,7 +37,7 @@ class BaseBottomSheet @JvmOverloads constructor(
     }
 
     override fun getScrimColor(context: Context): Int {
-        return ContextCompat.getColor(context, R.color.botttom_sheet_scrim)
+        return ContextCompat.getColor(context, R.color.bottom_sheet_scrim)
     }
 
 

@@ -32,8 +32,7 @@ import kotlin.time.Instant
 @Entity(
     tableName = "Feeds",
     indices = [
-        Index(value = ["url"], unique = true),
-        Index(value = ["id", "url", "title"], unique = true)
+        Index(value = ["url"], unique = true)
     ]
 )
 data class Feed(

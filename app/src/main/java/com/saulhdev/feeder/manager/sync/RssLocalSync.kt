@@ -181,11 +181,10 @@ private suspend fun syncFeed(
 ) {
     Log.d(TAG, "Fetching ${feedSql.title}")
 
-    val okHttpClient = OkHttpClient.Builder()
-        .build()
+    val okHttpClient: OkHttpClient by inject(OkHttpClient::class.java)
     val response: Response =
         okHttpClient.getResponse(url = feedSql.url, forceNetwork = forceNetwork)
-    val feedParser = FeedParser()
+    val feedParser = FeedParser(okHttpClient)
     val feed: JsonFeed = response.use {
         response.body.let { responseBody ->
             when {
