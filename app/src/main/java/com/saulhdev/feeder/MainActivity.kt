@@ -49,10 +49,14 @@ class MainActivity : ComponentActivity() {
             navController = rememberNavController()
             TransparentSystemBars()
             AppTheme(
-                darkTheme = when (com.saulhdev.feeder.manager.sync.prefs.overlayTheme.getValue()) {
-                    "auto_system" -> isSystemInDarkTheme()
-                    else          -> isDarkTheme
-                },
+                darkTheme =
+                    when (
+                        com.saulhdev.feeder.manager.sync.prefs.overlayTheme
+                            .getValue()
+                    ) {
+                        "auto_system" -> isSystemInDarkTheme()
+                        else -> isDarkTheme
+                    },
                 dynamicColor = prefs.dynamicColor.getValue(),
             ) {
                 NavigationManager(
@@ -70,14 +74,16 @@ class MainActivity : ComponentActivity() {
     fun TransparentSystemBars() {
         DisposableEffect(isDarkTheme, prefs.overlayTheme.getValue()) {
             enableEdgeToEdge(
-                statusBarStyle = SystemBarStyle.auto(
-                    android.graphics.Color.TRANSPARENT,
-                    android.graphics.Color.TRANSPARENT,
-                ) { isDarkTheme },
-                navigationBarStyle = SystemBarStyle.auto(
-                    android.graphics.Color.TRANSPARENT,
-                    android.graphics.Color.TRANSPARENT,
-                ) { isDarkTheme },
+                statusBarStyle =
+                    SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) { isDarkTheme },
+                navigationBarStyle =
+                    SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) { isDarkTheme },
             )
             onDispose {}
         }
@@ -103,6 +109,12 @@ class MainActivity : ComponentActivity() {
                 recreate()
             }
         }
+        prefs.syncFrequency.get().asLiveData().observe(this) {
+            configurePeriodicSync()
+        }
+        prefs.syncOnlyOnWifi.get().asLiveData().observe(this) {
+            configurePeriodicSync()
+        }
     }
 
     private fun configurePeriodicSync() {
@@ -119,32 +131,36 @@ class MainActivity : ComponentActivity() {
             }
             val timeInterval = (prefs.syncFrequency.getValue().toDouble() * 60).toLong()
 
-            val workRequestBuilder = PeriodicWorkRequestBuilder<FeedSyncer>(
-                timeInterval,
-                TimeUnit.MINUTES,
-            )
+            val workRequestBuilder =
+                PeriodicWorkRequestBuilder<FeedSyncer>(
+                    timeInterval,
+                    TimeUnit.MINUTES,
+                )
 
-            val syncWork = workRequestBuilder
-                .setConstraints(constraints.build())
-                .addTag("PeriodicFeedSyncer")
-                .build()
+            val syncWork =
+                workRequestBuilder
+                    .setConstraints(constraints.build())
+                    .addTag("PeriodicFeedSyncer")
+                    .build()
 
             workManager.enqueueUniquePeriodicWork(
                 "feeder_periodic_3",
                 when (replace) {
-                    true  -> ExistingPeriodicWorkPolicy.UPDATE
+                    true -> ExistingPeriodicWorkPolicy.UPDATE
                     false -> ExistingPeriodicWorkPolicy.KEEP
                 },
-                syncWork
+                syncWork,
             )
-
         } else {
             workManager.cancelUniqueWork("feeder_periodic_3")
         }
     }
 
     companion object {
-        fun navigateIntent(context: Context, destination: String): Intent {
+        fun navigateIntent(
+            context: Context,
+            destination: String,
+        ): Intent {
             val uri = "$NAV_BASE$destination".toUri()
             return Intent(Intent.ACTION_VIEW, uri, context, MainActivity::class.java)
         }
@@ -152,25 +168,28 @@ class MainActivity : ComponentActivity() {
         private suspend fun start(
             activity: Activity,
             targetIntent: Intent,
-            extras: Bundle
-        ): ActivityResult {
-            return suspendCancellableCoroutine { continuation ->
-                val intent = Intent(activity, MainActivity::class.java)
-                    .putExtras(extras)
-                    .putExtra("intent", targetIntent)
-                val resultReceiver = createResultReceiver {
-                    if (continuation.isActive) {
-                        continuation.resume(it)
+            extras: Bundle,
+        ): ActivityResult =
+            suspendCancellableCoroutine { continuation ->
+                val intent =
+                    Intent(activity, MainActivity::class.java)
+                        .putExtras(extras)
+                        .putExtra("intent", targetIntent)
+                val resultReceiver =
+                    createResultReceiver {
+                        if (continuation.isActive) {
+                            continuation.resume(it)
+                        }
                     }
-                }
                 activity.startActivity(intent.putExtra("callback", resultReceiver))
             }
-        }
 
-        private fun createResultReceiver(callback: (ActivityResult) -> Unit): ResultReceiver {
-            return object : ResultReceiver(Handler(Looper.myLooper()!!)) {
-
-                override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+        private fun createResultReceiver(callback: (ActivityResult) -> Unit): ResultReceiver =
+            object : ResultReceiver(Handler(Looper.myLooper()!!)) {
+                override fun onReceiveResult(
+                    resultCode: Int,
+                    resultData: Bundle?,
+                ) {
                     val data = Intent()
                     if (resultData != null) {
                         data.putExtras(resultData)
@@ -178,6 +197,5 @@ class MainActivity : ComponentActivity() {
                     callback(ActivityResult(resultCode, data))
                 }
             }
-        }
     }
 }
