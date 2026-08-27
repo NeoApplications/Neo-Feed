@@ -111,7 +111,7 @@ class NeoApp : MultiDexApplication(), KoinStartup {
         AndroidThreeTen.init(this)
         DynamicColors.applyToActivitiesIfAvailable(
             this,
-            _root_ide_package_.com.google.android.material.color.DynamicColorsOptions.Builder()
+            com.google.android.material.color.DynamicColorsOptions.Builder()
                 .setPrecondition { _, _ -> DynamicColors.isDynamicColorAvailable() }
                 .build()
         )

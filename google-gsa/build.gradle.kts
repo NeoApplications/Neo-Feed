@@ -1,11 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
     namespace = "com.google.android.libraries"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         minSdk = 26
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -23,9 +22,9 @@ android {
 
     sourceSets {
         getByName("main") {
-            java.srcDirs("src/main/java")
-            aidl.srcDirs("src/main/aidl")
-            res.srcDirs("src/main/res")
+            java.directories.add("src/main/java")
+            aidl.directories.add("src/main/aidl")
+            res.directories.add("src/main/res")
         }
     }
 
@@ -40,10 +39,10 @@ android {
         sourceCompatibility(libs.versions.jvmVersion.get())
         targetCompatibility(libs.versions.jvmVersion.get())
     }
+}
 
-    kotlin {
-        jvmToolchain(libs.versions.jvmVersion.get().toInt())
-    }
+kotlin {
+    jvmToolchain(libs.versions.jvmVersion.get().toInt())
 }
 
 dependencies {

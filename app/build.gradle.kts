@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
@@ -25,12 +23,12 @@ ksp {
 
 android {
     namespace = "com.saulhdev.feeder"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.saulhdev.neofeed"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1900
         versionName = "1.9.0"
 
@@ -39,13 +37,8 @@ android {
         multiDexEnabled = true
     }
 
-    applicationVariants.all {
-        val variant = this
-        outputs.all {
-            (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
-                "Neo_Feed_${variant.versionName}_${variant.name}.apk"
-        }
-    }
+    // The applicationVariants API is removed in AGP 9.0+. 
+    // Use androidComponents.onVariants to customize APK outputs.
 
     buildTypes {
         debug {
@@ -71,20 +64,16 @@ android {
 
     sourceSets {
         getByName("main") {
-            java.srcDirs("src/main/java")
-            aidl.srcDirs("src/main/aidl")
-            assets.srcDirs("src/main/assets")
-            res.srcDirs("src/main/res")
+            java.directories.add("src/main/java")
+            aidl.directories.add("src/main/aidl")
+            assets.directories.add("src/main/assets")
+            res.directories.add("src/main/res")
         }
     }
 
     compileOptions {
         sourceCompatibility(libs.versions.jvmVersion.get())
         targetCompatibility(libs.versions.jvmVersion.get())
-    }
-
-    kotlin {
-        jvmToolchain(libs.versions.jvmVersion.get().toInt())
     }
 
     buildFeatures {
@@ -104,6 +93,19 @@ android {
         checkReleaseBuilds = false
         disable += listOf("MissingTranslation", "ExtraTranslation")
     }
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            val versionName = output.versionName.get()
+            output.outputFileName.set("Neo_Feed_${versionName}_${variant.name}.apk")
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(libs.versions.jvmVersion.get().toInt())
 }
 
 dependencies {
