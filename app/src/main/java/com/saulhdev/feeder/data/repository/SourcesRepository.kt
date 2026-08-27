@@ -54,8 +54,8 @@ class SourcesRepository(db: NeoFeedDb) {
         feedsDao.insert(feed)
     }
 
-    fun updateSource(feed: Feed, resync: Boolean = false) {
-        scope.launch {
+    suspend fun updateSource(feed: Feed, resync: Boolean = false) {
+        withContext(jcc) {
             if (feedsDao.existsById(feed.id)) {
                 feedsDao.update(feed)
                 if (resync) requestFeedSync(feed.id)

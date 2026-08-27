@@ -28,6 +28,7 @@ import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.entity.JsonFeed
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.data.repository.SourcesRepository
+import com.saulhdev.feeder.manager.mastodon.MastodonFeedSync
 import com.saulhdev.feeder.manager.models.FeedParser
 import com.saulhdev.feeder.manager.models.getResponse
 import com.saulhdev.feeder.manager.models.scheduleFullTextParse
@@ -131,6 +132,7 @@ internal suspend fun syncFeeds(
                             feedsRepo.setCurrentlySyncingOn(feedId = feed.id, syncing = true)
 
                             syncFeed(
+                                context = context,
                                 feedsRepo = feedsRepo,
                                 articleRepo = articlesRepo,
                                 feedSql = feed,
@@ -171,6 +173,7 @@ internal suspend fun syncFeeds(
 }
 
 private suspend fun syncFeed(
+    context: Context,
     feedsRepo: SourcesRepository,
     articleRepo: ArticleRepository,
     feedSql: Feed,
@@ -180,6 +183,17 @@ private suspend fun syncFeed(
     downloadTime: Instant
 ) {
     Log.d(TAG, "Fetching ${feedSql.title}")
+
+    if (feedSql.sourceType == "mastodon") {
+        MastodonFeedSync.sync(
+            context = context,
+            articleRepo = articleRepo,
+            feedSql = feedSql,
+            filesDir = filesDir,
+            downloadTime = downloadTime
+        )
+        return
+    }
 
     val okHttpClient = OkHttpClient.Builder()
         .build()
@@ -230,7 +244,8 @@ private suspend fun syncFeed(
             }
             ?.filter { (article, _) ->
                 article.pubDate !in 1..<minKeptPubDate
-            } ?: emptyList()
+            }
+            ?.filterBlockedWords() ?: emptyList()
 
     Log.d(TAG, "Prepared ${articles.size} articles for ${feedSql.title}")
 
@@ -273,6 +288,25 @@ private suspend fun syncFeed(
 }
 
 class ResponseFailure(message: String?) : Exception(message)
+
+fun List<Pair<Article, String>>.filterBlockedWords(): List<Pair<Article, String>> {
+    val blocked = prefs.blockedWords.getValue()
+        .map { it.lowercase() }
+        .filter { it.isNotBlank() }
+    if (blocked.isEmpty()) return this
+    return filter { (article, text) ->
+        val haystack = buildString {
+            append(article.title)
+            append(article.plainTitle)
+            append(article.description)
+            append(article.plainSnippet)
+            article.author?.let { append(it) }
+            article.link?.let { append(it) }
+            append(text)
+        }.lowercase()
+        blocked.none { haystack.contains(it) }
+    }
+}
 
 internal suspend fun feedsToSync(
     repository: SourcesRepository,

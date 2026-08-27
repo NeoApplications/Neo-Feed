@@ -18,9 +18,11 @@
 
 package com.saulhdev.feeder.ui.components
 
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.saulhdev.feeder.data.content.StringSetPref
+import com.saulhdev.feeder.ui.navigation.LocalNavController
 
 @Composable
 fun StringSetPreference(
@@ -30,12 +32,24 @@ fun StringSetPreference(
     groupSize: Int = 1,
     isEnabled: Boolean = true,
 ) {
+    val navController = LocalNavController.current
     BasePreference(
         modifier = modifier,
         titleId = pref.titleId,
         summaryId = pref.summaryId,
         index = index,
         groupSize = groupSize,
-        isEnabled = isEnabled
+        isEnabled = isEnabled,
+        startWidget = {
+            Icon(
+                imageVector = pref.icon,
+                contentDescription = null,
+                tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+            )
+        },
+        onClick = {
+            pref.route?.let { navController.navigate(it) }
+                ?: pref.onClick?.invoke()
+        }
     )
 }
