@@ -76,8 +76,6 @@ class OverlayView(val context: Context) :
 
         themeHolder = OverlayThemeHolder(this)
 
-        // Start fully transparent so the overlay never covers the launcher/folders
-        // while it is closed (for example, before the first onScroll callback arrives).
         val bgColor = themeHolder.currentTheme.get(CardTheme.Colors.OVERLAY_BG.ordinal)
         getWindow().setBackgroundDrawable(ColorDrawable((bgColor and 0x00ffffff)))
 
@@ -334,8 +332,6 @@ class OverlayView(val context: Context) :
         super.onScroll(f)
 
         val bgColor = themeHolder.currentTheme.get(CardTheme.Colors.OVERLAY_BG.ordinal)
-        // When the panel is closed (progress 0) the overlay must be fully transparent
-        // so it does not cover the launcher/folders.
         val alpha = if (f <= 0f) 0f else prefs.overlayTransparency.getValue()
         val color = (alpha * 255.0f).toInt() shl 24 or (bgColor and 0x00ffffff)
         getWindow().setBackgroundDrawable(ColorDrawable(color))

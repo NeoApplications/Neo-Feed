@@ -147,9 +147,6 @@ public class OverlayController extends DialogOverlayController {
 
     public void setVisible(boolean visible) {
         if (visible) {
-            // Make the overlay touchable so the feed can be interacted with,
-            // but keep it non-focusable so the launcher/IME target never moves
-            // away from the launcher window.
             window.clearFlags(16); // FLAG_NOT_TOUCHABLE
         } else {
             window.addFlags(16); // FLAG_NOT_TOUCHABLE

@@ -163,8 +163,6 @@ abstract class OverlayControllerCallback extends BaseCallback {
 
         layoutParams.width = LayoutParams.MATCH_PARENT;
         layoutParams.height = LayoutParams.MATCH_PARENT;
-        // Start fully transparent, non-focusable and non-touchable so the overlay
-        // never briefly covers the launcher while it is being attached.
         layoutParams.flags |= 8650752
                 | LayoutParams.FLAG_NOT_FOCUSABLE
                 | LayoutParams.FLAG_NOT_TOUCHABLE;
@@ -172,8 +170,6 @@ abstract class OverlayControllerCallback extends BaseCallback {
         layoutParams.dimAmount = 0f;
         layoutParams.gravity = 3;
         layoutParams.type = 4;
-        // Don't override the launcher window's soft-input behaviour; otherwise
-        // the app-drawer search box can't show its own keyboard.
         layoutParams.softInputMode = LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED;
 
         controller.window.setAttributes(layoutParams);
