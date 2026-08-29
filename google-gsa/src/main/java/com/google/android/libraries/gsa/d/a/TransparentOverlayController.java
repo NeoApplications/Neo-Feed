@@ -1,7 +1,5 @@
 package com.google.android.libraries.gsa.d.a;
 
-import android.view.WindowManager.LayoutParams;
-
 final class TransparentOverlayController implements PanelController {
 
     private final OverlayController overlayController;
@@ -25,15 +23,9 @@ final class TransparentOverlayController implements PanelController {
 
     @Override
     public void openPanel() {
-        this.overlayController.setVisible(true);
+        this.overlayController.setFocusable(true);
+        this.overlayController.setWindowAlpha(1.0f);
         OverlayController overlayControllerVar = this.overlayController;
-        LayoutParams attributes = overlayControllerVar.window.getAttributes();
-        float f = attributes.alpha;
-        attributes.alpha = 1.0f;
-        if (f != attributes.alpha) {
-            overlayControllerVar.window.setAttributes(attributes);
-        }
-        overlayControllerVar = this.overlayController;
         PanelState panelStateVar = PanelState.OPEN_AS_LAYER;//Todo: PanelState.uoh was default
         if (overlayControllerVar.panelState != panelStateVar) {
             overlayControllerVar.panelState = panelStateVar;
@@ -43,15 +35,8 @@ final class TransparentOverlayController implements PanelController {
 
     @Override
     public void closePanel() {
-        OverlayController overlayControllerVar = this.overlayController;
-        LayoutParams attributes = overlayControllerVar.window.getAttributes();
-        float f = attributes.alpha;
-        attributes.alpha = 0.0f;
-        if (f != attributes.alpha) {
-            overlayControllerVar.window.setAttributes(attributes);
-        }
         this.overlayController.setVisible(false);
-        overlayControllerVar = this.overlayController;
+        OverlayController overlayControllerVar = this.overlayController;
         PanelState panelStateVar = PanelState.CLOSED;//Todo: PanelState.uoe was default
         if (overlayControllerVar.panelState != panelStateVar) {
             overlayControllerVar.panelState = panelStateVar;

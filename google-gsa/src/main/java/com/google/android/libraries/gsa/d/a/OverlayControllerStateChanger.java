@@ -1,7 +1,6 @@
 package com.google.android.libraries.gsa.d.a;
 
 import android.util.Log;
-import android.view.WindowManager.LayoutParams;
 
 final class OverlayControllerStateChanger implements PanelController {
 
@@ -14,14 +13,13 @@ final class OverlayControllerStateChanger implements PanelController {
     @Override
     public void onPanelDragged() {
         updatePanelState(PanelState.DRAGGING);
-        updateAlphaIfNeeded(1.0f);
+        overlayController.setFocusable(true);
     }
 
     @Override
     public void startPanelDrag() {
         updatePanelState(PanelState.DRAGGING);
-        overlayController.setVisible(true);
-        updateAlphaIfNeeded(1.0f);
+        overlayController.setFocusable(true);
     }
 
     @Override
@@ -45,6 +43,7 @@ final class OverlayControllerStateChanger implements PanelController {
             try {
                 overlayController.overlayCallback.overlayScrollChanged(position);
                 overlayController.onScroll(position);
+                overlayController.setWindowAlpha(position);
             } catch (Throwable ignored) {
                 // Optionally log the exception if needed
             }
@@ -53,7 +52,7 @@ final class OverlayControllerStateChanger implements PanelController {
 
     @Override
     public void closePanel() {
-        updateAlphaIfNeeded(0.0f);
+        overlayController.setVisible(false);
         updatePanelState(PanelState.CLOSED);
     }
 
@@ -66,14 +65,6 @@ final class OverlayControllerStateChanger implements PanelController {
         if (overlayController.panelState != newState) {
             overlayController.panelState = newState;
             overlayController.setState(newState);
-        }
-    }
-
-    private void updateAlphaIfNeeded(float newAlpha) {
-        LayoutParams attributes = overlayController.window.getAttributes();
-        if (attributes.alpha != newAlpha) {
-            attributes.alpha = newAlpha;
-            overlayController.window.setAttributes(attributes);
         }
     }
 }

@@ -3,6 +3,7 @@ package com.google.android.libraries.gsa.d.a;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.google.android.libraries.launcherclient.LauncherOverlayCallback;
@@ -145,12 +146,45 @@ public class OverlayController extends DialogOverlayController {
         return panelState == PanelState.OPEN_AS_DRAWER || panelState == PanelState.OPEN_AS_LAYER;
     }
 
-    public void setVisible(boolean visible) {
-        if (visible) {
-            window.clearFlags(16); // FLAG_NOT_TOUCHABLE
+    public void setFocusable(boolean focusable) {
+        WindowManager.LayoutParams attrs = window.getAttributes();
+        int flagsToChange = WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        boolean changed = false;
+
+        if (focusable) {
+            if ((attrs.flags & flagsToChange) != 0) {
+                attrs.flags &= ~flagsToChange;
+                changed = true;
+            }
         } else {
-            window.addFlags(16); // FLAG_NOT_TOUCHABLE
+            if ((attrs.flags & flagsToChange) != flagsToChange) {
+                attrs.flags |= flagsToChange;
+                changed = true;
+            }
         }
+
+        if (changed) {
+            window.setAttributes(attrs);
+            if (focusable && windowView != null) {
+                windowView.requestFocus();
+            }
+        }
+    }
+
+    public void setWindowAlpha(float alpha) {
+        WindowManager.LayoutParams attrs = window.getAttributes();
+        // Limitar alpha para evitar parpadeos en valores extremos y asegurar que el sistema lo procese
+        float targetAlpha = Math.max(0.0f, Math.min(1.0f, alpha));
+        if (attrs.alpha != targetAlpha) {
+            attrs.alpha = targetAlpha;
+            window.setAttributes(attrs);
+        }
+    }
+
+    public void setVisible(boolean visible) {
+        this.isVisible = visible;
+        setFocusable(visible);
+        setWindowAlpha(visible ? 1.0f : 0.0f);
     }
 
     public void setState(PanelState newState) {
