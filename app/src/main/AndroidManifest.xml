@@ -68,14 +68,17 @@
         <service
             android:name=".manager.service.OverlayService"
             android:enabled="true"
-            android:exported="true"
-            android:foregroundServiceType="shortService">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.android.launcher3.WINDOW_OVERLAY" />
+                <action android:name="com.google.android.apps.gsa.sidekick.SidekickService" />
 
                 <data android:scheme="app" />
             </intent-filter>
-
+            <intent-filter>
+                <action android:name="com.android.launcher3.WINDOW_OVERLAY" />
+                <data android:scheme="app" />
+            </intent-filter>
             <meta-data
                 android:name="service.api.version"
                 android:value="7" />
