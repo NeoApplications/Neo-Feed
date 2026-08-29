@@ -6,6 +6,9 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 -keep class com.google.android.libraries.launcherclient.** { *; }
 -keep class ua.itaysonlab.hfsdk.** { *; }
+-keep class com.google.android.libraries.gsa.d.a.** { *; }
+
+-keep class com.saulhdev.feeder.manager.service.OverlayService.**{*;}
 
 # For Okio
 # Animal Sniffer compileOnly dependency to ensure APIs are compatible with older versions of Java.

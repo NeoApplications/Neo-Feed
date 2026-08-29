@@ -37,9 +37,6 @@ android {
         multiDexEnabled = true
     }
 
-    // The applicationVariants API is removed in AGP 9.0+. 
-    // Use androidComponents.onVariants to customize APK outputs.
-
     buildTypes {
         debug {
             isMinifyEnabled = false
@@ -48,7 +45,8 @@ android {
         }
 
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
