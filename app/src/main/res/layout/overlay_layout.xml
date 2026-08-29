@@ -27,11 +27,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
+        app:elevation="0dp"
         app:liftOnScrollColor="@android:color/transparent">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
             app:contentScrim="@android:color/transparent"
             app:layout_scrollFlags="scroll|enterAlways"
             app:titleCollapseMode="fade">

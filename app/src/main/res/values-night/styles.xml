@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="BaseTheme" parent="Theme.Material3.DynamicColors.Dark">
-        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Surface</item>
+        <item name="toolbarStyle">@style/Widget.Material3.Toolbar</item>
         <item name="materialCardViewStyle">@style/MaterialCard</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

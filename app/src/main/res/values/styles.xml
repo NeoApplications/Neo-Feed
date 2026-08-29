@@ -1,6 +1,6 @@
 <resources>
     <style name="BaseTheme" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
-        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Surface</item>
+        <item name="toolbarStyle">@style/Widget.Material3.Toolbar</item>
         <item name="materialCardViewStyle">@style/MaterialCard</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
