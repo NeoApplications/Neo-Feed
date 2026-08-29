@@ -59,7 +59,7 @@ object MastodonFeedSync {
         val token = mastodonStorage.getAccessToken(instance, account)
             ?: throw ResponseFailure("No token for ${feedSql.title}")
 
-        val limit = prefs.mastodonItemsPerFeed.getValue().toInt().coerceAtLeast(1)
+        val limit = prefs.itemsPerFeed.getValue().toInt().coerceAtLeast(1)
 
         val statuses = mastodonApi.fetchHomeTimeline(instance, token, limit).getOrElse {
             throw ResponseFailure("Mastodon sync failed for ${feedSql.title}: ${it.message}")
