@@ -86,8 +86,10 @@ class DialogOverlayController extends ContextThemeWrapper implements Window.Call
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-            onBackPressed();
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                onBackPressed();
+            }
             return true;
         }
         return window.superDispatchKeyEvent(event);
