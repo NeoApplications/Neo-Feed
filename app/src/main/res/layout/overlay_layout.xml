@@ -21,24 +21,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/overlay_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:layout_height="match_parent">
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         app:liftOnScrollColor="@android:color/transparent">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            style="?attr/collapsingToolbarLayoutMediumStyle"
+        <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="?attr/actionBarSize"
             app:contentScrim="@android:color/transparent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:layout_scrollFlags="scroll|enterAlways"
             app:titleCollapseMode="fade">
 
             <include layout="@layout/overlay_header" />
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -52,6 +51,7 @@
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:listitem="@layout/feed_card_story_large" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -69,65 +69,5 @@
         android:src="@drawable/ic_caret_up"
         android:visibility="gone"
         app:rippleColor="#6D353232" />
-
-    <RelativeLayout
-        android:id="@+id/no_access_stub"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
-
-            <ImageView
-                android:id="@+id/nas_icon"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/ic_notification" />
-
-            <TextView
-                android:id="@+id/nas_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/overlay_no_permission"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/nas_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:text="@string/overlay_no_permission_desc" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/nas_action"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/allow_notify_to_settings" />
-        </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/nas_reload"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="8dp"
-            android:text="@string/overlay_reload"
-            android:textAllCaps="false" />
-    </RelativeLayout>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

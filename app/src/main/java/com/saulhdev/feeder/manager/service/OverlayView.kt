@@ -3,7 +3,6 @@ package com.saulhdev.feeder.manager.service
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +11,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -77,8 +81,9 @@ class OverlayView(val context: Context) :
         themeHolder = OverlayThemeHolder(this)
 
         val bgColor = themeHolder.currentTheme.get(CardTheme.Colors.OVERLAY_BG.ordinal)
-        getWindow().setBackgroundDrawable(ColorDrawable((bgColor and 0x00ffffff)))
+        getWindow().setBackgroundDrawable((bgColor and 0x00ffffff).toDrawable())
 
+        initInsets()
         initRecyclerView()
         initHeader()
         refreshNotifications()
@@ -177,6 +182,58 @@ class OverlayView(val context: Context) :
             .setTextColor(theme.get(CardTheme.Colors.TEXT_COLOR_PRIMARY.ordinal))
     }
 
+    private fun getStatusBarHeight(): Int {
+        val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+        return if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else 0
+    }
+
+    private fun getNavigationBarHeight(): Int {
+        val resourceId =
+            context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        return if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else 0
+    }
+
+    private fun applyInsets(statusBarTop: Int, navBarBottom: Int, left: Int = 0, right: Int = 0) {
+        val top = maxOf(statusBarTop, getStatusBarHeight())
+        val bottom = maxOf(navBarBottom, getNavigationBarHeight())
+        val density = context.resources.displayMetrics.density
+
+        rootView.findViewById<View>(R.id.app_bar)?.updatePadding(top = top)
+
+        rootView.findViewById<RecyclerView>(R.id.recycler)?.updatePadding(
+            left = left,
+            right = right,
+            bottom = bottom
+        )
+
+        rootView.findViewById<FloatingActionButton>(R.id.button_return_to_top)?.let { fab ->
+            fab.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                bottomMargin = (64 * density).toInt() + bottom
+                rightMargin = (24 * density).toInt() + right
+            }
+        }
+
+    }
+
+    private fun initInsets() {
+        applyInsets(getStatusBarHeight(), getNavigationBarHeight())
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { _, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            applyInsets(insets.top, insets.bottom, insets.left, insets.right)
+            windowInsets
+        }
+
+        rootView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) {
+                ViewCompat.requestApplyInsets(v)
+            }
+
+            override fun onViewDetachedFromWindow(v: View) {}
+        })
+    }
 
     private fun initRecyclerView() {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recycler)
@@ -334,7 +391,7 @@ class OverlayView(val context: Context) :
         val bgColor = themeHolder.currentTheme.get(CardTheme.Colors.OVERLAY_BG.ordinal)
         val alpha = if (f <= 0f) 0f else prefs.overlayTransparency.getValue()
         val color = (alpha * 255.0f).toInt() shl 24 or (bgColor and 0x00ffffff)
-        getWindow().setBackgroundDrawable(ColorDrawable(color))
+        getWindow().setBackgroundDrawable(color.toDrawable())
     }
 
     override fun onClientMessage(action: String) {
