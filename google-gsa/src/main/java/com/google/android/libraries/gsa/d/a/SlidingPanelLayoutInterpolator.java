@@ -46,7 +46,7 @@ final class SlidingPanelLayoutInterpolator extends AnimatorListenerAdapter imple
     @Override
     public void onAnimationEnd(Animator animation) {
         animator = null;
-        layout.updatePanelOffset(finalX); // Possibly renaming BM() would help readability
+        layout.updatePanelOffset(finalX);
 
         if (!layout.settling) return;
 
@@ -66,7 +66,6 @@ final class SlidingPanelLayoutInterpolator extends AnimatorListenerAdapter imple
 
     @Override
     public float getInterpolation(float input) {
-        // Ease-out quint interpolation
         float t = input - 1.0f;
         return (t * t * t * t * t) + 1.0f;
     }

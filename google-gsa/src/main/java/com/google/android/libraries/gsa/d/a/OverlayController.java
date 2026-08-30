@@ -173,7 +173,6 @@ public class OverlayController extends DialogOverlayController {
 
     public void setWindowAlpha(float alpha) {
         WindowManager.LayoutParams attrs = window.getAttributes();
-        // Limitar alpha para evitar parpadeos en valores extremos y asegurar que el sistema lo procese
         float targetAlpha = Math.max(0.0f, Math.min(1.0f, alpha));
         if (attrs.alpha != targetAlpha) {
             attrs.alpha = targetAlpha;

@@ -30,7 +30,7 @@
         app:elevation="0dp"
         app:liftOnScrollColor="@android:color/transparent">
 
-        <com.google.android.material.appbar.MaterialToolbar
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@android:color/transparent"
@@ -39,7 +39,7 @@
             app:titleCollapseMode="fade">
 
             <include layout="@layout/overlay_header" />
-        </com.google.android.material.appbar.MaterialToolbar>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 

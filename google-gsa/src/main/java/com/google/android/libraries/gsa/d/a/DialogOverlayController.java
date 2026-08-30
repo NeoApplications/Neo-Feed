@@ -49,6 +49,9 @@ class DialogOverlayController extends ContextThemeWrapper implements Window.Call
     void onBackPressed() {
     }
 
+    void closePanelIfNeeded(int flags) {
+    }
+
     void registerBackCallbackIfNeeded() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return;
@@ -89,6 +92,12 @@ class DialogOverlayController extends ContextThemeWrapper implements Window.Call
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
                 onBackPressed();
+            }
+            return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_HOME) {
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                closePanelIfNeeded(1);
             }
             return true;
         }

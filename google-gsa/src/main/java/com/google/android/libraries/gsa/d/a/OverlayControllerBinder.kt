@@ -57,13 +57,13 @@ class OverlayControllerBinder(
     override fun openOverlay(options: Int) {
         checkCallerId()
         this.mainThreadHandler.removeMessages(6)
-        Message.obtain(this.mainThreadHandler, 6, 0, options).sendToTarget()
+        Message.obtain(this.mainThreadHandler, 6, 1, options).sendToTarget()
     }
 
     override fun closeOverlay(options: Int) {
         checkCallerId()
         mainThreadHandler.removeMessages(6)
-        Message.obtain(mainThreadHandler, 6, 1, 0, Pair.create(Bundle(), callback)).sendToTarget()
+        Message.obtain(mainThreadHandler, 6, 0, options).sendToTarget()
     }
 
     override fun requestVoiceDetection(start: Boolean) {

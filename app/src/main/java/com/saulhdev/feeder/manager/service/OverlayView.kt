@@ -1,6 +1,9 @@
 package com.saulhdev.feeder.manager.service
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
@@ -66,6 +69,14 @@ class OverlayView(val context: Context) :
     private lateinit var rootView: View
     private lateinit var adapter: FeedAdapter
 
+    private val closeSystemDialogsReceiver = object : BroadcastReceiver() {
+        override fun onReceive(c: Context?, intent: Intent?) {
+            if (intent?.action == Intent.ACTION_CLOSE_SYSTEM_DIALOGS) {
+                closePanelIfNeeded(1)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -107,12 +118,18 @@ class OverlayView(val context: Context) :
             }
         }
         NeoApp.bridge.setCallback(this)
+
+        val filter = IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(closeSystemDialogsReceiver, filter, Context.RECEIVER_EXPORTED)
+        } else {
+            context.registerReceiver(closeSystemDialogsReceiver, filter)
+        }
     }
 
     override fun closePanelIfNeeded(flags: Int) {
         if (AbstractFloatingView.isAnyOpen()) {
             AbstractFloatingView.closeAllOpenViews(context)
-            return
         }
         super.closePanelIfNeeded(flags)
     }
@@ -381,6 +398,10 @@ class OverlayView(val context: Context) :
     }
 
     override fun onDestroy() {
+        try {
+            context.unregisterReceiver(closeSystemDialogsReceiver)
+        } catch (_: Exception) {
+        }
         super.onDestroy()
         NeoApp.bridge.setCallback(null)
     }
