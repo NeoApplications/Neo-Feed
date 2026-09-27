@@ -13,7 +13,7 @@ fun getVideo(src: String?): Video? {
             val videoId = match.groupValues[1]
             Video(
                 src = src,
-                imageUrl = "http://img.youtube.com/vi/$videoId/hqdefault.jpg",
+                imageUrl = "https://img.youtube.com/vi/$videoId/hqdefault.jpg",
                 link = "https://www.youtube.com/watch?v=$videoId"
             )
         }
