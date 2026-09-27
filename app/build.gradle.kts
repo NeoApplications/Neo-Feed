@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.aboutLibraries)
 }
 
 allprojects {
@@ -202,6 +203,9 @@ dependencies {
     implementation(libs.tagsoup)
     implementation(libs.jsoup)
     implementation(libs.slf4j)
+    implementation(libs.aboutlibraries.core)
+    implementation(libs.aboutlibraries.compose.core)
+    implementation(libs.aboutlibraries.compose.m3)
 
     // Test
     testImplementation(libs.test.runner)

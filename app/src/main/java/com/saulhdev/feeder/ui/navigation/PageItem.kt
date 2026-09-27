@@ -36,6 +36,11 @@ open class PageItem(
             icon = Phosphor.Copyleft,
             route = NavRoute.License,
         )
+        val OpenSource = PageItem(
+            titleId = R.string.about_open_source,
+            icon = Phosphor.Copyleft,
+            route = NavRoute.OpenSource,
+        )
         val AboutChangelog = PageItem(
             titleId = R.string.about_changelog,
             icon = Phosphor.ListDashes,

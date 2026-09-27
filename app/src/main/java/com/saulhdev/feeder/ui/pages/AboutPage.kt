@@ -49,6 +49,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +62,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import coil.annotation.ExperimentalCoilApi
+import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
+import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
+import com.mikepenz.aboutlibraries.ui.compose.variant.LibrariesVariant
 import com.saulhdev.feeder.BuildConfig
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.components.ContributorRow
@@ -189,7 +193,13 @@ fun AboutPage() {
             item {
                 PreferenceGroupHeading(heading = stringResource(id = R.string.about_build_information))
             }
-            itemsIndexed(listOf(PageItem.AboutLicense, PageItem.AboutChangelog)) { i, it ->
+            itemsIndexed(
+                listOf(
+                    PageItem.AboutLicense,
+                    PageItem.OpenSource,
+                    PageItem.AboutChangelog
+                )
+            ) { i, it ->
                 PagePreference(
                     titleId = it.titleId,
                     icon = it.icon,
@@ -270,9 +280,25 @@ fun LicensePage() {
         ) {
             item {
                 PreferencesWebView(url = "file:///android_asset/license.htm")
-
             }
         }
+    }
+}
+
+@Composable
+fun OpenSourcePage() {
+    ViewWithActionBar(
+        title = stringResource(R.string.about_open_source),
+    ) { paddingValues ->
+
+        val libraries by produceLibraries(R.raw.aboutlibraries)
+        LibrariesContainer(
+            libraries,
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            variant = LibrariesVariant.Traditional
+        )
     }
 }
 

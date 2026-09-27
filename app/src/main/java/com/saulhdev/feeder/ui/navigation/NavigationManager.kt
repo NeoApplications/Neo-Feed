@@ -46,6 +46,7 @@ import com.saulhdev.feeder.ui.pages.ChangelogPage
 import com.saulhdev.feeder.ui.pages.LicensePage
 import com.saulhdev.feeder.ui.pages.MainPage
 import com.saulhdev.feeder.ui.pages.MastodonCallbackPage
+import com.saulhdev.feeder.ui.pages.OpenSourcePage
 import com.saulhdev.feeder.ui.pages.PluginsPage
 import com.saulhdev.feeder.ui.pages.PreferencesPage
 import com.saulhdev.feeder.ui.pages.SourceAddPage
@@ -85,6 +86,7 @@ fun NavigationManager(
             }
             composable<NavRoute.About> { AboutPage() }
             composable<NavRoute.License> { LicensePage() }
+            composable<NavRoute.OpenSource> { OpenSourcePage() }
             composable<NavRoute.Changelog> { ChangelogPage() }
             composable<NavRoute.SourceAdd> { SourceAddPage() }
             composable<NavRoute.BlockedWords> { BlockedWordsPage() }
@@ -177,6 +179,8 @@ open class NavRoute {
     @Serializable
     data object License : NavRoute()
 
+    @Serializable
+    data object OpenSource : NavRoute()
     @Serializable
     data class WebView(val url: String = "") : NavRoute()
 }
