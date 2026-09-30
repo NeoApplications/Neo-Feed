@@ -40,6 +40,7 @@ import com.saulhdev.feeder.viewmodels.SearchFeedViewModel
 import com.saulhdev.feeder.viewmodels.SortFilterViewModel
 import com.saulhdev.feeder.viewmodels.SourceEditViewModel
 import com.saulhdev.feeder.viewmodels.SourceListViewModel
+import com.saulhdev.feeder.viewmodels.SourcesPluginsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Cache
@@ -73,6 +74,7 @@ class NeoApp : MultiDexApplication(), KoinStartup {
         viewModelOf(::SearchFeedViewModel)
         viewModelOf(::ArticleListViewModel)
         viewModelOf(::SourceListViewModel)
+        viewModelOf(::SourcesPluginsViewModel)
         viewModelOf(::ArticleViewModel)
         viewModelOf(::SortFilterViewModel)
         viewModelOf(::MastodonAuthViewModel)

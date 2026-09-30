@@ -28,6 +28,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.saulhdev.feeder.R
+import com.saulhdev.feeder.data.entity.NeoTheme
 import com.saulhdev.feeder.data.entity.SORT_CHRONOLOGICAL
 import com.saulhdev.feeder.data.weather.OWMWeatherProvider
 import com.saulhdev.feeder.ui.icons.Phosphor
@@ -43,8 +44,6 @@ import com.saulhdev.feeder.ui.icons.phosphor.FunnelSimple
 import com.saulhdev.feeder.ui.icons.phosphor.Hash
 import com.saulhdev.feeder.ui.icons.phosphor.Info
 import com.saulhdev.feeder.ui.icons.phosphor.Nut
-import com.saulhdev.feeder.ui.icons.phosphor.PaintRoller
-import com.saulhdev.feeder.ui.icons.phosphor.Puzzle
 import com.saulhdev.feeder.ui.icons.phosphor.SubtractSquare
 import com.saulhdev.feeder.ui.icons.phosphor.Swatches
 import com.saulhdev.feeder.ui.icons.phosphor.WifiHigh
@@ -54,8 +53,6 @@ import com.saulhdev.feeder.utils.getItemsPerFeed
 import com.saulhdev.feeder.utils.getSortingOptions
 import com.saulhdev.feeder.utils.getSyncFrequency
 import com.saulhdev.feeder.utils.getSyncRange
-import com.saulhdev.feeder.data.entity.NeoTheme
-import com.saulhdev.feeder.utils.getThemes
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject
@@ -206,14 +203,6 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     )
 
     /* Others */
-    val plugins = StringPref(
-        titleId = R.string.plugins_and_accounts,
-        icon = Phosphor.Puzzle,
-        key = PLUGINS,
-        dataStore = get(),
-        route = NavRoute.Plugins
-    )
-
     val about = StringPref(
         titleId = R.string.title_about,
         icon = Phosphor.Info,
@@ -294,7 +283,6 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val SYNC_RANGE = stringPreferencesKey("pref_sync_range")
         val ITEMS_PER_FEED = stringPreferencesKey("pref_items_per_feed")
         val BLOCKED_WORDS = stringSetPreferencesKey("pref_blocked_words")
-        val PLUGINS = stringPreferencesKey("pref_plugins")
         val ABOUT = stringPreferencesKey("pref_about")
         val DEBUG = booleanPreferencesKey("pref_debugging")
         val WEATHER_ENABLED = booleanPreferencesKey("pref_weather_enabled")
