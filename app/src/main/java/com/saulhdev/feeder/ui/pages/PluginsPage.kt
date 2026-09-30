@@ -37,9 +37,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -61,12 +63,10 @@ import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.account.AccountConfig
 import com.saulhdev.feeder.data.account.AccountType
-import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.components.preferences.PreferenceGroupHeading
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowCounterClockwise
 import com.saulhdev.feeder.ui.icons.phosphor.Plus
-import com.saulhdev.feeder.ui.navigation.LocalNavController
 import com.saulhdev.feeder.ui.pages.plugins.AddAccountSheet
 import com.saulhdev.feeder.ui.pages.plugins.MastodonConfigDialog
 import com.saulhdev.feeder.ui.pages.plugins.MinifluxConfigDialog
@@ -76,10 +76,7 @@ import com.saulhdev.feeder.viewmodels.PluginsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PluginsPage(
-    viewModel: PluginsViewModel = koinNeoViewModel(),
-) {
-    val navController = LocalNavController.current
+fun PluginsPage(viewModel: PluginsViewModel = koinNeoViewModel()) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -88,9 +85,7 @@ fun PluginsPage(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var editingNextcloudAccount by remember {
-        mutableStateOf<AccountConfig.NextcloudNewsAccount?>(
-            null
-        )
+        mutableStateOf<AccountConfig.NextcloudNewsAccount?>(null)
     }
     var isCreatingNextcloud by remember { mutableStateOf(false) }
 
@@ -107,15 +102,13 @@ fun PluginsPage(
         }
     }
 
-    ViewWithActionBar(
-        title = stringResource(id = R.string.plugins_and_accounts),
-        showBackButton = true,
-        onBackAction = { navController.popBackStack() },
+    Scaffold(
+        floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { showAddSheet = true },
                 modifier = Modifier.padding(16.dp),
-                shape = MaterialTheme.shapes.extraLarge
+                shape = MaterialTheme.shapes.extraLarge,
             ) {
                 Icon(
                     imageVector = Phosphor.Plus,
@@ -124,27 +117,27 @@ fun PluginsPage(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = stringResource(id = R.string.add_account))
             }
-        }
-    ) { paddingValues ->
+        },
+    ) { _ ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 80.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item {
                 Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                    ),
-                    modifier = Modifier.fillMaxWidth()
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor =
+                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        ),
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = stringResource(id = R.string.plugins_summary),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(16.dp),
                     )
                 }
             }
@@ -153,7 +146,9 @@ fun PluginsPage(
                 uiState.accounts.filterIsInstance<AccountConfig.NextcloudNewsAccount>()
             if (nextcloudAccounts.isNotEmpty()) {
                 item {
-                    PreferenceGroupHeading(heading = stringResource(id = R.string.service_nextcloud_news))
+                    PreferenceGroupHeading(
+                        heading = stringResource(id = R.string.service_nextcloud_news)
+                    )
                 }
                 items(nextcloudAccounts, key = { it.id }) { account ->
                     AccountCard(
@@ -164,7 +159,7 @@ fun PluginsPage(
                         isSyncing = uiState.isSyncing,
                         onSwitch = { viewModel.toggleAccountEnabled(account) },
                         onSyncNow = { viewModel.syncAccount(account, context) },
-                        onClick = { editingNextcloudAccount = account }
+                        onClick = { editingNextcloudAccount = account },
                     )
                 }
             }
@@ -178,17 +173,17 @@ fun PluginsPage(
                 items(mastodonAccounts, key = { it.id }) { account ->
                     AccountCard(
                         title = account.displayName,
-                        subtitle = stringResource(
-                            id = R.string.mastodon_instance,
-                            account.instance
-                        ),
+                        subtitle =
+                            stringResource(
+                                id = R.string.mastodon_instance,
+                                account.instance,
+                            ),
                         icon = ImageVector.vectorResource(id = R.drawable.mastodon),
-
                         isEnabled = account.isEnabled,
                         isSyncing = uiState.isSyncing,
                         onSwitch = { viewModel.toggleAccountEnabled(account) },
                         onSyncNow = { viewModel.syncAccount(account, context) },
-                        onClick = { editingMastodonAccount = account }
+                        onClick = { editingMastodonAccount = account },
                     )
                 }
             }
@@ -208,7 +203,7 @@ fun PluginsPage(
                         isSyncing = uiState.isSyncing,
                         onSwitch = { viewModel.toggleAccountEnabled(account) },
                         onSyncNow = { viewModel.syncAccount(account, context) },
-                        onClick = { editingMinifluxAccount = account }
+                        onClick = { editingMinifluxAccount = account },
                     )
                 }
             }
@@ -229,7 +224,7 @@ fun PluginsPage(
                     AccountType.MASTODON -> isCreatingMastodon = true
                     AccountType.MINIFLUX -> isCreatingMiniflux = true
                 }
-            }
+            },
         )
     }
 
@@ -258,7 +253,7 @@ fun PluginsPage(
                 viewModel.clearTestConnectionState()
                 editingNextcloudAccount = null
                 isCreatingNextcloud = false
-            }
+            },
         )
     }
 
@@ -278,10 +273,9 @@ fun PluginsPage(
             onDismiss = {
                 editingMastodonAccount = null
                 isCreatingMastodon = false
-            }
+            },
         )
     }
-
 
     if (isCreatingMiniflux || editingMinifluxAccount != null) {
         MinifluxConfigDialog(
@@ -308,7 +302,7 @@ fun PluginsPage(
                 viewModel.clearTestConnectionState()
                 editingMinifluxAccount = null
                 isCreatingMiniflux = false
-            }
+            },
         )
     }
 }
@@ -325,41 +319,39 @@ private fun AccountCard(
     onClick: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                modifier = Modifier.size(28.dp)
+                tint =
+                    if (isEnabled) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.outline,
+                modifier = Modifier.size(28.dp),
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
+                    color =
+                        if (isEnabled) MaterialTheme.colorScheme.onSurface
+                        else MaterialTheme.colorScheme.outline,
                 )
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             IconButton(
                 onClick = onSyncNow,
-                enabled = isEnabled && !isSyncing
+                enabled = isEnabled && !isSyncing,
             ) {
                 if (isSyncing) {
                     CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
@@ -367,13 +359,13 @@ private fun AccountCard(
                     Icon(
                         imageVector = Phosphor.ArrowCounterClockwise,
                         contentDescription = stringResource(id = R.string.sync_now),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
             Switch(
                 checked = isEnabled,
-                onCheckedChange = onSwitch
+                onCheckedChange = onSwitch,
             )
         }
     }
