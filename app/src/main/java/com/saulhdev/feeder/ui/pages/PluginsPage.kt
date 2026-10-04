@@ -18,7 +18,6 @@
 
 package com.saulhdev.feeder.ui.pages
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -108,15 +107,18 @@ fun PluginsPage(viewModel: PluginsViewModel = koinNeoViewModel()) {
             ExtendedFloatingActionButton(
                 onClick = { showAddSheet = true },
                 modifier = Modifier.padding(16.dp),
+                expanded = true,
                 shape = MaterialTheme.shapes.extraLarge,
-            ) {
-                Icon(
-                    imageVector = Phosphor.Plus,
-                    contentDescription = stringResource(id = R.string.add_account),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = stringResource(id = R.string.add_account))
-            }
+                icon = {
+                    Icon(
+                        imageVector = Phosphor.Plus,
+                        contentDescription = stringResource(id = R.string.add_account),
+                    )
+                },
+                text = {
+                    Text(text = stringResource(id = R.string.add_account))
+                },
+            )
         },
     ) { _ ->
         LazyColumn(
@@ -319,7 +321,8 @@ private fun AccountCard(
     onClick: () -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Row(

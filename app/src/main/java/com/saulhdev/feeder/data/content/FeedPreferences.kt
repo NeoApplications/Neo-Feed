@@ -125,7 +125,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         entries = getSyncFrequency(context)
     )
 
-    var syncRange = StringSelectionPref(
+    val syncRange = StringSelectionPref(
         titleId = R.string.pref_sync_range,
         icon = Phosphor.Clock,
         key = SYNC_RANGE,

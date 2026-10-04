@@ -285,4 +285,5 @@
     <string name="palette_neutral">Neutral</string>
     <string name="palette_tonal">Tonal</string>
     <string name="palette_expressive">Expressive</string>
+    <string name="add_source">Add source</string>
 </resources>

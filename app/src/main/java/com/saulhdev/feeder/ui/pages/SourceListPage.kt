@@ -31,6 +31,7 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
@@ -79,17 +80,22 @@ fun SourceListPage(viewModel: SourceListViewModel = koinNeoViewModel()) {
                             },
                             modifier = Modifier.padding(16.dp),
                             shape = MaterialTheme.shapes.extraLarge,
-                        ) {
-                            Icon(
-                                imageVector = Phosphor.Plus,
-                                contentDescription = stringResource(id = R.string.add_feed),
-                            )
-                        }
+                            expanded = true,
+                            icon = {
+                                Icon(
+                                    imageVector = Phosphor.Plus,
+                                    contentDescription = stringResource(id = R.string.add_source),
+                                )
+                            },
+                            text = {
+                                Text(text = stringResource(id = R.string.add_source))
+                            },
+                        )
                     },
                 ) { _ ->
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 8.dp),
+                        contentPadding = PaddingValues(all = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         item {

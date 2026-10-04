@@ -21,7 +21,6 @@ package com.saulhdev.feeder.ui.weather
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -49,7 +48,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -71,22 +69,23 @@ import kotlin.math.roundToInt
 fun WeatherWidget(
     modifier: Modifier = Modifier,
     prefs: FeedPreferences = koinInject(),
-    weatherRepo: WeatherRepository = koinInject()
+    weatherRepo: WeatherRepository = koinInject(),
 ) {
     val showWeather by prefs.weatherProvider.get().collectAsState(initial = false)
     if (!showWeather) return
-    val permissionDismissed by prefs.weatherPermissionDismissed.get()
-        .collectAsState(initial = true)
+    val permissionDismissed by prefs.weatherPermissionDismissed.get().collectAsState(initial = true)
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val granted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true ||
-                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
-        if (granted) {
-            weatherRepo.refreshWeather(force = true)
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            val granted =
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true ||
+                    permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+            if (granted) {
+                weatherRepo.refreshWeather(force = true)
+            }
         }
-    }
 
     LaunchedEffect(Unit) {
         weatherRepo.refreshWeather(false)
@@ -100,12 +99,12 @@ fun WeatherWidget(
             WeatherSuccessCard(
                 weather = state.weather,
                 modifier = modifier,
-                onClick = { showDialog = true }
+                onClick = { showDialog = true },
             )
             if (showDialog) {
                 WeatherDetailsDialog(
                     weather = state.weather,
-                    onDismiss = { showDialog = false }
+                    onDismiss = { showDialog = false },
                 )
             }
         }
@@ -117,7 +116,7 @@ fun WeatherWidget(
         is WeatherState.Error -> {
             WeatherErrorCard(
                 modifier = modifier,
-                onClick = { weatherRepo.refreshWeather(force = true) }
+                onClick = { weatherRepo.refreshWeather(force = true) },
             )
         }
 
@@ -129,13 +128,13 @@ fun WeatherWidget(
                         permissionLauncher.launch(
                             arrayOf(
                                 Manifest.permission.ACCESS_COARSE_LOCATION,
-                                Manifest.permission.ACCESS_FINE_LOCATION
+                                Manifest.permission.ACCESS_FINE_LOCATION,
                             )
                         )
                     },
                     onDismiss = {
                         prefs.weatherPermissionDismissed.setValue(true)
-                    }
+                    },
                 )
             }
         }
@@ -151,51 +150,47 @@ fun WeatherWidget(
 fun WeatherSuccessCard(
     weather: WeatherData,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        onClick = onClick,
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp)
-        ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_weather_location),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = weather.cityName,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
                 Text(
-                    text = stringResource(
-                        id = R.string.weather_max_min,
-                        "${weather.maxTemp.roundToInt()}${weather.unit}",
-                        "${weather.minTemp.roundToInt()}${weather.unit}"
-                    ),
+                    text =
+                        stringResource(
+                            id = R.string.weather_max_min,
+                            "${weather.maxTemp.roundToInt()}${weather.unit}",
+                            "${weather.minTemp.roundToInt()}${weather.unit}",
+                        ),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -203,15 +198,16 @@ fun WeatherSuccessCard(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    painter = painterResource(
-                        id = WeatherCode.getIconRes(weather.weatherCode, weather.isDay)
-                    ),
+                    painter =
+                        painterResource(
+                            id = WeatherCode.getIconRes(weather.weatherCode, weather.isDay)
+                        ),
                     contentDescription = null,
                     modifier = Modifier.size(44.dp),
-                    tint = Color.Unspecified
+                    tint = Color.Unspecified,
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
@@ -220,14 +216,13 @@ fun WeatherSuccessCard(
                     Text(
                         text = "${weather.temperature.roundToInt()}${weather.unit}",
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        text = stringResource(
-                            id = WeatherCode.getDescriptionRes(weather.weatherCode)
-                        ),
+                        text =
+                            stringResource(id = WeatherCode.getDescriptionRes(weather.weatherCode)),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -237,13 +232,13 @@ fun WeatherSuccessCard(
                             painter = painterResource(id = R.drawable.ic_weather_humidity),
                             contentDescription = null,
                             modifier = Modifier.size(13.dp),
-                            tint = Color.Unspecified
+                            tint = Color.Unspecified,
                         )
                         Spacer(modifier = Modifier.width(3.dp))
                         Text(
                             text = "${weather.humidity}%",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     Spacer(modifier = Modifier.height(4.dp))
@@ -252,13 +247,13 @@ fun WeatherSuccessCard(
                             painter = painterResource(id = R.drawable.ic_weather_wind),
                             contentDescription = null,
                             modifier = Modifier.size(13.dp),
-                            tint = Color.Unspecified
+                            tint = Color.Unspecified,
                         )
                         Spacer(modifier = Modifier.width(3.dp))
                         Text(
                             text = "${weather.windSpeed.roundToInt()} km/h",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -270,30 +265,27 @@ fun WeatherSuccessCard(
 @Composable
 private fun WeatherLoadingCard(modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp)),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        )
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             CircularProgressIndicator(
                 modifier = Modifier.size(20.dp),
-                strokeWidth = 2.dp
+                strokeWidth = 2.dp,
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = stringResource(id = R.string.weather_loading),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -302,34 +294,31 @@ private fun WeatherLoadingCard(modifier: Modifier = Modifier) {
 @Composable
 private fun WeatherErrorCard(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        )
+        onClick = onClick,
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp),
+            modifier = Modifier.fillMaxWidth().padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = stringResource(id = R.string.weather_error),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
             )
             Text(
                 text = stringResource(id = R.string.weather_tap_to_retry),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
         }
     }
@@ -342,57 +331,53 @@ private fun WeatherPermissionCard(
     onDismiss: () -> Unit,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .clickable(onClick = onGrantClick),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        )
+        onClick = onGrantClick,
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp),
+            modifier = Modifier.fillMaxWidth().padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Row(
                 modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_weather_location),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
                     text = stringResource(id = R.string.weather_location_permission_required),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
             Button(
                 onClick = onGrantClick,
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                modifier = Modifier.height(36.dp)
+                modifier = Modifier.height(36.dp),
             ) {
                 Text(
                     text = stringResource(id = R.string.weather_enable_location),
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
                 )
             }
             RoundButton(
                 icon = Phosphor.X,
                 description = stringResource(id = R.string.weather_dismiss_permission),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                onClick = onDismiss
+                onClick = onDismiss,
             )
         }
     }
 }
-
