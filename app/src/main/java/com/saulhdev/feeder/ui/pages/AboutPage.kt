@@ -133,7 +133,7 @@ fun AboutPage() {
                                     )
                                 }
                         },
-                        headlineContent = {
+                        content = {
                             Text(
                                 text = stringResource(id = R.string.app_name),
                                 style = MaterialTheme.typography.headlineMedium,

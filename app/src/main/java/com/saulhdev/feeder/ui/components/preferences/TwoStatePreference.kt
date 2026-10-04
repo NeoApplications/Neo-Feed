@@ -18,7 +18,6 @@
 
 package com.saulhdev.feeder.ui.components.preferences
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -117,7 +116,7 @@ fun TwoStatePreference(
         },
         onValueChange = {
             onToggle(it)
-        }
+        },
     )
 
     if (openDialog.value) {
@@ -131,7 +130,7 @@ fun TwoStatePreference(
                     coroutineScope.launch {
                         pref.setValue2(selectedKey)
                     }
-                }
+                },
             )
         }
     }
@@ -143,35 +142,37 @@ fun TwoStatePrefDialogUI(
     entries: Map<String, String>,
     selectedValue: String,
     openDialogCustom: MutableState<Boolean>,
-    onConfirm: (String) -> Unit
+    onConfirm: (String) -> Unit,
 ) {
-    var selected by remember(selectedValue, entries) {
-        mutableStateOf(
-            if (entries.containsKey(selectedValue)) selectedValue
-            else entries.keys.firstOrNull() ?: ""
-        )
-    }
+    var selected by
+        remember(selectedValue, entries) {
+            mutableStateOf(
+                if (entries.containsKey(selectedValue)) selectedValue
+                else entries.keys.firstOrNull() ?: ""
+            )
+        }
     val entryPairs = remember(entries) { entries.toList() }
 
     Card(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
     ) {
         Column(
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
                 text = stringResource(id = titleId),
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
             LazyColumn(
-                modifier = Modifier
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .weight(1f, false)
-                    .blockShadow(),
+                modifier =
+                    Modifier.padding(top = 16.dp, bottom = 8.dp).weight(1f, false).blockShadow()
             ) {
                 items(items = entryPairs, key = { it.first }) { item ->
                     ListItemWithRadioButton(
@@ -183,26 +184,22 @@ fun TwoStatePrefDialogUI(
                         enabled = true,
                         onClick = {
                             selected = item.first
-                        }
+                        },
                     )
                 }
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.End
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.End,
             ) {
-                DialogNegativeButton(
-                    onClick = { openDialogCustom.value = false }
-                )
+                DialogNegativeButton(onClick = { openDialogCustom.value = false })
                 DialogPositiveButton(
                     modifier = Modifier.padding(start = 16.dp),
                     onClick = {
                         openDialogCustom.value = false
                         onConfirm(selected)
-                    }
+                    },
                 )
             }
         }
@@ -222,10 +219,34 @@ fun TwoStatePreference(
     index: Int = 0,
     groupSize: Int = 1,
     onclick: () -> Unit = {},
-    onValueChange: (Boolean) -> Unit = {}
+    onValueChange: (Boolean) -> Unit = {},
 ) {
     ListItem(
-        headlineContent = {
+        leadingContent =
+            when {
+                icon != null -> {
+                    {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = stringResource(id = title),
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                }
+
+                iconId != 0 -> {
+                    {
+                        Icon(
+                            painter = painterResource(id = iconId),
+                            contentDescription = "",
+                            modifier = Modifier.clip(CircleShape).size(32.dp),
+                        )
+                    }
+                }
+
+                else -> null
+            },
+        content = {
             Text(
                 text = stringResource(id = title),
                 color = MaterialTheme.colorScheme.onSurface,
@@ -237,8 +258,8 @@ fun TwoStatePreference(
                 summaryText ?: if (summary != -1) stringResource(id = summary) else null
             if (displaySummary != null) {
                 Text(
-                    modifier = Modifier
-                        .addIf(!isEnabled) {
+                    modifier =
+                        Modifier.addIf(!isEnabled) {
                             alpha(0.3f)
                         },
                     text = displaySummary,
@@ -247,48 +268,17 @@ fun TwoStatePreference(
                 )
             }
         },
-        leadingContent = when {
-            icon != null -> {
-                {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = stringResource(id = title),
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                }
-            }
-
-            iconId != 0 -> {
-                {
-                    Icon(
-                        painter = painterResource(id = iconId),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(32.dp)
-                    )
-                }
-            }
-
-            else -> null
-        },
         trailingContent = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.width(8.dp))
                 VerticalDivider(
-                    modifier = Modifier
-                        .height(30.dp)
-                        .width(1.dp),
+                    modifier = Modifier.height(30.dp).width(1.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    thickness = 1.dp
+                    thickness = 1.dp,
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Switch(
-                    modifier = Modifier
-                        .height(24.dp),
+                    modifier = Modifier.height(24.dp),
                     checked = isChecked,
                     onCheckedChange = {
                         onValueChange(it)
@@ -297,18 +287,15 @@ fun TwoStatePreference(
                 )
             }
         },
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(enabled = isEnabled) {
-                onclick()
-            }
-            .clip(
-                GroupItemShape(index, groupSize - 1)
+        modifier = modifier.fillMaxWidth(),
+        onClick = onclick,
+        shapes = ListItemDefaults.shapes(shape = GroupItemShape(index, groupSize - 1)),
+        colors =
+            ListItemDefaults.colors(
+                containerColor =
+                    if (isChecked) {
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                    } else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
             ),
-        colors = ListItemDefaults.colors(
-            containerColor = if (isChecked) {
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-            } else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
-        )
     )
 }

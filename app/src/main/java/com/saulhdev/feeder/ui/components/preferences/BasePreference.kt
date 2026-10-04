@@ -18,7 +18,6 @@
 package com.saulhdev.feeder.ui.components.preferences
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.ui.theme.GroupItemShape
@@ -51,21 +49,19 @@ fun BasePreference(
     onClick: (() -> Unit)? = null,
 ) {
     ListItem(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(
-                GroupItemShape(index, groupSize - 1)
-            )
-            .addIf(onClick != null) {
-                clickable(enabled = isEnabled, onClick = onClick!!)
-            },
-        colors = ListItemDefaults.colors(
-            containerColor = if (isEnabled) {
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-            } else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
-        ),
+        modifier = modifier.fillMaxWidth(),
+        enabled = isEnabled,
+        onClick = onClick!!,
+        shapes = ListItemDefaults.shapes(shape = GroupItemShape(index, groupSize - 1)),
+        colors =
+            ListItemDefaults.colors(
+                containerColor =
+                    if (isEnabled) {
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                    } else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+            ),
         leadingContent = startWidget,
-        headlineContent = {
+        content = {
             Text(
                 text = stringResource(id = titleId),
                 color = MaterialTheme.colorScheme.onSurface,
@@ -74,8 +70,8 @@ fun BasePreference(
         },
         supportingContent = {
             Column(
-                modifier = Modifier
-                    .addIf(!isEnabled) {
+                modifier =
+                    Modifier.addIf(!isEnabled) {
                         alpha(0.3f)
                     }
             ) {
