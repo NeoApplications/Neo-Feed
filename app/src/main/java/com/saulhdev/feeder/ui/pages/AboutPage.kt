@@ -265,11 +265,11 @@ private val contributors =
 fun LicensePage() {
     ViewWithActionBar(title = stringResource(R.string.about_licenses)) { paddingValues ->
         LazyColumn(
-            modifier =
-                Modifier.padding(
+            contentPadding =
+                PaddingValues(
                     start = 8.dp,
                     end = 8.dp,
-                    top = 32.dp,
+                    top = paddingValues.calculateTopPadding(),
                     bottom = paddingValues.calculateBottomPadding(),
                 )
         ) {
@@ -294,14 +294,13 @@ fun ChangelogPage() {
     ViewWithActionBar(title = stringResource(R.string.about_changelog)) {
         Markdown(
             content = annotatedString,
-            modifier = Modifier.fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(it),
-            typography = markdownTypography(
-                h1 = MaterialTheme.typography.headlineLargeEmphasized,
-                h2 = MaterialTheme.typography.headlineMedium,
-                h3 = MaterialTheme.typography.headlineSmallEmphasized,
-            ),
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(it),
+            typography =
+                markdownTypography(
+                    h1 = MaterialTheme.typography.headlineLargeEmphasized,
+                    h2 = MaterialTheme.typography.headlineMedium,
+                    h3 = MaterialTheme.typography.headlineSmallEmphasized,
+                ),
             flavour = CommonMarkFlavourDescriptor(),
         )
     }
