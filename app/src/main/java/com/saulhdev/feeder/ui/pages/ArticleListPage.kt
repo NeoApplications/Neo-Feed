@@ -18,23 +18,19 @@
 
 package com.saulhdev.feeder.ui.pages
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -53,7 +49,7 @@ import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
-import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -76,6 +72,7 @@ import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.manager.localrss.SyncRestClient
 import com.saulhdev.feeder.ui.components.ArticleItem
 import com.saulhdev.feeder.ui.components.BookmarkItem
+import com.saulhdev.feeder.ui.components.BottomSheet
 import com.saulhdev.feeder.ui.components.OverflowMenu
 import com.saulhdev.feeder.ui.components.PullToRefreshLazyColumn
 import com.saulhdev.feeder.ui.icons.Phosphor
@@ -107,161 +104,149 @@ fun ArticleListPage(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    val filtersPageState =
+        rememberBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
+        )
     val paneNavigator = rememberListDetailPaneScaffoldNavigator<Any>()
     val articleId = remember { mutableStateOf("") }
 
     val state by viewModel.articleListState.collectAsState()
     val bookmarked by viewModel.bookmarksState.collectAsState()
 
+    var showFilters by remember { mutableStateOf(false) }
     var showBookmarks by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val showFAB by remember { derivedStateOf { listState.firstVisibleItemIndex > 4 } }
 
-    BackHandler(scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
-        scope.launch {
-            scaffoldState.bottomSheetState.partialExpand()
-        }
-    }
-
     NavigableListDetailPaneScaffold(
         navigator = paneNavigator,
         listPane = {
             AnimatedPane {
-                BottomSheetScaffold(
-                    scaffoldState = scaffoldState,
-                    sheetPeekHeight = 0.dp,
+                Scaffold(
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                     containerColor = Color.Transparent,
-                    sheetContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-                    sheetShape = MaterialTheme.shapes.extraSmall,
-                    sheetContent = {
-                        if (scaffoldState.bottomSheetState.currentValue != SheetValue.Hidden) {
-                            SortFilterSheet {
-                                scope.launch {
-                                    scaffoldState.bottomSheetState.partialExpand()
-                                }
-                            }
-                        } else Spacer(modifier = Modifier.height(8.dp))
-                    },
-                ) {
-                    Scaffold(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        containerColor = Color.Transparent,
-                        topBar = {
-                            TopAppBar(
-                                colors = TopAppBarDefaults.topAppBarColors(
+                    topBar = {
+                        TopAppBar(
+                            colors =
+                                TopAppBarDefaults.topAppBarColors(
                                     containerColor = MaterialTheme.colorScheme.background,
                                     scrolledContainerColor = MaterialTheme.colorScheme.background,
                                 ),
-                                title = { Text(text = stringResource(id = R.string.app_name)) },
-                                scrollBehavior = scrollBehavior,
-                                actions = {
-                                    IconButton(
-                                        modifier = Modifier
-                                            .size(size = 40.dp)
-                                            .clip(CircleShape),
-                                        onClick = {
-                                            scope.launch {
-                                                scaffoldState.bottomSheetState.expand()
-                                            }
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = if (state.isFilterModified) Phosphor.Filtered else Phosphor.Filter,
-                                            contentDescription = stringResource(id = R.string.sorting_order),
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
-
-                                    Surface(
-                                        color = if (showBookmarks) MaterialTheme.colorScheme.primaryContainer
-                                        else Color.Transparent,
-                                        shape = MaterialTheme.shapes.large,
-                                        onClick = {
-                                            showBookmarks = !showBookmarks
-                                        }
-                                    ) {
-                                        Icon(
-                                            modifier = Modifier.padding(8.dp),
-                                            imageVector = Phosphor.Bookmarks,
-                                            contentDescription = stringResource(id = R.string.title_bookmarks),
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
-
-                                    OverflowMenu {
-                                        DropdownMenuItem(
-                                            text = {
-                                                Text(text = stringResource(id = R.string.action_reload))
-                                            },
-                                            onClick = {
-                                                hideMenu()
-                                                scope.launch {
-                                                    syncClient.syncAllFeeds()
-                                                }
-                                            },
-                                            leadingIcon = {
-                                                Icon(
-                                                    imageVector = Phosphor.ArrowCounterClockwise,
-                                                    contentDescription = null,
-                                                )
-                                            }
-                                        )
-                                        HorizontalDivider()
-
-                                        DropdownMenuItem(
-                                            text = {
-                                                Text(text = stringResource(id = R.string.action_restart))
-                                            },
-                                            onClick = {
-                                                hideMenu()
-                                                NeoApp.instance!!.restart(false)
-                                            },
-                                            leadingIcon = {
-                                                Icon(
-                                                    imageVector = Phosphor.Power,
-                                                    contentDescription = null,
-                                                )
-                                            }
-                                        )
-                                    }
-                                }
-                            )
-                        },
-                        floatingActionButton = {
-                            AnimatedVisibility(
-                                visible = showFAB,
-                                enter = fadeIn(),
-                                exit = fadeOut(),
-                            ) {
-                                FloatingActionButton(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            title = { Text(text = stringResource(id = R.string.app_name)) },
+                            scrollBehavior = scrollBehavior,
+                            actions = {
+                                IconButton(
+                                    modifier = Modifier.size(size = 40.dp).clip(CircleShape),
                                     onClick = {
+                                        showFilters = true
                                         scope.launch {
-                                            listState.animateScrollToItem(0)
+                                            filtersPageState.expand()
                                         }
                                     },
                                 ) {
                                     Icon(
-                                        imageVector = Phosphor.CaretUp,
-                                        contentDescription = null,
+                                        imageVector =
+                                            if (state.isFilterModified) Phosphor.Filtered
+                                            else Phosphor.Filter,
+                                        contentDescription =
+                                            stringResource(id = R.string.sorting_order),
+                                        tint = MaterialTheme.colorScheme.primary,
                                     )
                                 }
+
+                                Surface(
+                                    color =
+                                        if (showBookmarks)
+                                            MaterialTheme.colorScheme.primaryContainer
+                                        else Color.Transparent,
+                                    shape = MaterialTheme.shapes.large,
+                                    onClick = {
+                                        showBookmarks = !showBookmarks
+                                    },
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.padding(8.dp),
+                                        imageVector = Phosphor.Bookmarks,
+                                        contentDescription =
+                                            stringResource(id = R.string.title_bookmarks),
+                                        tint = MaterialTheme.colorScheme.primary,
+                                    )
+                                }
+
+                                OverflowMenu {
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(text = stringResource(id = R.string.action_reload))
+                                        },
+                                        onClick = {
+                                            hideMenu()
+                                            scope.launch {
+                                                syncClient.syncAllFeeds()
+                                            }
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Phosphor.ArrowCounterClockwise,
+                                                contentDescription = null,
+                                            )
+                                        },
+                                    )
+                                    HorizontalDivider()
+
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                text = stringResource(id = R.string.action_restart)
+                                            )
+                                        },
+                                        onClick = {
+                                            hideMenu()
+                                            NeoApp.instance!!.restart(false)
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Phosphor.Power,
+                                                contentDescription = null,
+                                            )
+                                        },
+                                    )
+                                }
+                            },
+                        )
+                    },
+                    floatingActionButton = {
+                        AnimatedVisibility(
+                            visible = showFAB,
+                            enter = fadeIn(),
+                            exit = fadeOut(),
+                        ) {
+                            FloatingActionButton(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                onClick = {
+                                    scope.launch {
+                                        listState.animateScrollToItem(0)
+                                    }
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Phosphor.CaretUp,
+                                    contentDescription = null,
+                                )
                             }
                         }
-                    ) { paddingValues ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues)
-                        ) {
-                            when {
-                                showBookmarks -> LazyColumn(
+                    },
+                ) { paddingValues ->
+                    Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+                        when {
+                            showBookmarks ->
+                                LazyColumn(
                                     state = listState,
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    contentPadding = PaddingValues(8.dp)
+                                    contentPadding = PaddingValues(8.dp),
                                 ) {
                                     items(bookmarked.bookmarkedArticles, key = { it.id }) { item ->
                                         BookmarkItem(
@@ -275,33 +260,37 @@ fun ArticleListPage(
                                                         if (prefs.offlineReader.getValue()) {
                                                             scope.launch {
                                                                 paneNavigator.navigateTo(
-                                                                    ListDetailPaneScaffoldRole.Detail,
-                                                                    article.uuid
+                                                                    ListDetailPaneScaffoldRole
+                                                                        .Detail,
+                                                                    article.uuid,
                                                                 )
                                                             }
                                                         } else {
                                                             openLinkInCustomTab(
                                                                 context,
-                                                                article.link!!
+                                                                article.link!!,
                                                             )
                                                         }
                                                     }
                                                 }
                                                 scope.launch {
                                                     viewModel.unpinArticle(article.uuid)
-                                                    viewModel.registerOpenedArticle(item.article.uuid)
+                                                    viewModel.registerOpenedArticle(
+                                                        item.article.uuid
+                                                    )
                                                 }
                                             },
                                             onRemoveAction = {
                                                 scope.launch {
                                                     viewModel.bookmarkArticle(it.uuid, false)
                                                 }
-                                            }
+                                            },
                                         )
                                     }
                                 }
 
-                                else          -> PullToRefreshLazyColumn(
+                            else ->
+                                PullToRefreshLazyColumn(
                                     isRefreshing = state.isSyncing,
                                     onRefresh = {
                                         syncClient.syncAllFeeds()
@@ -310,10 +299,11 @@ fun ArticleListPage(
                                     content = {
                                         item(key = "header_weather_widget") {
                                             WeatherWidget(
-                                                modifier = Modifier.padding(
-                                                    horizontal = 4.dp,
-                                                    vertical = 4.dp
-                                                )
+                                                modifier =
+                                                    Modifier.padding(
+                                                        horizontal = 4.dp,
+                                                        vertical = 4.dp,
+                                                    )
                                             )
                                         }
                                         items(state.articles, key = { it.id }) { item ->
@@ -330,43 +320,64 @@ fun ArticleListPage(
                                                         scope.launch {
                                                             paneNavigator.navigateTo(
                                                                 ListDetailPaneScaffoldRole.Detail,
-                                                                item.id
+                                                                item.id,
                                                             )
                                                         }
                                                     } else {
                                                         openLinkInCustomTab(
                                                             context,
-                                                            item.link
+                                                            item.link,
                                                         )
                                                     }
                                                 }
                                                 scope.launch {
-                                                    viewModel.registerOpenedArticle(item.article.uuid)
+                                                    viewModel.registerOpenedArticle(
+                                                        item.article.uuid
+                                                    )
                                                 }
                                             }
                                         }
-                                    }
+                                    },
                                 )
-                            }
+                        }
+                    }
+                }
+
+                if (showFilters) {
+                    BottomSheet(
+                        sheetState = filtersPageState,
+                        onDismiss = {
+                            scope.launch { filtersPageState.hide() }
+                            showFilters = false
+                        },
+                    ) {
+                        SortFilterSheet {
+                            scope.launch { filtersPageState.hide() }
+                            showFilters = false
                         }
                     }
                 }
             }
         },
         detailPane = {
-            articleId.value = paneNavigator.currentDestination
-                ?.takeIf { it.pane == this.paneRole }?.contentKey
-                ?.toString().orEmpty()
+            articleId.value =
+                paneNavigator.currentDestination
+                    ?.takeIf { it.pane == this.paneRole }
+                    ?.contentKey
+                    ?.toString()
+                    .orEmpty()
 
-            articleId.value.takeIf { it.isNotEmpty() }?.let { id ->
-                AnimatedPane {
-                    ArticlePage(id) {
-                        scope.launch {
-                            paneNavigator.navigateBack()
+            articleId.value
+                .takeIf { it.isNotEmpty() }
+                ?.let { id ->
+                    AnimatedPane {
+                        ArticlePage(id) {
+                            scope.launch {
+                                paneNavigator.navigateBack()
+                            }
                         }
                     }
                 }
-            }
-        }
+        },
     )
 }
