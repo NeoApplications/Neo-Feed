@@ -8,6 +8,7 @@ compose-libs = "1.13.0-alpha03"
 compose-material = "1.5.0-alpha29"
 compose-material-adaptive = "1.3.0"
 compose-accompanist = "0.37.3"
+compose-markdown = "0.43.0"
 core-ktx = "1.19.1"
 datastore-preferences = "1.2.1"
 datetime = "0.8.0"
@@ -72,6 +73,8 @@ compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compos
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose-libs" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose-libs" }
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "material-kolor" }
+compose-markdown = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "compose-markdown" }
+compose-markdown-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "compose-markdown" }
 
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
