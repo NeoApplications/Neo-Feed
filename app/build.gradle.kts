@@ -14,6 +14,7 @@ allprojects {
             freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
             freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
         }
+        dependsOn("copyChangelogToAssets")
     }
 }
 
@@ -109,6 +110,17 @@ fun getEnvProperty(key: String): String {
     return "\"\""
 }
 
+tasks.register("copyChangelogToAssets") {
+    description = "Copy CHANGELOG.md to Assets"
+    copy {
+        from(project.rootDir)
+        include("CHANGELOG.md")
+        into("src/main/assets")
+        doLast {
+            println("CHANGELOG.md copied to assets")
+        }
+    }
+}
 
 androidComponents {
     onVariants { variant ->
