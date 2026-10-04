@@ -33,8 +33,8 @@ android {
         applicationId = "com.saulhdev.neofeed"
         minSdk = 26
         targetSdk = 37
-        versionCode = 2000
-        versionName = "2.0.0-alpha01"
+        versionCode = 2001
+        versionName = "2.0.0-beta01"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
