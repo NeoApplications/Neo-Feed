@@ -40,11 +40,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +60,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import coil.annotation.ExperimentalCoilApi
+import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.m3.markdownTypography
 import com.saulhdev.feeder.BuildConfig
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.components.ContributorRow
@@ -73,7 +78,9 @@ import com.saulhdev.feeder.ui.navigation.PageItem
 import com.saulhdev.feeder.ui.theme.kingthingsPrintingkit
 import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.utils.urlDecode
+import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
 import java.io.InputStream
+import java.io.InputStreamReader
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -275,10 +282,27 @@ fun LicensePage() {
 
 @Composable
 fun ChangelogPage() {
+    val context = LocalContext.current
+    val annotatedString =
+        remember(context) {
+            val reader = InputStreamReader(context.assets.open("CHANGELOG.md"))
+            reader.buffered().use { buffered ->
+                buffered.readText()
+            }
+        }
+
     ViewWithActionBar(title = stringResource(R.string.about_changelog)) {
-        PreferencesWebView(
-            url = "file:///android_asset/changelog.htm",
-            modifier = Modifier.padding(it),
+        Markdown(
+            content = annotatedString,
+            modifier = Modifier.fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(it),
+            typography = markdownTypography(
+                h1 = MaterialTheme.typography.headlineLargeEmphasized,
+                h2 = MaterialTheme.typography.headlineMedium,
+                h3 = MaterialTheme.typography.headlineSmallEmphasized,
+            ),
+            flavour = CommonMarkFlavourDescriptor(),
         )
     }
 }
