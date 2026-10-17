@@ -27,6 +27,16 @@ data class NextcloudUser(
 )
 
 @Serializable
+data class NextcloudVersion(
+    val version: String = "",
+)
+
+@Serializable
+data class NextcloudStatus(
+    val version: String = "",
+)
+
+@Serializable
 data class NextcloudFolder(
     val id: Long = 0,
     val name: String = "",
@@ -79,5 +89,6 @@ data class NextcloudItemsResponse(
 
 @Serializable
 data class MultipleItemsRequest(
-    val items: List<Long>,
+    val itemIds: List<Long> = emptyList(),
+    val items: List<Long> = itemIds,
 )
