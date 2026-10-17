@@ -1,4 +1,5 @@
 [versions]
+aboutLibraries = "15.3.0"
 agp = "9.4.1"
 appcompat = "1.8.0"
 browser = "1.10.0"
@@ -83,8 +84,10 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 
-accompanist-webview = { group = "com.google.accompanist", name = "accompanist-webview", version.ref = "compose-accompanist" }
-accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "compose-accompanist" }
+aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
+aboutlibraries-compose-core = { module = "com.mikepenz:aboutlibraries-compose-core", version.ref = "aboutLibraries" }
+aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
+
 
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
@@ -136,4 +139,5 @@ kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 

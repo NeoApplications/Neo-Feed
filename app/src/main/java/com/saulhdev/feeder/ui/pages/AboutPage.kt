@@ -47,6 +47,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +61,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import coil.annotation.ExperimentalCoilApi
+import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
+import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
+import com.mikepenz.aboutlibraries.ui.compose.variant.LibrariesVariant
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.markdownTypography
 import com.saulhdev.feeder.BuildConfig
@@ -88,20 +92,22 @@ fun AboutPage() {
     val title = stringResource(id = R.string.title_about)
     ViewWithActionBar(title = title) { paddingValues ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(8.dp),
         ) {
             item {
                 Column(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(4.dp)
-                            .background(
-                                MaterialTheme.colorScheme.surfaceContainerHighest,
-                                MaterialTheme.shapes.extraLarge,
-                            )
-                            .clip(MaterialTheme.shapes.extraLarge),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceContainerHighest,
+                            MaterialTheme.shapes.extraLarge
+                        )
+                        .clip(MaterialTheme.shapes.extraLarge),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -128,7 +134,8 @@ fun AboutPage() {
                                         bitmap = bitmap.asImageBitmap(),
                                         contentDescription = null,
                                         modifier =
-                                            Modifier.requiredSize(84.dp)
+                                            Modifier
+                                                .requiredSize(84.dp)
                                                 .clip(MaterialTheme.shapes.large),
                                     )
                                 }
@@ -152,15 +159,15 @@ fun AboutPage() {
                                             BuildConfig.VERSION_CODE +
                                             " )",
                                     style = MaterialTheme.typography.titleSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
                                     text = BuildConfig.APPLICATION_ID,
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
-                        },
+                        }
                     )
 
                     LazyRow(
@@ -191,11 +198,15 @@ fun AboutPage() {
                 )
             }
             item {
-                PreferenceGroupHeading(
-                    heading = stringResource(id = R.string.about_build_information)
-                )
+                PreferenceGroupHeading(heading = stringResource(id = R.string.about_build_information))
             }
-            itemsIndexed(listOf(PageItem.AboutLicense, PageItem.AboutChangelog)) { i, it ->
+            itemsIndexed(
+                listOf(
+                    PageItem.AboutLicense,
+                    PageItem.OpenSource,
+                    PageItem.AboutChangelog
+                )
+            ) { i, it ->
                 PagePreference(
                     titleId = it.titleId,
                     icon = it.icon,
@@ -211,72 +222,89 @@ fun AboutPage() {
 private data class Link(
     val icon: ImageVector,
     @StringRes val labelResId: Int,
-    val url: String,
+    val url: String
 )
 
 private data class TeamMember(
     @StringRes val name: Int,
     @StringRes val descriptionRes: Int,
     val photoUrl: String,
-    val webpage: String,
+    val webpage: String
 )
 
-private val links =
-    listOf(
-        Link(
-            icon = Phosphor.GithubLogo,
-            labelResId = R.string.about_source_code,
-            url = "https://github.com/NeoApplications/Neo-Feed",
-        ),
-        Link(
-            icon = Phosphor.Megaphone,
-            labelResId = R.string.about_channel,
-            url = "https://t.me/neo_applications",
-        ),
-        Link(
-            icon = Phosphor.TelegramLogo,
-            labelResId = R.string.about_community_telegram,
-            url = "https://t.me/neo_launcher",
-        ),
-        Link(
-            icon = Phosphor.BracketsSquare,
-            labelResId = R.string.about_community_matrix,
-            url = "https://matrix.to/#/#neo-launcher:matrix.org",
-        ),
+private val links = listOf(
+    Link(
+        icon = Phosphor.GithubLogo,
+        labelResId = R.string.about_source_code,
+        url = "https://github.com/NeoApplications/Neo-Feed"
+    ),
+    Link(
+        icon = Phosphor.Megaphone,
+        labelResId = R.string.about_channel,
+        url = "https://t.me/neo_applications"
+    ),
+    Link(
+        icon = Phosphor.TelegramLogo,
+        labelResId = R.string.about_community_telegram,
+        url = "https://t.me/neo_launcher"
+    ),
+    Link(
+        icon = Phosphor.BracketsSquare,
+        labelResId = R.string.about_community_matrix,
+        url = "https://matrix.to/#/#neo-launcher:matrix.org"
     )
+)
 
-private val contributors =
-    listOf(
-        TeamMember(
-            name = R.string.about_developer,
-            descriptionRes = R.string.author_role,
-            photoUrl = "https://avatars.githubusercontent.com/u/6044050",
-            webpage = "https://github.com/saulhdev",
-        ),
-        TeamMember(
-            name = R.string.about_developer2,
-            descriptionRes = R.string.author_role,
-            photoUrl = "https://avatars.githubusercontent.com/u/40302595",
-            webpage = "https://github.com/machiav3lli",
-        ),
+private val contributors = listOf(
+    TeamMember(
+        name = R.string.about_developer,
+        descriptionRes = R.string.author_role,
+        photoUrl = "https://avatars.githubusercontent.com/u/6044050",
+        webpage = "https://github.com/saulhdev"
+    ),
+    TeamMember(
+        name = R.string.about_developer2,
+        descriptionRes = R.string.author_role,
+        photoUrl = "https://avatars.githubusercontent.com/u/40302595",
+        webpage = "https://github.com/machiav3lli"
     )
+)
 
 @Composable
 fun LicensePage() {
-    ViewWithActionBar(title = stringResource(R.string.about_licenses)) { paddingValues ->
+    ViewWithActionBar(
+        title = stringResource(R.string.about_licenses),
+    ) { paddingValues ->
         LazyColumn(
-            contentPadding =
-                PaddingValues(
+            modifier = Modifier
+                .padding(
                     start = 8.dp,
                     end = 8.dp,
-                    top = paddingValues.calculateTopPadding(),
-                    bottom = paddingValues.calculateBottomPadding(),
+                    top = 32.dp,
+                    bottom = paddingValues.calculateBottomPadding()
                 )
         ) {
             item {
                 PreferencesWebView(url = "file:///android_asset/license.htm")
             }
         }
+    }
+}
+
+@Composable
+fun OpenSourcePage() {
+    ViewWithActionBar(
+        title = stringResource(R.string.about_open_source),
+    ) { paddingValues ->
+
+        val libraries by produceLibraries(R.raw.aboutlibraries)
+        LibrariesContainer(
+            libraries,
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            variant = LibrariesVariant.Traditional
+        )
     }
 }
 
@@ -294,7 +322,10 @@ fun ChangelogPage() {
     ViewWithActionBar(title = stringResource(R.string.about_changelog)) {
         Markdown(
             content = annotatedString,
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(it),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(it),
             typography =
                 markdownTypography(
                     h1 = MaterialTheme.typography.headlineLargeEmphasized,
