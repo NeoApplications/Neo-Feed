@@ -19,7 +19,6 @@
 package com.saulhdev.feeder.ui.components.dialog
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,10 +44,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.data.content.StringSelectionPref
 import com.saulhdev.feeder.ui.theme.GroupItemShape
@@ -58,7 +55,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun StringSelectionPrefDialogUI(
     pref: StringSelectionPref,
-    openDialogCustom: MutableState<Boolean>
+    openDialogCustom: MutableState<Boolean>,
 ) {
     var selected by remember { mutableStateOf(pref.getValue()) }
     val entryPairs = pref.entries.toList()
@@ -68,20 +65,20 @@ fun StringSelectionPrefDialogUI(
     Card(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
     ) {
         Column(
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
-                modifier = Modifier
-                    .blockShadow()
-                    .padding(all = 8.dp)
-                    .weight(1f, false),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+                modifier = Modifier.blockShadow().padding(all = 8.dp).weight(1f, false),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 items(items = entryPairs, key = { it.first }) {
                     ListItemWithRadioButton(
@@ -93,20 +90,16 @@ fun StringSelectionPrefDialogUI(
                         enabled = true,
                         onClick = {
                             selected = it.first
-                        }
+                        },
                     )
                 }
             }
 
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.End
+                Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.End,
             ) {
-                DialogNegativeButton(
-                    onClick = { openDialogCustom.value = false }
-                )
+                DialogNegativeButton(onClick = { openDialogCustom.value = false })
                 DialogPositiveButton(
                     modifier = Modifier.padding(start = 16.dp),
                     onClick = {
@@ -114,7 +107,7 @@ fun StringSelectionPrefDialogUI(
                             openDialogCustom.value = false
                             pref.setValue(selected)
                         }
-                    }
+                    },
                 )
             }
         }
@@ -131,82 +124,81 @@ fun ListItemWithRadioButton(
     radioButton: Boolean = true,
     selected: Boolean = false,
     enabled: Boolean = true,
-    onClick: (() -> Unit)? = null,
+    onClick: () -> Unit,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     startIcon: (@Composable () -> Unit)? = null,
 ) {
-    val actualContainerColor by animateColorAsState(
-        targetValue = if (selected) {
-            MaterialTheme.colorScheme.secondaryContainer
-        } else {
-            containerColor
-        },
-        label = "containerColor"
-    )
-
-    val itemModifier = modifier
-        .clip(GroupItemShape(index, groupSize - 1))
-        .then(
-            if (onClick != null) {
-                Modifier.clickable(
-                    enabled = enabled,
-                    role = Role.RadioButton,
-                    onClick = onClick
-                )
-            } else {
-                Modifier
-            }
+    val actualContainerColor by
+        animateColorAsState(
+            targetValue =
+                if (selected) {
+                    MaterialTheme.colorScheme.secondaryContainer
+                } else {
+                    containerColor
+                },
+            label = "containerColor",
         )
 
     ListItem(
-        modifier = itemModifier,
+        modifier = modifier.fillMaxWidth(),
         leadingContent = startIcon,
-        headlineContent = {
+        enabled = enabled,
+        onClick = onClick,
+        shapes = ListItemDefaults.shapes(shape = GroupItemShape(index, groupSize - 1)),
+        content = {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = if (!enabled) {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
-            )
-        },
-        supportingContent = if (summary.isNotEmpty()) {
-            {
-                Text(
-                    text = summary,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (!enabled) {
+                color =
+                    if (!enabled) {
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                )
-            }
-        } else null,
-        trailingContent = if (radioButton) {
-            {
-                RadioButton(
-                    selected = selected,
-                    enabled = enabled,
-                    onClick = null,
-                    modifier = Modifier.size(24.dp),
-                    colors = RadioButtonDefaults.colors(
-                        selectedColor = MaterialTheme.colorScheme.primary,
-                        unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledSelectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-                        disabledUnselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-                    ),
-                )
-            }
-        } else null,
-        colors = ListItemDefaults.colors(
-            containerColor = actualContainerColor,
-            headlineColor = MaterialTheme.colorScheme.onSurface,
-            leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            supportingColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+                        MaterialTheme.colorScheme.onSurface
+                    },
+            )
+        },
+        supportingContent =
+            if (summary.isNotEmpty()) {
+                {
+                    Text(
+                        text = summary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color =
+                            if (!enabled) {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                    )
+                }
+            } else null,
+        trailingContent =
+            if (radioButton) {
+                {
+                    RadioButton(
+                        selected = selected,
+                        enabled = enabled,
+                        onClick = null,
+                        modifier = Modifier.size(24.dp),
+                        colors =
+                            RadioButtonDefaults.colors(
+                                selectedColor = MaterialTheme.colorScheme.primary,
+                                unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                disabledSelectedColor =
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                                disabledUnselectedColor =
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                            ),
+                    )
+                }
+            } else null,
+        colors =
+            ListItemDefaults.colors(
+                containerColor = actualContainerColor,
+                headlineColor = MaterialTheme.colorScheme.onSurface,
+                leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                supportingColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
     )
 }

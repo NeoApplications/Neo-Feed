@@ -19,7 +19,6 @@
 package com.saulhdev.feeder.ui.components
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +37,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.data.db.models.Feed
@@ -51,54 +49,48 @@ fun SourceItem(
     onSwitch: (Feed) -> Unit = {},
     onClick: (Feed) -> Unit = {},
 ) {
-    val (isEnabled, enable) = remember(source.isEnabled) {
-        mutableStateOf(source.isEnabled)
-    }
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isEnabled) MaterialTheme.colorScheme.surfaceContainerHighest
-        else MaterialTheme.colorScheme.surfaceContainerLowest, label = "backgroundColor"
-    )
+    val (isEnabled, enable) =
+        remember(source.isEnabled) {
+            mutableStateOf(source.isEnabled)
+        }
+    val backgroundColor by
+        animateColorAsState(
+            targetValue =
+                if (isEnabled) MaterialTheme.colorScheme.surfaceContainerHighest
+                else MaterialTheme.colorScheme.surfaceContainerLowest,
+            label = "backgroundColor",
+        )
 
     ListItem(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.large)
-            .clickable { onClick(source) },
-        colors = ListItemDefaults.colors(
-            containerColor = backgroundColor,
-        ),
-        headlineContent = {
+        modifier = modifier.fillMaxWidth(),
+        onClick = { onClick(source) },
+        shapes = ListItemDefaults.shapes(shape = MaterialTheme.shapes.medium),
+        colors = ListItemDefaults.colors(containerColor = backgroundColor),
+        content = {
             Text(text = source.title)
         },
         supportingContent = {
-            Text(
-                text = source.url.toString(),
-            )
+            Text(text = source.url.toString())
         },
         trailingContent = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.width(8.dp))
                 VerticalDivider(
-                    modifier = Modifier
-                        .height(30.dp)
-                        .width(1.dp),
+                    modifier = Modifier.height(30.dp).width(1.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    thickness = 1.dp
+                    thickness = 1.dp,
                 )
                 Spacer(modifier = Modifier.width(12.dp))
-            Switch(
-                checked = isEnabled,
-                enabled = enabled,
-                colors = SwitchDefaults.colors(uncheckedBorderColor = Color.Transparent),
-                onCheckedChange = {
-                    enable(!isEnabled)
-                    onSwitch(source)
-                }
-            )
-        }
-        }
+                Switch(
+                    checked = isEnabled,
+                    enabled = enabled,
+                    colors = SwitchDefaults.colors(uncheckedBorderColor = Color.Transparent),
+                    onCheckedChange = {
+                        enable(!isEnabled)
+                        onSwitch(source)
+                    },
+                )
+            }
+        },
     )
 }
-

@@ -95,7 +95,6 @@ fun PreferencesPage(
             prefs.openInBrowser,
             prefs.offlineReader,
             prefs.removeDuplicates,
-            prefs.plugins,
         )
     val filterPrefs = listOf(prefs.blockedWords)
     val themePrefs = listOf(prefs.appTheme)

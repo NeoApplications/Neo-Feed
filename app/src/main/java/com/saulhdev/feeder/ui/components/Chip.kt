@@ -182,8 +182,6 @@ fun ChipsSwitch(
             text = stringResource(id = firstTextId),
             icon = firstIcon,
             selected = { firstSelected },
-            index = 0,
-            count = 2,
             onClick = {
                 onCheckedChange(true)
                 selectFirst(true)
@@ -193,8 +191,6 @@ fun ChipsSwitch(
             text = stringResource(id = secondTextId),
             icon = secondIcon,
             selected = { !firstSelected },
-            index = 1,
-            count = 2,
             onClick = {
                 onCheckedChange(false)
                 selectFirst(false)

@@ -16,9 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 package com.saulhdev.feeder.ui.pages
-
 
 import android.content.ActivityNotFoundException
 import android.graphics.Bitmap
@@ -34,22 +32,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,9 +60,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import coil.annotation.ExperimentalCoilApi
-import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
-import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
-import com.mikepenz.aboutlibraries.ui.compose.variant.LibrariesVariant
+import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.m3.markdownTypography
 import com.saulhdev.feeder.BuildConfig
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.components.ContributorRow
@@ -81,64 +78,62 @@ import com.saulhdev.feeder.ui.navigation.PageItem
 import com.saulhdev.feeder.ui.theme.kingthingsPrintingkit
 import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.utils.urlDecode
+import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
 import java.io.InputStream
+import java.io.InputStreamReader
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun AboutPage() {
     val title = stringResource(id = R.string.title_about)
-    ViewWithActionBar(
-        title = title,
-    ) { paddingValues ->
+    ViewWithActionBar(title = title) { paddingValues ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(8.dp),
         ) {
             item {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceContainerHighest,
-                            MaterialTheme.shapes.extraLarge
-                        )
-                        .clip(MaterialTheme.shapes.extraLarge),
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(4.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surfaceContainerHighest,
+                                MaterialTheme.shapes.extraLarge,
+                            )
+                            .clip(MaterialTheme.shapes.extraLarge),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     ListItem(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ListItemDefaults.colors(
-                            containerColor = Color.Transparent,
-                        ),
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         leadingContent = {
                             ResourcesCompat.getDrawable(
-                                LocalContext.current.resources,
-                                R.mipmap.ic_launcher,
-                                LocalContext.current.theme
-                            )?.let { drawable ->
-                                val bitmap = Bitmap.createBitmap(
-                                    drawable.intrinsicWidth,
-                                    drawable.intrinsicHeight,
-                                    Bitmap.Config.ARGB_8888
+                                    LocalContext.current.resources,
+                                    R.mipmap.ic_launcher,
+                                    LocalContext.current.theme,
                                 )
-                                val canvas = Canvas(bitmap)
-                                drawable.setBounds(0, 0, canvas.width, canvas.height)
-                                drawable.draw(canvas)
-                                Image(
-                                    bitmap = bitmap.asImageBitmap(),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .requiredSize(84.dp)
-                                        .clip(MaterialTheme.shapes.large)
-                                )
-                            }
+                                ?.let { drawable ->
+                                    val bitmap =
+                                        Bitmap.createBitmap(
+                                            drawable.intrinsicWidth,
+                                            drawable.intrinsicHeight,
+                                            Bitmap.Config.ARGB_8888,
+                                        )
+                                    val canvas = Canvas(bitmap)
+                                    drawable.setBounds(0, 0, canvas.width, canvas.height)
+                                    drawable.draw(canvas)
+                                    Image(
+                                        bitmap = bitmap.asImageBitmap(),
+                                        contentDescription = null,
+                                        modifier =
+                                            Modifier.requiredSize(84.dp)
+                                                .clip(MaterialTheme.shapes.large),
+                                    )
+                                }
                         },
-                        headlineContent = {
+                        content = {
                             Text(
                                 text = stringResource(id = R.string.app_name),
                                 style = MaterialTheme.typography.headlineMedium,
@@ -149,18 +144,23 @@ fun AboutPage() {
                         supportingContent = {
                             Column {
                                 Text(
-                                    text = stringResource(id = R.string.app_version) + ": "
-                                            + BuildConfig.VERSION_NAME + " ( Build " + BuildConfig.VERSION_CODE + " )",
+                                    text =
+                                        stringResource(id = R.string.app_version) +
+                                            ": " +
+                                            BuildConfig.VERSION_NAME +
+                                            " ( Build " +
+                                            BuildConfig.VERSION_CODE +
+                                            " )",
                                     style = MaterialTheme.typography.titleSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 Text(
                                     text = BuildConfig.APPLICATION_ID,
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
-                        }
+                        },
                     )
 
                     LazyRow(
@@ -187,95 +187,90 @@ fun AboutPage() {
                     photoUrl = it.photoUrl,
                     url = it.webpage,
                     index = i,
-                    groupSize = contributors.size
+                    groupSize = contributors.size,
                 )
             }
             item {
-                PreferenceGroupHeading(heading = stringResource(id = R.string.about_build_information))
-            }
-            itemsIndexed(
-                listOf(
-                    PageItem.AboutLicense,
-                    PageItem.OpenSource,
-                    PageItem.AboutChangelog
+                PreferenceGroupHeading(
+                    heading = stringResource(id = R.string.about_build_information)
                 )
-            ) { i, it ->
+            }
+            itemsIndexed(listOf(PageItem.AboutLicense, PageItem.AboutChangelog)) { i, it ->
                 PagePreference(
                     titleId = it.titleId,
                     icon = it.icon,
                     route = it.route,
                     index = i,
-                    groupSize = 2
+                    groupSize = 2,
                 )
             }
         }
     }
 }
 
-
 private data class Link(
     val icon: ImageVector,
     @StringRes val labelResId: Int,
-    val url: String
+    val url: String,
 )
 
 private data class TeamMember(
     @StringRes val name: Int,
     @StringRes val descriptionRes: Int,
     val photoUrl: String,
-    val webpage: String
+    val webpage: String,
 )
 
-private val links = listOf(
-    Link(
-        icon = Phosphor.GithubLogo,
-        labelResId = R.string.about_source_code,
-        url = "https://github.com/NeoApplications/Neo-Feed"
-    ),
-    Link(
-        icon = Phosphor.Megaphone,
-        labelResId = R.string.about_channel,
-        url = "https://t.me/neo_applications"
-    ),
-    Link(
-        icon = Phosphor.TelegramLogo,
-        labelResId = R.string.about_community_telegram,
-        url = "https://t.me/neo_launcher"
-    ),
-    Link(
-        icon = Phosphor.BracketsSquare,
-        labelResId = R.string.about_community_matrix,
-        url = "https://matrix.to/#/#neo-launcher:matrix.org"
+private val links =
+    listOf(
+        Link(
+            icon = Phosphor.GithubLogo,
+            labelResId = R.string.about_source_code,
+            url = "https://github.com/NeoApplications/Neo-Feed",
+        ),
+        Link(
+            icon = Phosphor.Megaphone,
+            labelResId = R.string.about_channel,
+            url = "https://t.me/neo_applications",
+        ),
+        Link(
+            icon = Phosphor.TelegramLogo,
+            labelResId = R.string.about_community_telegram,
+            url = "https://t.me/neo_launcher",
+        ),
+        Link(
+            icon = Phosphor.BracketsSquare,
+            labelResId = R.string.about_community_matrix,
+            url = "https://matrix.to/#/#neo-launcher:matrix.org",
+        ),
     )
-)
 
-private val contributors = listOf(
-    TeamMember(
-        name = R.string.about_developer,
-        descriptionRes = R.string.author_role,
-        photoUrl = "https://avatars.githubusercontent.com/u/6044050",
-        webpage = "https://github.com/saulhdev"
-    ),
-    TeamMember(
-        name = R.string.about_developer2,
-        descriptionRes = R.string.author_role,
-        photoUrl = "https://avatars.githubusercontent.com/u/40302595",
-        webpage = "https://github.com/machiav3lli"
+private val contributors =
+    listOf(
+        TeamMember(
+            name = R.string.about_developer,
+            descriptionRes = R.string.author_role,
+            photoUrl = "https://avatars.githubusercontent.com/u/6044050",
+            webpage = "https://github.com/saulhdev",
+        ),
+        TeamMember(
+            name = R.string.about_developer2,
+            descriptionRes = R.string.author_role,
+            photoUrl = "https://avatars.githubusercontent.com/u/40302595",
+            webpage = "https://github.com/machiav3lli",
+        ),
     )
-)
 
 @Composable
 fun LicensePage() {
-    ViewWithActionBar(
-        title = stringResource(R.string.about_licenses),
-    ) { paddingValues ->
+    ViewWithActionBar(title = stringResource(R.string.about_licenses)) { paddingValues ->
         LazyColumn(
-            modifier = Modifier
-                .padding(
+            contentPadding =
+                PaddingValues(
                     start = 8.dp,
                     end = 8.dp,
-                    top = 32.dp,
-                    bottom = paddingValues.calculateBottomPadding()
+                    top = paddingValues.calculateTopPadding(),
+                    bottom = paddingValues.calculateBottomPadding(),
                 )
         ) {
             item {
@@ -286,89 +281,96 @@ fun LicensePage() {
 }
 
 @Composable
-fun OpenSourcePage() {
-    ViewWithActionBar(
-        title = stringResource(R.string.about_open_source),
-    ) { paddingValues ->
+fun ChangelogPage() {
+    val context = LocalContext.current
+    val annotatedString =
+        remember(context) {
+            val reader = InputStreamReader(context.assets.open("CHANGELOG.md"))
+            reader.buffered().use { buffered ->
+                buffered.readText()
+            }
+        }
 
-        val libraries by produceLibraries(R.raw.aboutlibraries)
-        LibrariesContainer(
-            libraries,
-            Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            variant = LibrariesVariant.Traditional
+    ViewWithActionBar(title = stringResource(R.string.about_changelog)) {
+        Markdown(
+            content = annotatedString,
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(it),
+            typography =
+                markdownTypography(
+                    h1 = MaterialTheme.typography.headlineLargeEmphasized,
+                    h2 = MaterialTheme.typography.headlineMedium,
+                    h3 = MaterialTheme.typography.headlineSmallEmphasized,
+                ),
+            flavour = CommonMarkFlavourDescriptor(),
         )
     }
 }
 
 @Composable
-fun ChangelogPage() {
-    ViewWithActionBar(
-        title = stringResource(R.string.about_changelog),
-    ) {
-        PreferencesWebView(url = "file:///android_asset/changelog.htm")
-        Spacer(modifier = Modifier.requiredHeight(50.dp))
-    }
-}
-
-@Composable
-fun PreferencesWebView(url: String) {
+fun PreferencesWebView(
+    url: String,
+    modifier: Modifier = Modifier,
+) {
 
     val cssFile = "light.css"
     AndroidView(
+        modifier = modifier,
         factory = { context ->
             WebView(context).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
+                layoutParams =
+                    ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    )
 
-                webViewClient = object : WebViewClient() {
-                    override fun onPageFinished(view: WebView, url: String) {
-                        if (url.startsWith("file:///android_asset")) {
-                            try {
-                                settings.javaScriptEnabled = true
-                                val inputStream: InputStream = context.assets.open(cssFile)
-                                val buffer = ByteArray(inputStream.available())
-                                inputStream.read(buffer)
-                                inputStream.close()
-                                val encoded = Base64.encodeToString(buffer, Base64.NO_WRAP)
-                                loadUrl(
-                                    "javascript:(function() { " +
+                webViewClient =
+                    object : WebViewClient() {
+                        override fun onPageFinished(view: WebView, url: String) {
+                            if (url.startsWith("file:///android_asset")) {
+                                try {
+                                    settings.javaScriptEnabled = true
+                                    val inputStream: InputStream = context.assets.open(cssFile)
+                                    val buffer = ByteArray(inputStream.available())
+                                    inputStream.read(buffer)
+                                    inputStream.close()
+                                    val encoded = Base64.encodeToString(buffer, Base64.NO_WRAP)
+                                    loadUrl(
+                                        "javascript:(function() { " +
                                             "var head  = document.getElementsByTagName('head')[0];" +
                                             "var style = document.createElement('style');" +
                                             "style.type = 'text/css';" +
-                                            "style.innerHTML =  window.atob('" + encoded + "');" +
+                                            "style.innerHTML =  window.atob('" +
+                                            encoded +
+                                            "');" +
                                             "head.appendChild(style);" +
                                             "})()"
-                                )
-                                settings.javaScriptEnabled = false
-                            } catch (e: Exception) {
-                                e.printStackTrace()
+                                    )
+                                    settings.javaScriptEnabled = false
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
                             }
+                            super.onPageFinished(view, url.urlDecode())
                         }
-                        super.onPageFinished(view, url.urlDecode())
-                    }
 
-                    override fun shouldOverrideUrlLoading(
-                        view: WebView,
-                        request: WebResourceRequest
-                    ): Boolean {
-                        if (url.contains("file://")) {
-                            view.loadUrl(url)
-                        } else {
-                            try {
-                                context.launchView(url)
-                            } catch (e: ActivityNotFoundException) {
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView,
+                            request: WebResourceRequest,
+                        ): Boolean {
+                            if (url.contains("file://")) {
                                 view.loadUrl(url)
+                            } else {
+                                try {
+                                    context.launchView(url)
+                                } catch (e: ActivityNotFoundException) {
+                                    view.loadUrl(url)
+                                }
                             }
+                            return true
                         }
-                        return true
                     }
-                }
             }
         },
-        update = { webView -> webView.loadUrl(url.urlDecode()) }
+        update = { webView -> webView.loadUrl(url.urlDecode()) },
     )
 }

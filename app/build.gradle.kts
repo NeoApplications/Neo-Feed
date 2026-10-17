@@ -15,6 +15,7 @@ allprojects {
             freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
             freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
         }
+        dependsOn("copyChangelogToAssets")
     }
 }
 
@@ -33,13 +34,12 @@ android {
         applicationId = "com.saulhdev.neofeed"
         minSdk = 26
         targetSdk = 37
-        versionCode = 2000
-        versionName = "2.0.0"
+        versionCode = 2001
+        versionName = "2.0.0-beta01"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
-
 
         buildConfigField("String", "API_KEY", getEnvProperty("OWM_API_KEY"))
     }
@@ -56,13 +56,13 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
         all {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -110,6 +110,17 @@ fun getEnvProperty(key: String): String {
     return "\"\""
 }
 
+tasks.register("copyChangelogToAssets") {
+    description = "Copy CHANGELOG.md to Assets"
+    copy {
+        from(project.rootDir)
+        include("CHANGELOG.md")
+        into("src/main/assets")
+        doLast {
+            println("CHANGELOG.md copied to assets")
+        }
+    }
+}
 
 androidComponents {
     onVariants { variant ->
@@ -132,7 +143,7 @@ dependencies {
     implementation(libs.stdlib)
     implementation(libs.serialization.json)
 
-    //Core
+    // Core
     implementation(libs.appcompat)
     implementation(libs.core.ktx)
     implementation(libs.multidex)
@@ -150,7 +161,7 @@ dependencies {
     implementation(libs.lifecycle.service)
     implementation(libs.lifecycle.viewmodel.ktx)
 
-    //Compose
+    // Compose
     api(platform(libs.compose.bom))
     implementation(libs.compose.animation)
     implementation(libs.compose.foundation)
@@ -165,35 +176,37 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.navigation.compose)
     implementation(libs.material.kolor)
+    implementation(libs.compose.markdown)
+    implementation(libs.compose.markdown.m3)
 
-    //Room
+    // Room
     implementation(libs.room.ktx)
     implementation(libs.room.paging)
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
 
-    //Security
+    // Security
     implementation(libs.security.crypto)
 
-    //Squareup
+    // Squareup
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.okhttp)
     implementation(libs.retrofit) { exclude(module = "okhttp") }
     implementation(libs.retrofit.converter.gson)
 
-    //Coil
+    // Coil
     implementation(libs.coil)
     implementation(libs.coil.compose)
 
-    //Koin
+    // Koin
     api(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.koin.startup)
 
-    //Libs
+    // Libs
     implementation(libs.owm)
     implementation(libs.threetenabp)
     implementation(libs.rome) { exclude(module = "rome-utils") }

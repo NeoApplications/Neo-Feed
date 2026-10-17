@@ -35,9 +35,9 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.icons.Phosphor
+import com.saulhdev.feeder.ui.icons.phosphor.Compass
 import com.saulhdev.feeder.ui.icons.phosphor.GearSix
 import com.saulhdev.feeder.ui.icons.phosphor.Graph
-import com.saulhdev.feeder.ui.icons.phosphor.Info
 import com.saulhdev.feeder.ui.pages.AboutPage
 import com.saulhdev.feeder.ui.pages.ArticleListPage
 import com.saulhdev.feeder.ui.pages.ArticlePage
@@ -50,7 +50,7 @@ import com.saulhdev.feeder.ui.pages.OpenSourcePage
 import com.saulhdev.feeder.ui.pages.PluginsPage
 import com.saulhdev.feeder.ui.pages.PreferencesPage
 import com.saulhdev.feeder.ui.pages.SourceAddPage
-import com.saulhdev.feeder.ui.pages.SourceListPage
+import com.saulhdev.feeder.ui.pages.SourcesPluginsPage
 import com.saulhdev.feeder.ui.views.ComposeWebView
 import kotlinx.serialization.Serializable
 
@@ -132,7 +132,7 @@ sealed class NavItem(
     val content: @Composable () -> Unit = {}
 ) {
     data object Feed :
-        NavItem(R.string.home, Phosphor.Info, {
+        NavItem(R.string.home, Phosphor.Compass, {
             ArticleListPage()
         })
 
@@ -143,7 +143,7 @@ sealed class NavItem(
 
     data object Sources :
         NavItem(R.string.title_sources, Phosphor.Graph, {
-            SourceListPage()
+            SourcesPluginsPage()
         })
 }
 
