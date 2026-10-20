@@ -18,109 +18,20 @@
 
 package com.saulhdev.feeder.ui.navigation
 
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.navDeepLink
-import androidx.navigation.toRoute
 import androidx.navigation3.runtime.NavKey
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.Compass
 import com.saulhdev.feeder.ui.icons.phosphor.GearSix
 import com.saulhdev.feeder.ui.icons.phosphor.Graph
-import com.saulhdev.feeder.ui.pages.AboutPage
 import com.saulhdev.feeder.ui.pages.ArticleListPage
-import com.saulhdev.feeder.ui.pages.ArticlePage
-import com.saulhdev.feeder.ui.pages.BlockedWordsPage
-import com.saulhdev.feeder.ui.pages.ChangelogPage
-import com.saulhdev.feeder.ui.pages.LicensePage
-import com.saulhdev.feeder.ui.pages.MainPage
-import com.saulhdev.feeder.ui.pages.MastodonCallbackPage
-import com.saulhdev.feeder.ui.pages.OpenSourcePage
-import com.saulhdev.feeder.ui.pages.PluginsPage
 import com.saulhdev.feeder.ui.pages.PreferencesPage
-import com.saulhdev.feeder.ui.pages.SourceAddPage
 import com.saulhdev.feeder.ui.pages.SourcesPluginsPage
-import com.saulhdev.feeder.ui.views.ComposeWebView
 import kotlinx.serialization.Serializable
 
-val LocalNavController =
-    staticCompositionLocalOf<NavController> {
-        error("CompositionLocal LocalNavController not present")
-    }
-
 const val NAV_BASE = "nf-navigation://androidx.navigation/"
-
-@Composable
-fun NavigationManager(
-    navController: NavHostController,
-    modifier: Modifier = Modifier,
-) {
-    CompositionLocalProvider(LocalNavController provides navController) {
-        NavHost(
-            modifier = modifier,
-            navController = navController,
-            startDestination = NavRoute.Main(),
-            enterTransition = { fadeIn() + slideInHorizontally { it } },
-            exitTransition = { fadeOut() + slideOutHorizontally { -it / 2 } },
-            popEnterTransition = { fadeIn() + slideInHorizontally { -it } },
-            popExitTransition = { fadeOut() + slideOutHorizontally { it / 2 } },
-        ) {
-            composable<NavRoute.Main>(
-                deepLinks = listOf(navDeepLink { uriPattern = "$NAV_BASE${Routes.MAIN}/{page}" })
-            ) {
-                val args = it.toRoute<NavRoute.Main>()
-                MainPage(args.page)
-            }
-            composable<NavRoute.About> { AboutPage() }
-            composable<NavRoute.License> { LicensePage() }
-            composable<NavRoute.OpenSource> { OpenSourcePage() }
-            composable<NavRoute.Changelog> { ChangelogPage() }
-            composable<NavRoute.SourceAdd> { SourceAddPage() }
-            composable<NavRoute.BlockedWords> { BlockedWordsPage() }
-            composable<NavRoute.Plugins> { PluginsPage() }
-            composable<NavRoute.MastodonCallback>(
-                deepLinks =
-                    listOf(
-                        navDeepLink {
-                            uriPattern = "nf-mastodon://callback?code={code}&state={state}"
-                        }
-                    )
-            ) {
-                val args = it.toRoute<NavRoute.MastodonCallback>()
-                MastodonCallbackPage(args.code, args.state)
-            }
-            composable<NavRoute.WebView>(
-                deepLinks = listOf(navDeepLink { uriPattern = "$NAV_BASE${Routes.WEB_VIEW}/{url}" })
-            ) {
-                val args = it.toRoute<NavRoute.WebView>()
-                ComposeWebView(args.url)
-            }
-            composable<NavRoute.ArticleView>(
-                deepLinks =
-                    listOf(
-                        navDeepLink {
-                            uriPattern = "$NAV_BASE${Routes.ARTICLE_VIEW}/{uuid}"
-                        }
-                    )
-            ) {
-                val args = it.toRoute<NavRoute.ArticleView>()
-                ArticlePage(args.uuid)
-            }
-        }
-    }
-}
 
 object Routes {
     const val MAIN = "main"

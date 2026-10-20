@@ -1,6 +1,5 @@
 package com.saulhdev.feeder.ui.pages
 
-
 import android.provider.Settings
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
@@ -10,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation3.runtime.NavKey
 import com.saulhdev.feeder.ui.components.SlidePager
 import com.saulhdev.feeder.ui.components.dialog.DrawPermissionRequestDialog
 import com.saulhdev.feeder.ui.navigation.NavItem
@@ -39,11 +39,10 @@ fun MainPage(
             scope.launch {
                 pagerState.animateScrollToPage(index)
             }
-        }
+        },
     ) {
         SlidePager(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             pagerState = pagerState,
             pageItems = pages,
         )

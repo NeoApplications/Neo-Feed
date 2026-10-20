@@ -85,22 +85,22 @@ fun BlockedWordsPage(
         onBackAction = navigateUp,
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = paddingValues.calculateTopPadding(),
-                    bottom = paddingValues.calculateBottomPadding()
-                ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier =
+                Modifier.fillMaxSize()
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = paddingValues.calculateTopPadding(),
+                        bottom = paddingValues.calculateBottomPadding(),
+                    ),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 OutlinedTextField(
                     value = newWord,
@@ -109,16 +109,17 @@ fun BlockedWordsPage(
                     singleLine = true,
                     label = { Text(text = stringResource(id = R.string.blocked_words_hint)) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            val trimmed = newWord.trim().lowercase()
-                            if (trimmed.isNotBlank()) {
-                                save(words + trimmed)
-                                newWord = ""
-                                focusManager.clearFocus()
+                    keyboardActions =
+                        KeyboardActions(
+                            onDone = {
+                                val trimmed = newWord.trim().lowercase()
+                                if (trimmed.isNotBlank()) {
+                                    save(words + trimmed)
+                                    newWord = ""
+                                    focusManager.clearFocus()
+                                }
                             }
-                        }
-                    )
+                        ),
                 )
                 Button(
                     onClick = {
@@ -129,7 +130,7 @@ fun BlockedWordsPage(
                             focusManager.clearFocus()
                         }
                     },
-                    enabled = newWord.trim().isNotBlank()
+                    enabled = newWord.trim().isNotBlank(),
                 ) {
                     Text(text = stringResource(id = R.string.blocked_words_add))
                 }
@@ -139,7 +140,7 @@ fun BlockedWordsPage(
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(bottom = 16.dp)
+                contentPadding = PaddingValues(bottom = 16.dp),
             ) {
                 if (words.isEmpty()) {
                     item {
@@ -147,28 +148,25 @@ fun BlockedWordsPage(
                             text = stringResource(id = R.string.blocked_words_empty),
                             modifier = Modifier.padding(top = 16.dp),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 } else {
                     items(words.sorted(), key = { it }) { word ->
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
                                 text = word,
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyLarge,
                             )
-                            IconButton(
-                                onClick = { save(words - word) }
-                            ) {
+                            IconButton(onClick = { save(words - word) }) {
                                 Icon(
                                     imageVector = Phosphor.TrashSimple,
-                                    contentDescription = stringResource(id = R.string.action_delete)
+                                    contentDescription =
+                                        stringResource(id = R.string.action_delete),
                                 )
                             }
                         }

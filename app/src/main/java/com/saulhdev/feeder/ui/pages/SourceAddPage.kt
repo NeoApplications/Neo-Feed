@@ -60,7 +60,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
-import com.saulhdev.feeder.ui.navigation.LocalNavController
 import com.saulhdev.feeder.utils.extensions.StableHolder
 import com.saulhdev.feeder.utils.extensions.interceptKey
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
@@ -108,11 +107,14 @@ fun SourceAddPage(
         var feedUrl by remember { mutableStateOf("") }
 
         Column(
-            modifier = Modifier.padding(
-                top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding(), start = 8.dp, end = 8.dp
-            ),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier.padding(
+                    top = paddingValues.calculateTopPadding(),
+                    bottom = paddingValues.calculateBottomPadding(),
+                    start = 8.dp,
+                    end = 8.dp,
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AddFeedView(
                 feedUrl = feedUrl,
@@ -124,7 +126,8 @@ fun SourceAddPage(
                     errors = emptyList()
                     currentlySearching = true
                     coroutineScope.launch {
-                        searchFeedViewModel.searchForFeeds(url)
+                        searchFeedViewModel
+                            .searchForFeeds(url)
                             .onCompletion {
                                 currentlySearching = false
                             }
@@ -138,12 +141,13 @@ fun SourceAddPage(
                     }
                 },
                 results = StableHolder(results),
-                errors = if (currentlySearching) StableHolder(emptyList()) else StableHolder(errors),
+                errors =
+                    if (currentlySearching) StableHolder(emptyList()) else StableHolder(errors),
                 currentlySearching = currentlySearching,
                 onClick = {
-                    //saveFeed(results, repository)
-                    //TODO: enable click event when the rss is added
-                }
+                    // saveFeed(results, repository)
+                    // TODO: enable click event when the rss is added
+                },
             )
         }
     }
@@ -165,28 +169,25 @@ fun AddFeedView(
     val scrollState = rememberScrollState()
     Box(
         contentAlignment = Alignment.TopCenter,
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(scrollState)
+        modifier = Modifier.fillMaxWidth().verticalScroll(scrollState),
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(8.dp)
+            modifier = Modifier.padding(8.dp),
         ) {
             SearchFeedUI(
                 feedUrl = feedUrl,
                 onUrlChanged = onUrlChanged,
                 onSearch = onSearch,
                 focusManager = focusManager,
-                keyboardController = keyboardController
+                keyboardController = keyboardController,
             )
             SearchResult(
                 results = results,
                 errors = errors,
                 currentlySearching = currentlySearching,
-                onClick = onClick
+                onClick = onClick,
             )
         }
     }
@@ -198,55 +199,59 @@ fun SearchFeedUI(
     onUrlChanged: (String) -> Unit,
     onSearch: (URL) -> Unit,
     focusManager: FocusManager,
-    keyboardController: SoftwareKeyboardController?
+    keyboardController: SoftwareKeyboardController?,
 ) {
-    val isNotValidUrl by remember(feedUrl) {
-        derivedStateOf {
-            feedUrl.isNotEmpty() && isNotValidUrl(feedUrl)
+    val isNotValidUrl by
+        remember(feedUrl) {
+            derivedStateOf {
+                feedUrl.isNotEmpty() && isNotValidUrl(feedUrl)
+            }
         }
-    }
-    val isValidUrl by remember(feedUrl) {
-        derivedStateOf {
-            isValidUrl(feedUrl)
+    val isValidUrl by
+        remember(feedUrl) {
+            derivedStateOf {
+                isValidUrl(feedUrl)
+            }
         }
-    }
     OutlinedTextField(
         value = feedUrl,
         onValueChange = onUrlChanged,
-        modifier = Modifier
-            .fillMaxWidth()
-            .interceptKey(Key.Enter) {
-                if (isValidUrl) {
-                    onSearch(sloppyLinkToStrictURLNoThrows(feedUrl))
-                    keyboardController?.hide()
+        modifier =
+            Modifier.fillMaxWidth()
+                .interceptKey(Key.Enter) {
+                    if (isValidUrl) {
+                        onSearch(sloppyLinkToStrictURLNoThrows(feedUrl))
+                        keyboardController?.hide()
+                    }
                 }
-            }
-            .interceptKey(Key.Escape) {
-                focusManager.clearFocus()
-            },
+                .interceptKey(Key.Escape) {
+                    focusManager.clearFocus()
+                },
         singleLine = true,
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12F),
-        ),
-
+        colors =
+            TextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12F),
+            ),
         isError = isNotValidUrl,
-        keyboardOptions = KeyboardOptions.Default.copy(
-            capitalization = KeyboardCapitalization.None,
-            autoCorrectEnabled = false,
-            keyboardType = KeyboardType.Uri,
-            imeAction = ImeAction.Search
-        ),
-        keyboardActions = KeyboardActions(
-            onSearch = {
-                if (isValidUrl) {
-                    onSearch(sloppyLinkToStrictURLNoThrows(feedUrl))
-                    keyboardController?.hide()
+        keyboardOptions =
+            KeyboardOptions.Default.copy(
+                capitalization = KeyboardCapitalization.None,
+                autoCorrectEnabled = false,
+                keyboardType = KeyboardType.Uri,
+                imeAction = ImeAction.Search,
+            ),
+        keyboardActions =
+            KeyboardActions(
+                onSearch = {
+                    if (isValidUrl) {
+                        onSearch(sloppyLinkToStrictURLNoThrows(feedUrl))
+                        keyboardController?.hide()
+                    }
                 }
-            }
-        ),
+            ),
         shape = MaterialTheme.shapes.medium,
-        label = { Text(text = stringResource(id = R.string.add_feed_search_hint)) }
+        label = { Text(text = stringResource(id = R.string.add_feed_search_hint)) },
     )
 
     OutlinedButton(
@@ -256,11 +261,9 @@ fun SearchFeedUI(
                 onSearch(sloppyLinkToStrictURLNoThrows(feedUrl))
                 focusManager.clearFocus()
             }
-        }
+        },
     ) {
-        Text(
-            stringResource(android.R.string.search_go)
-        )
+        Text(stringResource(android.R.string.search_go))
     }
 }
 
@@ -273,13 +276,14 @@ fun SearchResult(
 ) {
     if (results.item.isEmpty()) {
         for (error in errors.item) {
-            val title = stringResource(
-                R.string.failed_to_parse,
-                error.url
-            )
+            val title =
+                stringResource(
+                    R.string.failed_to_parse,
+                    error.url,
+                )
             ErrorResultView(
                 title = title,
-                description = error.description
+                description = error.description,
             )
         }
     }
@@ -287,7 +291,7 @@ fun SearchResult(
         SearchResultView(
             title = result.title,
             url = result.url,
-            description = result.description
+            description = result.description,
         ) {
             onClick(result)
         }
@@ -301,11 +305,10 @@ fun SearchResult(
 fun SearchingIndicator() {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .safeSemantics {
+        modifier =
+            Modifier.fillMaxWidth().safeSemantics {
                 testTag = "searchingIndicator"
-            }
+            },
     ) {
         CircularProgressIndicator()
     }
@@ -320,29 +323,26 @@ fun SearchResultView(
 ) {
     Card(
         onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .safeSemantics {
+        modifier =
+            Modifier.fillMaxWidth().safeSemantics {
                 testTag = "searchResult"
-            }
+            },
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
         ) {
             Text(
                 title,
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleSmall,
             )
             Text(
                 url,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
             Text(
                 description,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
@@ -354,46 +354,43 @@ fun ErrorResultView(
     description: String,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .safeSemantics {
+        modifier =
+            Modifier.fillMaxWidth().safeSemantics {
                 testTag = "errorResult"
             }
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
         ) {
             Text(
                 title,
-                style = MaterialTheme.typography.titleSmall
-                    .copy(color = MaterialTheme.colorScheme.error)
+                style =
+                    MaterialTheme.typography.titleSmall.copy(
+                        color = MaterialTheme.colorScheme.error
+                    ),
             )
             Text(
                 description,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
 }
 
 private fun isValidUrl(url: String): Boolean {
-    if (url.isBlank()) {
-        return false
-    }
-    return try {
+    return url.isNotBlank() &&
         try {
-            URL(url)
-            true
-        } catch (_: MalformedURLException) {
-            URL("http://$url")
-            true
+            try {
+                URL(url)
+                true
+            } catch (_: MalformedURLException) {
+                URL("http://$url")
+                true
+            }
+        } catch (e: Exception) {
+            false
         }
-    } catch (e: Exception) {
-        false
-    }
 }
 
 private fun isNotValidUrl(url: String) = !isValidUrl(url)

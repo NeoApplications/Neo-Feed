@@ -128,14 +128,20 @@ class MainActivity : ComponentActivity() {
     fun TransparentSystemBars() {
         DisposableEffect(isDarkTheme, prefs.appTheme.getValue()) {
             enableEdgeToEdge(
-                statusBarStyle = SystemBarStyle.auto(
-                    android.graphics.Color.TRANSPARENT,
-                    android.graphics.Color.TRANSPARENT,
-                ) { isDarkTheme },
-                navigationBarStyle = SystemBarStyle.auto(
-                    android.graphics.Color.TRANSPARENT,
-                    android.graphics.Color.TRANSPARENT,
-                ) { isDarkTheme },
+                statusBarStyle =
+                    SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) {
+                        isDarkTheme
+                    },
+                navigationBarStyle =
+                    SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) {
+                        isDarkTheme
+                    },
             )
             onDispose {}
         }
@@ -163,8 +169,7 @@ class MainActivity : ComponentActivity() {
         val shouldSync = freqHours > 0
         val replace = true
         if (shouldSync) {
-            val constraints = Constraints.Builder()
-                .setRequiresBatteryNotLow(true)
+            val constraints = Constraints.Builder().setRequiresBatteryNotLow(true)
 
             if (prefs.syncOnlyOnWifi.getValue()) {
                 constraints.setRequiredNetworkType(NetworkType.UNMETERED)
@@ -173,25 +178,26 @@ class MainActivity : ComponentActivity() {
             }
             val timeInterval = maxOf(15L, (freqHours * 60).toLong())
 
-            val workRequestBuilder = PeriodicWorkRequestBuilder<FeedSyncer>(
-                timeInterval,
-                TimeUnit.MINUTES,
-            )
+            val workRequestBuilder =
+                PeriodicWorkRequestBuilder<FeedSyncer>(
+                    timeInterval,
+                    TimeUnit.MINUTES,
+                )
 
-            val syncWork = workRequestBuilder
-                .setConstraints(constraints.build())
-                .addTag("PeriodicFeedSyncer")
-                .build()
+            val syncWork =
+                workRequestBuilder
+                    .setConstraints(constraints.build())
+                    .addTag("PeriodicFeedSyncer")
+                    .build()
 
             workManager.enqueueUniquePeriodicWork(
                 "feeder_periodic_3",
                 when (replace) {
-                    true  -> ExistingPeriodicWorkPolicy.UPDATE
+                    true -> ExistingPeriodicWorkPolicy.UPDATE
                     false -> ExistingPeriodicWorkPolicy.KEEP
                 },
-                syncWork
+                syncWork,
             )
-
         } else {
             workManager.cancelUniqueWork("feeder_periodic_3")
         }
@@ -206,12 +212,13 @@ class MainActivity : ComponentActivity() {
         private suspend fun start(
             activity: Activity,
             targetIntent: Intent,
-            extras: Bundle
+            extras: Bundle,
         ): ActivityResult {
             return suspendCancellableCoroutine { continuation ->
-                val intent = Intent(activity, MainActivity::class.java)
-                    .putExtras(extras)
-                    .putExtra("intent", targetIntent)
+                val intent =
+                    Intent(activity, MainActivity::class.java)
+                        .putExtras(extras)
+                        .putExtra("intent", targetIntent)
                 val resultReceiver = createResultReceiver {
                     if (continuation.isActive) {
                         continuation.resume(it)

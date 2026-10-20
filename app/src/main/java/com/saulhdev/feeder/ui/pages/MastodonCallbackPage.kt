@@ -66,33 +66,31 @@ fun MastodonCallbackPage(
 
     ViewWithActionBar(
         title = stringResource(id = R.string.add_mastodon_account),
-        showBackButton = false
+        showBackButton = false,
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
+            contentAlignment = Alignment.Center,
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 when {
                     uiState.isLoading -> CircularProgressIndicator()
                     completed -> {
                         Text(
                             text = stringResource(id = R.string.mastodon_account_added),
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
                         )
                     }
 
                     uiState.error != null -> {
                         Text(
-                            text = stringResource(id = R.string.mastodon_auth_error, uiState.error!!),
+                            text =
+                                stringResource(id = R.string.mastodon_auth_error, uiState.error!!),
                             color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                         Button(
                             onClick = { navigateUp() },
