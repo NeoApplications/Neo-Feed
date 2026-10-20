@@ -18,13 +18,17 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainPage(pageIndex: Int = 0) {
+fun MainPage(
+    pageIndex: Int = 0,
+    onNavigate: (NavKey) -> Unit = {},
+) {
     val scope = rememberCoroutineScope()
-    val pages = persistentListOf(
-        NavItem.Feed,
-        NavItem.Settings,
-        NavItem.Sources,
-    )
+    val pages =
+        persistentListOf(
+            NavItem.Feed,
+            NavItem.Settings(onNavigate),
+            NavItem.Sources(onNavigate),
+        )
     val pagerState = rememberPagerState(initialPage = pageIndex, pageCount = { pages.size })
     val currentPageIndex = remember { derivedStateOf { pagerState.currentPage } }
 

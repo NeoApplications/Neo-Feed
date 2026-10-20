@@ -25,8 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.saulhdev.feeder.data.content.StringPref
-import com.saulhdev.feeder.ui.navigation.LocalNavController
-import com.saulhdev.feeder.ui.navigation.NavRoute
 
 @Composable
 fun ActionPreference(
@@ -35,8 +33,8 @@ fun ActionPreference(
     index: Int = 1,
     groupSize: Int = 1,
     isEnabled: Boolean = true,
+    onNavigate: () -> Unit,
 ) {
-    val navController = LocalNavController.current
     BasePreference(
         modifier = modifier,
         titleId = pref.titleId,
@@ -52,12 +50,8 @@ fun ActionPreference(
             )
         },
         onClick = {
-            if (pref.route != null) {
-                navController.navigate(pref.route)
-            } else {
-                pref.onClick?.invoke()
-            }
-        }
+            pref.route?.let { onNavigate() } ?: pref.onClick?.invoke()
+        },
     )
 }
 
@@ -68,17 +62,17 @@ fun PagePreference(
     icon: ImageVector,
     index: Int = 1,
     groupSize: Int = 1,
-    route: NavRoute,
+    onClick: () -> Unit,
 ) {
-    val navController = LocalNavController.current
     BasePreference(
         modifier = modifier,
         titleId = titleId,
-        startWidget = icon?.let {
-            { Icon(imageVector = icon, contentDescription = stringResource(id = titleId)) }
-        },
+        startWidget =
+            icon.let {
+                { Icon(imageVector = icon, contentDescription = stringResource(id = titleId)) }
+            },
         index = index,
         groupSize = groupSize,
-        onClick = { navController.navigate(route) }
+        onClick = onClick,
     )
 }

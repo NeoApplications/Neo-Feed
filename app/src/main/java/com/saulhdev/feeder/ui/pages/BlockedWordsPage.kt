@@ -58,7 +58,6 @@ import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.TrashSimple
-import com.saulhdev.feeder.ui.navigation.LocalNavController
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -66,8 +65,8 @@ import org.koin.compose.koinInject
 fun BlockedWordsPage(
     prefs: FeedPreferences = koinInject(),
     articleRepository: ArticleRepository = koinInject(),
+    navigateUp: () -> Unit,
 ) {
-    val navController = LocalNavController.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
@@ -83,7 +82,7 @@ fun BlockedWordsPage(
 
     ViewWithActionBar(
         title = stringResource(id = R.string.blocked_words_title),
-        onBackAction = { navController.popBackStack() }
+        onBackAction = navigateUp,
     ) { paddingValues ->
         Column(
             modifier = Modifier

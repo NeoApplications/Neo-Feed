@@ -23,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.saulhdev.feeder.data.content.StringSetPref
-import com.saulhdev.feeder.ui.navigation.LocalNavController
 
 @Composable
 fun StringSetPreference(
@@ -32,8 +31,8 @@ fun StringSetPreference(
     index: Int = 1,
     groupSize: Int = 1,
     isEnabled: Boolean = true,
+    onNavigate: () -> Unit,
 ) {
-    val navController = LocalNavController.current
     BasePreference(
         modifier = modifier,
         titleId = pref.titleId,
@@ -49,8 +48,7 @@ fun StringSetPreference(
             )
         },
         onClick = {
-            pref.route?.let { navController.navigate(it) }
-                ?: pref.onClick?.invoke()
-        }
+            pref.route?.let { onNavigate() } ?: pref.onClick?.invoke()
+        },
     )
 }

@@ -40,8 +40,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
-import com.saulhdev.feeder.ui.navigation.LocalNavController
-import com.saulhdev.feeder.ui.navigation.NavRoute
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.viewmodels.MastodonAuthViewModel
 
@@ -50,8 +48,8 @@ fun MastodonCallbackPage(
     code: String,
     state: String,
     viewModel: MastodonAuthViewModel = koinNeoViewModel(),
+    navigateUp: () -> Unit = {},
 ) {
-    val navController = LocalNavController.current
     val uiState by viewModel.uiState.collectAsState()
     val completed by viewModel.completed.collectAsState()
 
@@ -62,13 +60,7 @@ fun MastodonCallbackPage(
     LaunchedEffect(completed) {
         if (completed) {
             viewModel.reset()
-            val popped = navController.popBackStack<NavRoute.Plugins>(inclusive = false)
-            if (!popped) {
-                navController.navigate(NavRoute.Plugins) {
-                    popUpTo<NavRoute.MastodonCallback> { inclusive = true }
-                    launchSingleTop = true
-                }
-            }
+            navigateUp()
         }
     }
 
@@ -103,8 +95,8 @@ fun MastodonCallbackPage(
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Button(
-                            onClick = { navController.popBackStack() },
-                            modifier = Modifier.fillMaxWidth()
+                            onClick = { navigateUp() },
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             Text(text = stringResource(id = R.string.go_back))
                         }

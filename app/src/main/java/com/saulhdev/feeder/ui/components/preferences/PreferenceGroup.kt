@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavKey
 
 @Composable
 fun PreferenceGroup(
@@ -59,7 +60,8 @@ fun PreferenceGroup(
     heading: String,
     prefs: List<Any>,
     modifier: Modifier = Modifier,
-    onPrefDialog: (Any) -> Unit = {}
+    onNavigate: (NavKey) -> Unit = {},
+    onPrefDialog: (Any) -> Unit = {},
 ) {
     val size = prefs.size
 
@@ -68,7 +70,7 @@ fun PreferenceGroup(
         modifier = modifier,
     ) {
         prefs.forEachIndexed { i, it ->
-            PreferenceBuilder(it, onPrefDialog, i, size)
+            PreferenceBuilder(it, onPrefDialog, i, size, onNavigate)
             if (i < size - 1) Spacer(modifier = Modifier.height(4.dp))
         }
     }

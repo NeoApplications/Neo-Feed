@@ -15,12 +15,16 @@ import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.asLiveData
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.deeplink.DeepLinkRequest
+import androidx.navigation3.runtime.deeplink.DeepLinkUri
+import androidx.navigation3.runtime.deeplink.UriDeepLinkMatcher
+import androidx.navigation3.runtime.deeplink.invoke
+import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -29,20 +33,43 @@ import androidx.work.WorkManager
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.weather.WeatherRepository
 import com.saulhdev.feeder.manager.localrss.FeedSyncer
+import com.saulhdev.feeder.ui.navigation.AppNavDisplay
 import com.saulhdev.feeder.ui.navigation.NAV_BASE
 import com.saulhdev.feeder.ui.navigation.NavRoute
-import com.saulhdev.feeder.ui.navigation.NavigationManager
+import com.saulhdev.feeder.ui.navigation.Routes
 import com.saulhdev.feeder.ui.theme.AppTheme
 import com.saulhdev.feeder.utils.extensions.isDarkTheme
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.serialization.serializer
 import org.koin.java.KoinJavaComponent.inject
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 
 class MainActivity : ComponentActivity() {
-    private lateinit var navController: NavHostController
+    private val deepLinkChannel = Channel<Intent>(Channel.UNLIMITED)
     private val prefs: FeedPreferences by inject(FeedPreferences::class.java)
     private val weatherRepo: WeatherRepository by inject(WeatherRepository::class.java)
+
+    private val deepLinkMatchers: List<UriDeepLinkMatcher<NavRoute>> =
+        listOf(
+            UriDeepLinkMatcher(
+                uriPattern = DeepLinkUri("$NAV_BASE${Routes.MAIN}/{page}"),
+                serializer = serializer<NavRoute.Main>(),
+            ),
+            UriDeepLinkMatcher(
+                uriPattern = DeepLinkUri("nf-mastodon://callback?code={code}&state={state}"),
+                serializer = serializer<NavRoute.MastodonCallback>(),
+            ),
+            UriDeepLinkMatcher(
+                uriPattern = DeepLinkUri("$NAV_BASE${Routes.WEB_VIEW}/{url}"),
+                serializer = serializer<NavRoute.WebView>(),
+            ),
+            UriDeepLinkMatcher(
+                uriPattern = DeepLinkUri("$NAV_BASE${Routes.ARTICLE_VIEW}/{uuid}"),
+                serializer = serializer<NavRoute.ArticleView>(),
+            ),
+        )
 
     override fun onResume() {
         super.onResume()
@@ -53,40 +80,49 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            navController = rememberNavController()
+            val backStack = rememberNavBackStack(*initBackStack(intent).toTypedArray())
+
+            LaunchedEffect(Unit) {
+                for (navIntent in deepLinkChannel) {
+                    val route = handleDeepLink(navIntent) ?: continue
+                    if (backStack.firstOrNull() !is NavRoute.Main) {
+                        backStack.add(0, NavRoute.Main())
+                    }
+                    backStack.add(route)
+                }
+            }
+
             TransparentSystemBars()
             AppTheme(prefs.appTheme.getValue()) {
-                NavigationManager(
+                AppNavDisplay(
                     modifier = Modifier.imePadding(),
-                    navController = navController,
+                    backStack = backStack,
                 )
             }
         }
 
         configurePeriodicSync()
         observePrefs()
-        handleDeepLink(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleDeepLink(intent)
+        deepLinkChannel.trySend(intent)
     }
 
-    private fun handleDeepLink(intent: Intent?) {
-        if (intent == null) return
-        if (::navController.isInitialized) {
-            val data = intent.data
-            if (data?.scheme == "nf-mastodon" && data.host == "callback") {
-                val code = data.getQueryParameter("code").orEmpty()
-                val state = data.getQueryParameter("state").orEmpty()
-                navController.navigate(NavRoute.MastodonCallback(code = code, state = state))
-            } else {
-                navController.handleDeepLink(intent)
-            }
-        }
+    private fun handleDeepLink(intent: Intent?): NavRoute? {
+        if (intent == null) return null
+        val request = DeepLinkRequest(intent)
+        return deepLinkMatchers.mapNotNull { it.match(request) }.maxOrNull()?.key
     }
+
+    private fun initBackStack(intent: Intent?): List<NavRoute> =
+        when (val route = handleDeepLink(intent)) {
+            null -> listOf(NavRoute.Main())
+            is NavRoute.Main -> listOf(route)
+            else -> listOf(NavRoute.Main(), route)
+        }
 
     @Composable
     fun TransparentSystemBars() {

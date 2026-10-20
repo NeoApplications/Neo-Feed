@@ -60,6 +60,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
+import androidx.navigation3.runtime.NavKey
 import coil.annotation.ExperimentalCoilApi
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
@@ -88,7 +89,7 @@ import java.io.InputStreamReader
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-fun AboutPage() {
+fun AboutPage(onNavigate: (NavKey) -> Unit) {
     val title = stringResource(id = R.string.title_about)
     ViewWithActionBar(title = title) { paddingValues ->
         LazyColumn(
@@ -188,7 +189,7 @@ fun AboutPage() {
                 PagePreference(
                     titleId = it.titleId,
                     icon = it.icon,
-                    route = it.route,
+                    onClick = { onNavigate(it.route) },
                     index = i,
                     groupSize = 3,
                 )

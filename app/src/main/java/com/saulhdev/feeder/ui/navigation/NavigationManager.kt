@@ -33,6 +33,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import androidx.navigation3.runtime.NavKey
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.Compass
@@ -142,27 +143,27 @@ sealed class NavItem(
             },
         )
 
-    data object Settings :
+    class Settings(onNavigate: (NavKey) -> Unit) :
         NavItem(
             R.string.title_settings,
             Phosphor.GearSix,
             {
-                PreferencesPage()
+                PreferencesPage(onNavigate = onNavigate)
             },
         )
 
-    data object Sources :
+    class Sources(onNavigate: (NavKey) -> Unit) :
         NavItem(
             R.string.title_sources,
             Phosphor.Graph,
             {
-                SourcesPluginsPage()
+                SourcesPluginsPage(onNavigate = onNavigate)
             },
         )
 }
 
 @Serializable
-open class NavRoute {
+open class NavRoute : NavKey {
     @Serializable data object About : NavRoute()
 
     @Serializable data object SourceAdd : NavRoute()

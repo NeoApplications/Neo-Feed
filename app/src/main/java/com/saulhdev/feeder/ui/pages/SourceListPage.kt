@@ -46,12 +46,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavKey
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.components.SourceItem
 import com.saulhdev.feeder.ui.components.preferences.PreferenceGroupHeading
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.Plus
-import com.saulhdev.feeder.ui.navigation.LocalNavController
 import com.saulhdev.feeder.ui.navigation.NavRoute
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.viewmodels.SourceListViewModel
@@ -60,8 +60,10 @@ import okhttp3.internal.toLongOrDefault
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun SourceListPage(viewModel: SourceListViewModel = koinNeoViewModel()) {
-    val navController = LocalNavController.current
+fun SourceListPage(
+    viewModel: SourceListViewModel = koinNeoViewModel(),
+    onNavigate: (NavKey) -> Unit = {},
+) {
     val scope = rememberCoroutineScope()
     val state by viewModel.state.collectAsState()
     val paneNavigator = rememberListDetailPaneScaffoldNavigator<Any>()
@@ -76,7 +78,7 @@ fun SourceListPage(viewModel: SourceListViewModel = koinNeoViewModel()) {
                     floatingActionButton = {
                         ExtendedFloatingActionButton(
                             onClick = {
-                                navController.navigate(NavRoute.SourceAdd)
+                                onNavigate(NavRoute.SourceAdd)
                             },
                             modifier = Modifier.padding(16.dp),
                             shape = MaterialTheme.shapes.extraLarge,

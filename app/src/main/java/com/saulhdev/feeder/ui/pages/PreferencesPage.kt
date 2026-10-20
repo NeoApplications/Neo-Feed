@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavKey
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.content.AppThemePref
 import com.saulhdev.feeder.data.content.FeedPreferences
@@ -68,6 +69,7 @@ fun PreferencesPage(
     prefs: FeedPreferences = koinInject(),
     locationHelper: LocationHelper = koinInject(),
     weatherRepo: WeatherRepository = koinInject(),
+    onNavigate: (NavKey) -> Unit,
 ) {
     val context = LocalContext.current
     val title = stringResource(id = R.string.title_settings)
@@ -138,6 +140,7 @@ fun PreferencesPage(
                 PreferenceGroup(
                     stringResource(id = R.string.pref_cat_overlay),
                     prefs = themePrefs,
+                    onNavigate = onNavigate,
                     onPrefDialog = onPrefDialog,
                 )
             }
@@ -145,6 +148,7 @@ fun PreferencesPage(
                 PreferenceGroup(
                     stringResource(id = R.string.title_service),
                     prefs = servicePrefs,
+                    onNavigate = onNavigate,
                     onPrefDialog = onPrefDialog,
                 )
             }
@@ -152,6 +156,7 @@ fun PreferencesPage(
                 PreferenceGroup(
                     stringResource(id = R.string.pref_cat_filters),
                     prefs = filterPrefs,
+                    onNavigate = onNavigate,
                     onPrefDialog = onPrefDialog,
                 )
 
@@ -181,6 +186,7 @@ fun PreferencesPage(
                 PreferenceGroup(
                     stringResource(id = R.string.pref_cat_weather),
                     prefs = weatherPrefs,
+                    onNavigate = onNavigate,
                     onPrefDialog = onPrefDialog,
                 )
 
@@ -216,6 +222,7 @@ fun PreferencesPage(
                 PreferenceGroup(
                     stringResource(id = R.string.title_other),
                     prefs = debugPrefs,
+                    onNavigate = onNavigate,
                     onPrefDialog = onPrefDialog,
                 )
                 Spacer(modifier = Modifier.height(8.dp))

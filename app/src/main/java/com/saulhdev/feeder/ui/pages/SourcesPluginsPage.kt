@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.manager.models.exportBookmarks
 import com.saulhdev.feeder.manager.models.exportOpml
@@ -49,7 +50,10 @@ import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Clock
 
 @Composable
-fun SourcesPluginsPage(viewModel: SourcesPluginsViewModel = koinNeoViewModel()) {
+fun SourcesPluginsPage(
+    viewModel: SourcesPluginsViewModel = koinNeoViewModel(),
+    onNavigate: (NavKey) -> Unit = {},
+) {
     val pageTab = rememberSaveable { mutableIntStateOf(0) }
     val context = LocalContext.current
     val coroutineScope: ApplicationCoroutineScope by inject(ApplicationCoroutineScope::class.java)
@@ -227,7 +231,7 @@ fun SourcesPluginsPage(viewModel: SourcesPluginsViewModel = koinNeoViewModel()) 
 
             when (pageTab.intValue) {
                 0 -> {
-                    SourceListPage()
+                    SourceListPage(onNavigate = onNavigate)
                 }
                 1 -> {
                     PluginsPage()

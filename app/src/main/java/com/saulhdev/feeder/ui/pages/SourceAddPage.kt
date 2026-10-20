@@ -78,9 +78,9 @@ import java.net.URL
 fun SourceAddPage(
     searchFeedViewModel: SearchFeedViewModel = koinNeoViewModel(),
     sourcesViewModel: SourceListViewModel = koinNeoViewModel(),
+    navigateUp: () -> Unit = {},
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val navController = LocalNavController.current
     val title = stringResource(id = R.string.add_rss)
 
     var results by rememberSaveable {
@@ -89,15 +89,15 @@ fun SourceAddPage(
 
     BackHandler {
         sourcesViewModel.saveFeed(results)
-        navController.popBackStack()
+        navigateUp()
     }
 
     ViewWithActionBar(
         title = title,
         onBackAction = {
             sourcesViewModel.saveFeed(results)
-            navController.popBackStack()
-        }
+            navigateUp()
+        },
     ) { paddingValues ->
         var currentlySearching by rememberSaveable {
             mutableStateOf(false)
