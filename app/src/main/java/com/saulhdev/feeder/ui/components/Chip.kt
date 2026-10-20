@@ -51,43 +51,46 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.CheckCircle
 import com.saulhdev.feeder.ui.icons.phosphor.Circle
 import com.saulhdev.feeder.utils.extensions.addIf
+import com.saulhdev.feeder.utils.extensions.launchView
 
 @Composable
 fun SelectChip(
     modifier: Modifier = Modifier,
     text: String,
     checked: Boolean = false,
-    colors: SelectableChipColors = FilterChipDefaults.filterChipColors(
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        labelColor = MaterialTheme.colorScheme.onSurface,
-        iconColor = MaterialTheme.colorScheme.onSurface,
-        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    ),
+    colors: SelectableChipColors =
+        FilterChipDefaults.filterChipColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            labelColor = MaterialTheme.colorScheme.onSurface,
+            iconColor = MaterialTheme.colorScheme.onSurface,
+            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        ),
     alwaysShowIcon: Boolean = true,
     onSelected: () -> Unit = {},
 ) {
-    val selectionCornerRadius by animateDpAsState(
-        when {
-            checked -> 4.dp
-            else    -> 16.dp
-        }
-    )
-    val icon by remember(checked) {
-        mutableStateOf(
-            if (checked) Phosphor.CheckCircle
-            else Phosphor.Circle
+    val selectionCornerRadius by
+        animateDpAsState(
+            when {
+                checked -> 4.dp
+                else -> 16.dp
+            }
         )
-    }
+    val icon by
+        remember(checked) {
+            mutableStateOf(if (checked) Phosphor.CheckCircle else Phosphor.Circle)
+        }
 
     FilterChip(
         modifier = modifier,
@@ -96,25 +99,27 @@ fun SelectChip(
         border = null,
         selected = checked,
         leadingIcon = {
-            if (alwaysShowIcon) Icon(
-                imageVector = icon,
-                contentDescription = null,
-            )
-            else AnimatedVisibility(
-                visible = checked,
-                enter = scaleIn(),
-                exit = scaleOut(),
-            ) {
+            if (alwaysShowIcon)
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
                 )
-            }
+            else
+                AnimatedVisibility(
+                    visible = checked,
+                    enter = scaleIn(),
+                    exit = scaleOut(),
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                    )
+                }
         },
         onClick = { onSelected() },
         label = {
             Text(text = text)
-        }
+        },
     )
 }
 
@@ -131,9 +136,8 @@ fun ActionChip(
         modifier = modifier,
         label = {
             Text(
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .addIf(fullWidth) {
+                modifier =
+                    Modifier.padding(vertical = 8.dp).addIf(fullWidth) {
                         fillMaxWidth()
                     },
                 text = text,
@@ -144,21 +148,25 @@ fun ActionChip(
             icon?.let {
                 Icon(
                     imageVector = it,
-                    contentDescription = text
+                    contentDescription = text,
                 )
             }
         },
         shape = MaterialTheme.shapes.extraLarge,
-        colors = AssistChipDefaults.assistChipColors(
-            containerColor = if (positive) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.tertiaryContainer,
-            labelColor = if (positive) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onTertiaryContainer,
-            leadingIconContentColor = if (positive) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onTertiaryContainer,
-        ),
+        colors =
+            AssistChipDefaults.assistChipColors(
+                containerColor =
+                    if (positive) MaterialTheme.colorScheme.primaryContainer
+                    else MaterialTheme.colorScheme.tertiaryContainer,
+                labelColor =
+                    if (positive) MaterialTheme.colorScheme.onPrimaryContainer
+                    else MaterialTheme.colorScheme.onTertiaryContainer,
+                leadingIconContentColor =
+                    if (positive) MaterialTheme.colorScheme.onPrimaryContainer
+                    else MaterialTheme.colorScheme.onTertiaryContainer,
+            ),
         border = null,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
@@ -174,8 +182,7 @@ fun ChipsSwitch(
     val (firstSelected, selectFirst) = remember { mutableStateOf(firstSelected) }
 
     SingleChoiceSegmentedButtonRow(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         space = 24.dp,
     ) {
         SegmentedTabButton(
@@ -185,7 +192,7 @@ fun ChipsSwitch(
             onClick = {
                 onCheckedChange(true)
                 selectFirst(true)
-            }
+            },
         )
         SegmentedTabButton(
             text = stringResource(id = secondTextId),
@@ -194,7 +201,7 @@ fun ChipsSwitch(
             onClick = {
                 onCheckedChange(false)
                 selectFirst(false)
-            }
+            },
         )
     }
 }
@@ -204,35 +211,79 @@ fun DeSelectAll(
     completeList: List<String>,
     selectedList: SnapshotStateList<String>,
 ) {
-    if (completeList.size > 1) Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        AnimatedVisibility(
-            visible = selectedList.isNotEmpty(),
-            enter = fadeIn()
-                    + slideInHorizontally { w -> -w }
-                    + expandHorizontally(expandFrom = Alignment.Start, clip = false),
-            exit = fadeOut()
-                    + slideOutHorizontally { w -> -w }
-                    + shrinkHorizontally(shrinkTowards = Alignment.Start, clip = false),
+    if (completeList.size > 1)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            FilledTonalButton(onClick = { selectedList.clear() }) {
-                Text(text = stringResource(id = R.string.select_all))
+            AnimatedVisibility(
+                visible = selectedList.isNotEmpty(),
+                enter =
+                    fadeIn() +
+                        slideInHorizontally { w -> -w } +
+                        expandHorizontally(expandFrom = Alignment.Start, clip = false),
+                exit =
+                    fadeOut() +
+                        slideOutHorizontally { w -> -w } +
+                        shrinkHorizontally(shrinkTowards = Alignment.Start, clip = false),
+            ) {
+                FilledTonalButton(onClick = { selectedList.clear() }) {
+                    Text(text = stringResource(id = R.string.select_all))
+                }
+            }
+            AnimatedVisibility(
+                visible = selectedList.size != completeList.size,
+                enter =
+                    fadeIn() +
+                        slideInHorizontally { w -> w } +
+                        expandHorizontally(expandFrom = Alignment.End, clip = false),
+                exit =
+                    fadeOut() +
+                        slideOutHorizontally { w -> w } +
+                        shrinkHorizontally(shrinkTowards = Alignment.End, clip = false),
+            ) {
+                FilledTonalButton(onClick = { selectedList.addAll(completeList - selectedList) }) {
+                    Text(text = stringResource(id = R.string.deselect_all))
+                }
             }
         }
-        AnimatedVisibility(
-            visible = selectedList.size != completeList.size,
-            enter = fadeIn()
-                    + slideInHorizontally { w -> w }
-                    + expandHorizontally(expandFrom = Alignment.End, clip = false),
-            exit = fadeOut()
-                    + slideOutHorizontally { w -> w }
-                    + shrinkHorizontally(shrinkTowards = Alignment.End, clip = false),
-        ) {
-            FilledTonalButton(onClick = { selectedList.addAll(completeList - selectedList) }) {
-                Text(text = stringResource(id = R.string.deselect_all))
-            }
-        }
-    }
+}
+
+@Composable
+fun LinkChip(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    label: String,
+    url: String,
+) {
+    val context = LocalContext.current
+
+    AssistChip(
+        modifier = modifier,
+        border = null,
+        shape = MaterialTheme.shapes.medium,
+        colors =
+            AssistChipDefaults.assistChipColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+            ),
+        leadingIcon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        },
+        label = {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        onClick = {
+            context.launchView(url)
+        },
+    )
 }

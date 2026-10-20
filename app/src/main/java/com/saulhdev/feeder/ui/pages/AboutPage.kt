@@ -28,7 +28,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -70,7 +69,7 @@ import com.mikepenz.markdown.m3.markdownTypography
 import com.saulhdev.feeder.BuildConfig
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.components.ContributorRow
-import com.saulhdev.feeder.ui.components.LinkItem
+import com.saulhdev.feeder.ui.components.LinkChip
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.components.preferences.PagePreference
 import com.saulhdev.feeder.ui.components.preferences.PreferenceGroupHeading
@@ -99,20 +98,13 @@ fun AboutPage() {
         ) {
             item {
                 Column(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(4.dp)
-                            .background(
-                                MaterialTheme.colorScheme.surfaceContainerHighest,
-                                MaterialTheme.shapes.extraLarge,
-                            )
-                            .clip(MaterialTheme.shapes.extraLarge),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     ListItem(
                         modifier = Modifier.fillMaxWidth(),
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        verticalAlignment = Alignment.CenterVertically,
                         leadingContent = {
                             ResourcesCompat.getDrawable(
                                     LocalContext.current.resources,
@@ -133,7 +125,7 @@ fun AboutPage() {
                                         bitmap = bitmap.asImageBitmap(),
                                         contentDescription = null,
                                         modifier =
-                                            Modifier.requiredSize(84.dp)
+                                            Modifier.requiredSize(72.dp)
                                                 .clip(MaterialTheme.shapes.large),
                                     )
                                 }
@@ -141,30 +133,16 @@ fun AboutPage() {
                         content = {
                             Text(
                                 text = stringResource(id = R.string.app_name),
-                                style = MaterialTheme.typography.headlineMedium,
+                                style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontFamily = kingthingsPrintingkit,
                             )
                         },
                         supportingContent = {
-                            Column {
-                                Text(
-                                    text =
-                                        stringResource(id = R.string.app_version) +
-                                            ": " +
-                                            BuildConfig.VERSION_NAME +
-                                            " ( Build " +
-                                            BuildConfig.VERSION_CODE +
-                                            " )",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                Text(
-                                    text = BuildConfig.APPLICATION_ID,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
+                            Text(
+                                text = BuildConfig.APPLICATION_ID,
+                                style = MaterialTheme.typography.labelSmall,
+                            )
                         },
                     )
 
@@ -173,7 +151,7 @@ fun AboutPage() {
                         contentPadding = PaddingValues(8.dp),
                     ) {
                         items(links) { link ->
-                            LinkItem(
+                            LinkChip(
                                 icon = link.icon,
                                 label = stringResource(id = link.labelResId),
                                 url = link.url,
