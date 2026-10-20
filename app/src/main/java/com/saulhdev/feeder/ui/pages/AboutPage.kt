@@ -93,22 +93,20 @@ fun AboutPage() {
     val title = stringResource(id = R.string.title_about)
     ViewWithActionBar(title = title) { paddingValues ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(8.dp),
         ) {
             item {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceContainerHighest,
-                            MaterialTheme.shapes.extraLarge
-                        )
-                        .clip(MaterialTheme.shapes.extraLarge),
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(4.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surfaceContainerHighest,
+                                MaterialTheme.shapes.extraLarge,
+                            )
+                            .clip(MaterialTheme.shapes.extraLarge),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -135,8 +133,7 @@ fun AboutPage() {
                                         bitmap = bitmap.asImageBitmap(),
                                         contentDescription = null,
                                         modifier =
-                                            Modifier
-                                                .requiredSize(84.dp)
+                                            Modifier.requiredSize(84.dp)
                                                 .clip(MaterialTheme.shapes.large),
                                     )
                                 }
@@ -160,15 +157,15 @@ fun AboutPage() {
                                             BuildConfig.VERSION_CODE +
                                             " )",
                                     style = MaterialTheme.typography.titleSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 Text(
                                     text = BuildConfig.APPLICATION_ID,
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
-                        }
+                        },
                     )
 
                     LazyRow(
@@ -199,13 +196,15 @@ fun AboutPage() {
                 )
             }
             item {
-                PreferenceGroupHeading(heading = stringResource(id = R.string.about_build_information))
+                PreferenceGroupHeading(
+                    heading = stringResource(id = R.string.about_build_information)
+                )
             }
             itemsIndexed(
                 listOf(
                     PageItem.AboutLicense,
                     PageItem.OpenSource,
-                    PageItem.AboutChangelog
+                    PageItem.AboutChangelog,
                 )
             ) { i, it ->
                 PagePreference(
@@ -213,7 +212,7 @@ fun AboutPage() {
                     icon = it.icon,
                     route = it.route,
                     index = i,
-                    groupSize = 2,
+                    groupSize = 3,
                 )
             }
         }
@@ -223,53 +222,55 @@ fun AboutPage() {
 private data class Link(
     val icon: ImageVector,
     @StringRes val labelResId: Int,
-    val url: String
+    val url: String,
 )
 
 private data class TeamMember(
     @StringRes val name: Int,
     @StringRes val descriptionRes: Int,
     val photoUrl: String,
-    val webpage: String
+    val webpage: String,
 )
 
-private val links = listOf(
-    Link(
-        icon = Phosphor.GithubLogo,
-        labelResId = R.string.about_source_code,
-        url = "https://github.com/NeoApplications/Neo-Feed"
-    ),
-    Link(
-        icon = Phosphor.Megaphone,
-        labelResId = R.string.about_channel,
-        url = "https://t.me/neo_applications"
-    ),
-    Link(
-        icon = Phosphor.TelegramLogo,
-        labelResId = R.string.about_community_telegram,
-        url = "https://t.me/neo_launcher"
-    ),
-    Link(
-        icon = Phosphor.BracketsSquare,
-        labelResId = R.string.about_community_matrix,
-        url = "https://matrix.to/#/#neo-launcher:matrix.org"
+private val links =
+    listOf(
+        Link(
+            icon = Phosphor.GithubLogo,
+            labelResId = R.string.about_source_code,
+            url = "https://github.com/NeoApplications/Neo-Feed",
+        ),
+        Link(
+            icon = Phosphor.Megaphone,
+            labelResId = R.string.about_channel,
+            url = "https://t.me/neo_applications",
+        ),
+        Link(
+            icon = Phosphor.TelegramLogo,
+            labelResId = R.string.about_community_telegram,
+            url = "https://t.me/neo_launcher",
+        ),
+        Link(
+            icon = Phosphor.BracketsSquare,
+            labelResId = R.string.about_community_matrix,
+            url = "https://matrix.to/#/#neo-launcher:matrix.org",
+        ),
     )
-)
 
-private val contributors = listOf(
-    TeamMember(
-        name = R.string.about_developer,
-        descriptionRes = R.string.author_role,
-        photoUrl = "https://avatars.githubusercontent.com/u/6044050",
-        webpage = "https://github.com/saulhdev"
-    ),
-    TeamMember(
-        name = R.string.about_developer2,
-        descriptionRes = R.string.author_role,
-        photoUrl = "https://avatars.githubusercontent.com/u/40302595",
-        webpage = "https://github.com/machiav3lli"
+private val contributors =
+    listOf(
+        TeamMember(
+            name = R.string.about_developer,
+            descriptionRes = R.string.author_role,
+            photoUrl = "https://avatars.githubusercontent.com/u/6044050",
+            webpage = "https://github.com/saulhdev",
+        ),
+        TeamMember(
+            name = R.string.about_developer2,
+            descriptionRes = R.string.author_role,
+            photoUrl = "https://avatars.githubusercontent.com/u/40302595",
+            webpage = "https://github.com/machiav3lli",
+        ),
     )
-)
 
 @Composable
 fun LicensePage() {
@@ -286,17 +287,13 @@ fun LicensePage() {
 
 @Composable
 fun OpenSourcePage() {
-    ViewWithActionBar(
-        title = stringResource(R.string.about_open_source),
-    ) { paddingValues ->
-
+    ViewWithActionBar(title = stringResource(R.string.about_open_source)) { paddingValues ->
         val libraries by produceLibraries(R.raw.aboutlibraries)
+
         LibrariesContainer(
-            libraries,
-            Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            variant = LibrariesVariant.Traditional
+            libraries = libraries,
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            variant = LibrariesVariant.Traditional,
         )
     }
 }
@@ -315,10 +312,7 @@ fun ChangelogPage() {
     ViewWithActionBar(title = stringResource(R.string.about_changelog)) {
         Markdown(
             content = annotatedString,
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(it),
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(it),
             typography =
                 markdownTypography(
                     h1 = MaterialTheme.typography.headlineLargeEmphasized,

@@ -54,9 +54,10 @@ import com.saulhdev.feeder.ui.pages.SourcesPluginsPage
 import com.saulhdev.feeder.ui.views.ComposeWebView
 import kotlinx.serialization.Serializable
 
-val LocalNavController = staticCompositionLocalOf<NavController> {
-    error("CompositionLocal LocalNavController not present")
-}
+val LocalNavController =
+    staticCompositionLocalOf<NavController> {
+        error("CompositionLocal LocalNavController not present")
+    }
 
 const val NAV_BASE = "nf-navigation://androidx.navigation/"
 
@@ -65,9 +66,7 @@ fun NavigationManager(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
-    CompositionLocalProvider(
-        LocalNavController provides navController
-    ) {
+    CompositionLocalProvider(LocalNavController provides navController) {
         NavHost(
             modifier = modifier,
             navController = navController,
@@ -77,7 +76,6 @@ fun NavigationManager(
             popEnterTransition = { fadeIn() + slideInHorizontally { -it } },
             popExitTransition = { fadeOut() + slideOutHorizontally { it / 2 } },
         ) {
-
             composable<NavRoute.Main>(
                 deepLinks = listOf(navDeepLink { uriPattern = "$NAV_BASE${Routes.MAIN}/{page}" })
             ) {
@@ -92,11 +90,12 @@ fun NavigationManager(
             composable<NavRoute.BlockedWords> { BlockedWordsPage() }
             composable<NavRoute.Plugins> { PluginsPage() }
             composable<NavRoute.MastodonCallback>(
-                deepLinks = listOf(
-                    navDeepLink {
-                        uriPattern = "nf-mastodon://callback?code={code}&state={state}"
-                    }
-                )
+                deepLinks =
+                    listOf(
+                        navDeepLink {
+                            uriPattern = "nf-mastodon://callback?code={code}&state={state}"
+                        }
+                    )
             ) {
                 val args = it.toRoute<NavRoute.MastodonCallback>()
                 MastodonCallbackPage(args.code, args.state)
@@ -108,9 +107,12 @@ fun NavigationManager(
                 ComposeWebView(args.url)
             }
             composable<NavRoute.ArticleView>(
-                deepLinks = listOf(navDeepLink {
-                    uriPattern = "$NAV_BASE${Routes.ARTICLE_VIEW}/{uuid}"
-                })
+                deepLinks =
+                    listOf(
+                        navDeepLink {
+                            uriPattern = "$NAV_BASE${Routes.ARTICLE_VIEW}/{uuid}"
+                        }
+                    )
             ) {
                 val args = it.toRoute<NavRoute.ArticleView>()
                 ArticlePage(args.uuid)
@@ -129,58 +131,60 @@ object Routes {
 sealed class NavItem(
     val title: Int,
     val icon: ImageVector,
-    val content: @Composable () -> Unit = {}
+    val content: @Composable () -> Unit = {},
 ) {
     data object Feed :
-        NavItem(R.string.home, Phosphor.Compass, {
-            ArticleListPage()
-        })
+        NavItem(
+            R.string.home,
+            Phosphor.Compass,
+            {
+                ArticleListPage()
+            },
+        )
 
     data object Settings :
-        NavItem(R.string.title_settings, Phosphor.GearSix, {
-            PreferencesPage()
-        })
+        NavItem(
+            R.string.title_settings,
+            Phosphor.GearSix,
+            {
+                PreferencesPage()
+            },
+        )
 
     data object Sources :
-        NavItem(R.string.title_sources, Phosphor.Graph, {
-            SourcesPluginsPage()
-        })
+        NavItem(
+            R.string.title_sources,
+            Phosphor.Graph,
+            {
+                SourcesPluginsPage()
+            },
+        )
 }
 
 @Serializable
 open class NavRoute {
-    @Serializable
-    data object About : NavRoute()
+    @Serializable data object About : NavRoute()
 
-    @Serializable
-    data object SourceAdd : NavRoute()
+    @Serializable data object SourceAdd : NavRoute()
 
-    @Serializable
-    data object BlockedWords : NavRoute()
+    @Serializable data object BlockedWords : NavRoute()
 
-    @Serializable
-    data object Plugins : NavRoute()
+    @Serializable data object Plugins : NavRoute()
 
-    @Serializable
-    data object MastodonAdd : NavRoute()
+    @Serializable data object MastodonAdd : NavRoute()
 
     @Serializable
     data class MastodonCallback(val code: String = "", val state: String = "") : NavRoute()
 
-    @Serializable
-    data class ArticleView(val uuid: String = "") : NavRoute()
+    @Serializable data class ArticleView(val uuid: String = "") : NavRoute()
 
-    @Serializable
-    data object Changelog : NavRoute()
+    @Serializable data object Changelog : NavRoute()
 
-    @Serializable
-    data class Main(val page: Int = 0) : NavRoute()
+    @Serializable data class Main(val page: Int = 0) : NavRoute()
 
-    @Serializable
-    data object License : NavRoute()
+    @Serializable data object License : NavRoute()
 
-    @Serializable
-    data object OpenSource : NavRoute()
-    @Serializable
-    data class WebView(val url: String = "") : NavRoute()
+    @Serializable data object OpenSource : NavRoute()
+
+    @Serializable data class WebView(val url: String = "") : NavRoute()
 }
