@@ -26,6 +26,7 @@ material-kolor = "5.0.1"
 moshi = "1.15.2"
 multidex = "2.0.1"
 navigation = "2.10.2"
+navigation3 = "1.2.0"
 okhttp = "5.5.0"
 owm = "2.1.0"
 readability4j = "1.0.8"
@@ -69,7 +70,9 @@ compose-foundation = { group = "androidx.compose.foundation", name = "foundation
 compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "compose-libs" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "compose-material" }
 compose-material3-navigationsuite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-material" }
-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+compose-navigation3 = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
+compose-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose-libs" }
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose-libs" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose-libs" }
