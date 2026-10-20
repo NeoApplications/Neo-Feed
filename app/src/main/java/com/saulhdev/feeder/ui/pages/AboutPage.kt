@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -272,17 +273,9 @@ private val contributors = listOf(
 
 @Composable
 fun LicensePage() {
-    ViewWithActionBar(
-        title = stringResource(R.string.about_licenses),
-    ) { paddingValues ->
+    ViewWithActionBar(title = stringResource(R.string.about_licenses)) { paddingValues ->
         LazyColumn(
-            modifier = Modifier
-                .padding(
-                    start = 8.dp,
-                    end = 8.dp,
-                    top = 32.dp,
-                    bottom = paddingValues.calculateBottomPadding()
-                )
+            modifier = Modifier.padding(paddingValues.plus(PaddingValues(horizontal = 8.dp)))
         ) {
             item {
                 PreferencesWebView(url = "file:///android_asset/license.htm")
