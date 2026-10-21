@@ -98,6 +98,13 @@ android {
         checkReleaseBuilds = false
         disable += listOf("MissingTranslation", "ExtraTranslation")
     }
+
+    dependenciesInfo {
+        // Disables dependency metadata when building APKs (for IzzyOnDroid/F-Droid)
+        includeInApk = false
+        // Disables dependency metadata when building Android App Bundles (for Google Play)
+        includeInBundle = false
+    }
 }
 
 fun getEnvProperty(key: String): String {
