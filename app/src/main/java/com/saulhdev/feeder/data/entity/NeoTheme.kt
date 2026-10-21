@@ -38,7 +38,7 @@ sealed class NeoTheme {
         override val dynamicColor: Boolean
             get() = true
         override val seedColor: Long
-            get() = 0xFF6644FF
+            get() = 0xFFBBAADD
         override val paletteStyle: Int
             get() = PaletteStyle.TonalSpot.ordinal
         override val blackOnDark: Boolean
@@ -56,7 +56,7 @@ sealed class NeoTheme {
         override val dynamicColor: Boolean
             get() = false
         override val seedColor: Long
-            get() = 0xFF6644FF
+            get() = 0xFFBBAADD
         override val paletteStyle: Int
             get() = PaletteStyle.TonalSpot.ordinal
         override val blackOnDark: Boolean
@@ -74,7 +74,7 @@ sealed class NeoTheme {
         override val dynamicColor: Boolean
             get() = false
         override val seedColor: Long
-            get() = 0xFF6644FF
+            get() = 0xFFBBAADD
         override val paletteStyle: Int
             get() = PaletteStyle.TonalSpot.ordinal
         override val blackOnDark: Boolean
