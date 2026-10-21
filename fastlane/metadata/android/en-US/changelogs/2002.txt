@@ -1,0 +1,6 @@
+Add: Support for Mastodon, Miniflux and Nextcloud-News feeds
+Add: Word-based blocking
+Add: Weather widget
+Add: New theming system
+Update: Revamp all UI
++ more in +100 commits & +30 translation contributions

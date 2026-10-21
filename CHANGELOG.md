@@ -1,6 +1,25 @@
 CHANGELOG
 =========
 
+2.0.0 (21.10.2026) +100 Commits & +30 Translations
+------------
+
+### Function
+
+- Add: Support for Mastodon, Miniflux and Nextcloud-News feeds
+- Add: Word-based blocking
+- Add: Enable minify release
+- Add: Web client's caching and timeout settings
+- CompileSDK 37.1
+- TargetSdk 37
+
+### UI/UX
+
+- Add: Weather widget
+- Add: New theming system
+- Add: Animated buttons and chips
+- Update: Revamp all item layouts
+
 1.9.0 (09.11.2025) +200 Commits & +30 Translations
 ------------
 
