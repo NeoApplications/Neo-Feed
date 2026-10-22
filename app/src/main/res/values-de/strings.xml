@@ -143,4 +143,42 @@
     <string name="action_delete">Löschen</string>
     <string name="action_save">Speichern</string>
     <string name="action_open_smry">Öffnen in SMRY</string>
+    <string name="pref_cat_filters">Filter</string>
+    <string name="pref_blocked_words">Blockierte Wörter</string>
+    <string name="pref_blocked_words_summary">Verstecke Artikel, die diese Wörter enthalten</string>
+    <string name="blocked_words_title">Blockierte Wörter</string>
+    <string name="blocked_words_hint">Füge ein Wort hinzu</string>
+    <string name="blocked_words_add">Hinzufügen</string>
+    <string name="blocked_words_empty">Keine blockierten Wörter</string>
+    <string name="pref_cat_weather">Wetter</string>
+    <string name="pref_show_weather">Quelle für Wetterdaten</string>
+    <string name="pref_show_weather_summary">Abtippen, um Quelle für Wetterdaten auszuwählen</string>
+    <string name="pref_weather_unit">Temperatureinheit</string>
+    <string name="pref_weather_unit_celsius">Celsius (°C)</string>
+    <string name="pref_weather_unit_fahrenheit">Fahrenheit (°F)</string>
+    <string name="pref_weather_city">Eigene Stadt</string>
+    <string name="pref_weather_city_summary">Stadtnamen einfügen, oder freilassen für automatische Standortwahl</string>
+    <string name="weather_api_key">OWM API Key</string>
+    <string name="owm_get_your_own_key">Erhalte einen API-Key auf api.openweathermap.org</string>
+    <string name="weather_loading">Lade Wetterdaten…</string>
+    <string name="weather_error">Laden der Wetterdaten fehlgeschlagen</string>
+    <string name="weather_enable_location">Standortzugriff gewähren</string>
+    <string name="weather_location_permission_required">Standortzugriff ist erforderlich für automatisierte, lokale Wetterdaten</string>
+    <string name="weather_location_disabled">Standortdienst ist deaktiviert</string>
+    <string name="weather_forecast_hourly">Stündliche vorhersage</string>
+    <string name="weather_details_title">Wetter Details</string>
+    <string name="weather_code_clear">Klarer Himmel</string>
+    <string name="weather_code_mainly_clear">Größtenteils Klar</string>
+    <string name="weather_code_partly_cloudy">Teilweise bewölkt</string>
+    <string name="weather_code_fog">Nebel</string>
+    <string name="weather_code_rain">Regen</string>
+    <string name="weather_code_heavy_rain">Schwerer Regen</string>
+    <string name="weather_code_snow">Schnee</string>
+    <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
+    <string name="weather_provider_open_meteo" translatable="true">Open Meteo</string>
+    <string name="plugins_and_accounts">Erweiterungen &amp; Nutzerkonten</string>
+    <string name="accounts_label">Nutzerkonten</string>
+    <string name="plugins_summary">Verwaltet Nutzerkonten, API Keys und externe feed-Dienste</string>
+    <string name="select_service">Wähle eine Dienst aus</string>
+    <string name="excluded_folders">Ausgeschlossene Ordner</string>
 </resources>
