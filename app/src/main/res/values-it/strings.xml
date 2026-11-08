@@ -150,4 +150,6 @@
     <string name="sync_range_three_days">3 giorni</string>
     <string name="sync_range_one_week">1 settimana</string>
     <string name="sync_range_one_month">1 mese</string>
+    <string name="pref_cat_filters">Filtri</string>
+    <string name="pref_blocked_words">Parole bloccate</string>
 </resources>
